@@ -3,13 +3,15 @@ import { createRoot } from 'react-dom/client';
 import { Component } from 'react-simplified';
 import { HashRouter, Route } from 'react-router-dom';
 import { NavBar, Card, Alert } from './widgets';
-import { TaskList, TaskDetails, TaskEdit, TaskNew } from './task-components';
+import { AngelList, AngelDetails, PostList, PostDetails, PostEdit, PostNew } from './angel-components';
 
 class Menu extends Component {
   render() {
     return (
-      <NavBar brand="Todo App">
-        <NavBar.Link to="/tasks">Tasks</NavBar.Link>
+      <NavBar brand="Sonny Angel Wiki">
+        <NavBar.Link to="/about">About</NavBar.Link>
+        <NavBar.Link to="/collection">Collection</NavBar.Link>
+        <NavBar.Link to="/community">Community</NavBar.Link>
       </NavBar>
     );
   }
@@ -17,7 +19,19 @@ class Menu extends Component {
 
 class Home extends Component {
   render() {
-    return <Card title="Welcome">This is Todo App</Card>;
+    return <Card title="Welcome">He may bring you happiness</Card>;
+  }
+}
+
+class About extends Component {
+  render() {
+    return (
+      <>
+        <Card title="About">
+          <p>This is Sonny Angel</p>
+        </Card>
+      </>
+    )
   }
 }
 
@@ -29,10 +43,13 @@ if (root)
         <Alert />
         <Menu />
         <Route exact path="/" component={Home} />
-        <Route exact path="/tasks" component={TaskList} />
-        <Route exact path="/tasks/:id(\d+)" component={TaskDetails} /> {/* id must be number */}
-        <Route exact path="/tasks/:id(\d+)/edit" component={TaskEdit} /> {/* id must be number */}
-        <Route exact path="/tasks/new" component={TaskNew} />
+        <Route exact path="/about" component={About} />
+        <Route exact path="/collection" component={AngelList} />
+        <Route exact path="/collection/:angel_id(\d+)" component={AngelDetails} />
+        <Route exact path="/community" component={PostList} />
+        <Route exact path="/community/:post_id(\d+)" component={PostDetails} />
+        <Route exact path="/community/new" component={PostNew} />
+        <Route exact path="/community/:id(\d+)/edit" component={PostEdit} />
       </div>
     </HashRouter>,
   );
