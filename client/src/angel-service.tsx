@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:3000/api/v2';
 
-export type Angel = {
+export type Sonny_Angel = {
   angel_id: number;
   series: string;
   name: string;
@@ -15,14 +15,14 @@ class AngelService {
    * Get angels with given id.
    */
   get(angel_id: number) {
-    return axios.get<Angel>('/angels/' + angel_id).then((response) => response.data);
+    return axios.get<Sonny_Angel>('/angels/' + angel_id).then((response) => response.data);
   }
 
   /**
    * Get all angels.
    */
   getAll() {
-    return axios.get<Angel[]>('/angels').then((response) => response.data);
+    return axios.get<Sonny_Angel[]>('/angels').then((response) => response.data);
   }
 }
 

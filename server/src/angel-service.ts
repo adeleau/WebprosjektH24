@@ -1,7 +1,7 @@
 import pool from './mysql-pool';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-export type Angel = {
+export type Sonny_Angel = {
   angel_id: number;
   series: string;
   name: string;
@@ -14,11 +14,11 @@ class AngelService {
    * Get angel with given id.
    */
   get(angel_id: number) {
-    return new Promise<Angel | undefined>((resolve, reject) => {
-      pool.query('SELECT * FROM Angels WHERE id = ?', [angel_id], (error, results: RowDataPacket[]) => {
+    return new Promise<Sonny_Angel | undefined>((resolve, reject) => {
+      pool.query('SELECT * FROM Sonny_Angels WHERE id = ?', [angel_id], (error, results: RowDataPacket[]) => {
         if (error) return reject(error);
 
-        resolve(results[0] as Angel);
+        resolve(results[0] as Sonny_Angel);
       });
     });
   }
@@ -27,11 +27,11 @@ class AngelService {
    * Get all angels.
    */
   getAll() {
-    return new Promise<Angel[]>((resolve, reject) => {
-      pool.query('SELECT * FROM Angels', (error, results: RowDataPacket[]) => {
+    return new Promise<Sonny_Angel[]>((resolve, reject) => {
+      pool.query('SELECT * FROM Sonny_Angels', (error, results: RowDataPacket[]) => {
         if (error) return reject(error);
 
-        resolve(results as Angel[]);
+        resolve(results as Sonny_Angel[]);
       });
     });
   }
@@ -103,7 +103,7 @@ class PostService {
 
   updatePost(post_id: number, title: string, content: string, img: string) {
     return new Promise<void>((resolve, reject) => {
-      pool.query('UPDATE Posts SET title=?, content=?, img=? WHERE angel_id=?', [title, content, post_id, img], (error, results: ResultSetHeader) => {
+      pool.query('UPDATE Posts SET title=?, content=?, img=? WHERE post_id=?', [title, content, post_id, img], (error, results: ResultSetHeader) => {
         if (error) return reject(error);
         resolve();
       });

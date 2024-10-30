@@ -8,15 +8,29 @@ import mysql from 'mysql2';
  * - `MYSQL_DATABASE`
  */
 const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
+  // host: process.env.MYSQL_HOST,
+  // user: process.env.MYSQL_USER,
+  // password: process.env.MYSQL_PASSWORD,
+  // database: process.env.MYSQL_DATABASE,
+  host: 'mysql.stud.ntnu.no',
+  user: 'fs_dcst2002_1_gruppe3',
+  password: 'Passord123',
+  database: 'fs_dcst2002_1_gr3db',
   // Reduce load on NTNU MySQL server
   connectionLimit: 1,
   // Convert MySQL boolean values to JavaScript boolean values
   typeCast: (field, next) =>
     field.type == 'TINY' && field.length == 1 ? field.string() == '1' : next(),
+});
+
+pool.getConnection((error, connection) => {
+  if (error) {
+    console.error('Error connecting to the database: ', error); // Logg feil ved tilkobling
+    return;
+  }
+
+  console.log('Successfully connected to the database'); // Logg suksess ved tilkobling
+  connection.release(); // Husk å frigjøre forbindelsen
 });
 
 export default pool;

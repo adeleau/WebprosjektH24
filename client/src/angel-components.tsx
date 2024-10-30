@@ -3,7 +3,7 @@ import { Component } from 'react-simplified';
 import { Alert, Card, Row, Column, Form, Button } from './widgets';
 import { NavLink } from 'react-router-dom';
 const { angelService, postService } = services;
-import services, { Angel, Post } from './angel-service';
+import services, { Sonny_Angel, Post } from './angel-service';
 import { createHashHistory } from 'history';
 
 const history = createHashHistory(); // Use history.push(...) to programmatically change path, for instance after successfully saving a student
@@ -12,12 +12,12 @@ const history = createHashHistory(); // Use history.push(...) to programmaticall
  * Renders angel list.
  */
 export class AngelList extends Component {
-  angels: Angel[] = [];
+  angels: Sonny_Angel[] = [];
 
   render() {
     return (
       <>
-        <Card title="Sonny Angel">
+        <Card title="Sonny Angel collection">
           {this.angels.map((angel) => (
             <Row key={angel.angel_id}>
               <Column>
@@ -26,7 +26,7 @@ export class AngelList extends Component {
             </Row>
           ))}
         </Card>
-        <Button.Success onClick={() => history.push('/angels/new')}>New Sonny Angel</Button.Success>
+        {/* <Button.Success onClick={() => history.push('/angels/new')}>New Sonny Angel</Button.Success> */}
       </>
     );
   }
@@ -43,12 +43,12 @@ export class AngelList extends Component {
  * Renders a specific angel.
  */
 export class AngelDetails extends Component<{ match: { params: { angel_id: number } } }> {
-  angel: Angel = { angel_id: 0, series: '', name: '', description: '', image: '' };
+  angel: Sonny_Angel = { angel_id: 0, series: '', name: '', description: '', image: '' };
 
   render() {
     return (
       <>
-        <Card title="Sonny Angel">
+        <Card title={this.angel.name}>
           <Row>
             <Column width={2}>Name:</Column>
             <Column>{this.angel.name}</Column>
@@ -63,7 +63,9 @@ export class AngelDetails extends Component<{ match: { params: { angel_id: numbe
           </Row>
           <Row>
             <Column width={2}>Image:</Column>
-            <Column><img src={this.angel.image}></img></Column>
+            <Column>
+              <img src={this.angel.image}></img>
+            </Column>
           </Row>
         </Card>
         <Button.Success
@@ -89,7 +91,7 @@ export class PostList extends Component {
   render() {
     return (
       <>
-        <Card title="Sonny Angel">
+        <Card title="Community">
           {this.posts.map((post) => (
             <Row key={post.post_id}>
               <Column>
@@ -101,7 +103,7 @@ export class PostList extends Component {
         <Button.Success onClick={() => history.push('/posts/new')}>New post</Button.Success>
       </>
     );
-  }
+  } 
 
   mounted() {
     postService
@@ -120,7 +122,7 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
   render() {
     return (
       <>
-        <Card title="Post">
+        <Card title={this.post.title}>
           <Row>
             <Column width={2}>Title:</Column>
             <Column>{this.post.title}</Column>
@@ -131,7 +133,9 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
           </Row>
           <Row>
             <Column width={2}>Image:</Column>
-            <Column><img src={this.post.img}></img></Column>
+            <Column>
+              <img src={this.post.img}></img>
+            </Column>
           </Row>
         </Card>
         <Button.Success
@@ -207,7 +211,7 @@ export class PostEdit extends Component<{ match: { params: { post_id: number } }
                   .then(() => {
                     history.push('/posts/' + this.post.post_id);
                   })
-                  .catch((error) => Alert.danger('Error updating: ' + error.message))
+                  .catch((error) => Alert.danger('Error updating post: ' + error.message))
               }
             >
               Save
@@ -272,6 +276,18 @@ export class PostNew extends Component {
               <Form.Textarea
                 value={this.content}
                 onChange={(event) => (this.content = event.currentTarget.value)}
+                rows={10}
+              />
+            </Column>
+          </Row>
+          <Row>
+            <Column width={2}>
+              <Form.Label>Image:</Form.Label>
+            </Column>
+            <Column>
+              <Form.Textarea
+                value={this.img}
+                onChange={(event) => (this.img = event.currentTarget.value)}
                 rows={10}
               />
             </Column>

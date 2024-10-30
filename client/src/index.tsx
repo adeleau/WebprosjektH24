@@ -3,15 +3,22 @@ import { createRoot } from 'react-dom/client';
 import { Component } from 'react-simplified';
 import { HashRouter, Route } from 'react-router-dom';
 import { NavBar, Card, Alert } from './widgets';
-import { AngelList, AngelDetails, PostList, PostDetails, PostEdit, PostNew } from './angel-components';
+import {
+  AngelList,
+  AngelDetails,
+  PostList,
+  PostDetails,
+  PostEdit,
+  PostNew,
+} from './angel-components';
 
 class Menu extends Component {
   render() {
     return (
       <NavBar brand="Sonny Angel Wiki">
         <NavBar.Link to="/about">About</NavBar.Link>
-        <NavBar.Link to="/collection">Collection</NavBar.Link>
-        <NavBar.Link to="/community">Community</NavBar.Link>
+        <NavBar.Link to="/angels">Collection</NavBar.Link>
+        <NavBar.Link to="/posts">Community</NavBar.Link>
       </NavBar>
     );
   }
@@ -31,7 +38,7 @@ class About extends Component {
           <p>This is Sonny Angel</p>
         </Card>
       </>
-    )
+    );
   }
 }
 
@@ -44,12 +51,12 @@ if (root)
         <Menu />
         <Route exact path="/" component={Home} />
         <Route exact path="/about" component={About} />
-        <Route exact path="/collection" component={AngelList} />
-        <Route exact path="/collection/:angel_id(\d+)" component={AngelDetails} />
-        <Route exact path="/community" component={PostList} />
-        <Route exact path="/community/:post_id(\d+)" component={PostDetails} />
-        <Route exact path="/community/new" component={PostNew} />
-        <Route exact path="/community/:id(\d+)/edit" component={PostEdit} />
+        <Route exact path="/angels" component={AngelList} /> {/* collection */}
+        <Route exact path="/angels/:angel_id(\d+)" component={AngelDetails} />
+        <Route exact path="/posts" component={PostList} /> {/* community */}
+        <Route exact path="/posts/:post_id(\d+)" component={PostDetails} />
+        <Route exact path="/posts/new" component={PostNew} />
+        <Route exact path="/posts/:post_id(\d+)/edit" component={PostEdit} />
       </div>
     </HashRouter>,
   );
