@@ -1,6 +1,6 @@
 import express from 'express';
 import services from './angel-service';
-const { angelService, postService } = services; 
+const { angelService, collectionService, postService } = services; 
 
 /**
  * Express router containing angel methods.
@@ -43,7 +43,7 @@ router.post('/posts', (request, response) => {
   const data = request.body;
   if (data && data.title && data.title.length != 0)
     postService
-      .create(data.title, data.content, data.img)
+      .create(data.user_id, data.title, data.content, data.img)
       .then((post_id) => response.send({ post_id: post_id }))
       .catch((error) => response.status(500).send(error));
   else response.status(400).send('Missing post title');
@@ -66,6 +66,53 @@ router.put('/posts/:post_id', (request, response) => {
   } else {
     response.status(400).send('Missing angel title or content');
   }
+});
+
+router.post('/posts/:post_id/likes', (request, response) => {
+  const post_id = Number(request.params.post_id);
+  const { user_id } = request.body;
+
+  if (user_id) {
+    postService
+      .likePost(post_id, user_id)
+      .then((like_id) => response.status(201).send({ like_id }))
+      .catch((error) => response.status(500).send(error));
+  } else {
+    response.status(400).send('Missing user ID');
+  }
+});
+
+//Likes
+router.get('/posts/:post_id/likes', (request, response) => {
+  const post_id = Number(request.params.post_id);
+
+  postService
+    .getPosLikes(post_id)
+    .then((likes) => response.send(likes))
+    .catch((error) => response.status(500).send(error));
+});
+
+router.post('/posts/:post_id/comments', (request, response) => {
+  const post_id = Number(request.params.post_id);
+  const { user_id, content } = request.body;
+
+  if (user_id && content) {
+    postService
+      .addPosCom(post_id, user_id, content)
+      .then((comment_id) => response.status(201).send({ comment_id }))
+      .catch((error) => response.status(500).send(error));
+  } else {
+    response.status(400).send('Missing user ID or comment content');
+  }
+});
+
+router.get('/posts/:post_id/comments', (request, response) => {
+  const post_id = Number(request.params.post_id);
+
+  postService
+    .getPosComs(post_id)
+    .then((comments) => response.send(comments))
+    .catch((error) => response.status(500).send(error));
 });
 
 export default router;

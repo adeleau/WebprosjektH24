@@ -1,0 +1,33 @@
+/*
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Yu Mincho Regular; //tekst type
+  color: #f8f8ff; //tekst-farge
+  background-size: cover; //fargen blir hele bakgrunnen
+  bacground-color: #f2a6b0;
+}
+
+nav{
+  width: 100px;
+  height: 10px;
+  display: flex;
+  align-itmes: center;
+}
+
+footer{
+  background-color: #ffe9eb;
+  color: rgb(2, 1, 1);
+    text-align: center;
+    padding: 0px;
+    position: fixed;
+    width: 100%;
+    margin-bottom: 10px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    
+}
+
+
+

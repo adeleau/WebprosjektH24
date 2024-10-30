@@ -4,7 +4,7 @@ axios.defaults.baseURL = 'http://localhost:3000/api/v2';
 
 export type Sonny_Angel = {
   angel_id: number;
-  series: string;
+  collection_id: number;
   name: string;
   description: string;
   image: string;
@@ -28,12 +28,54 @@ class AngelService {
 
 const angelService = new AngelService();
 
+export type Collection = {
+  collection_id: number;
+  series: string;
+  reldate: Date;
+  description: string;
+}
+
+export type CollectionComment = {
+  colcom_id: number;
+  collection_id: number;
+  user_id: number; 
+  content: string; 
+  created_at: Date; 
+};
+
+export type CollectionLike = {
+  collike_id: number;
+  collection_id: number; 
+  user_id: number;  
+}
+
+class CollectionService{
+  // legg inn alle get bla bla
+}
+
+const collectionService = new CollectionService();
+
 export type Post = {
   post_id: number;
   title: string;
+  user_id: number;
   content: string;
   img: string;
 };
+
+export type PostComment = {
+  poscom_id: number;
+  post_id: number;
+  user_id: number; 
+  content: string; 
+  created_at: Date; 
+};
+
+export type PostLike = {
+  poslike_id: number;
+  post_id: number; 
+  user_id: number;  
+}
 
 class PostService {
   /**
@@ -55,9 +97,9 @@ class PostService {
    *
    * Resolves the newly created post id.
    */
-  create(title: string, content: string, img: string) {
+  create(title: string, user_id: number, content: string, img: string) {
     return axios
-      .post<{ post_id: number }>('/posts', { title: title, content: content, img: img })
+      .post<{ post_id: number }>('/posts', { title: title, user_id: user_id, content: content, img: img })
       .then((response) => response.data.post_id);
   }
 
@@ -70,8 +112,29 @@ class PostService {
   deletePost(post_id: number) {
     return axios.delete<{ post_id: number }>('/posts/' + post_id).then((response) => response.data.post_id);
   }
+
+  likePost(post_id: number, user_id:number) {
+    return axios
+    .post<{ poslike_id: number }>('/posts/' + post_id + '/likes', { user_id })
+    .then((response) => response.data.poslike_id);
+  }
+
+  getPosLikes(post_id: number) {
+    return axios.get<PostLike[]>('/posts/' + post_id + '/likes').then((response) => response.data);
+  }
+
+  addPosCom(post_id: number, user_id: number, content: string, created_at: Date) {
+    return axios
+      .post<{ poscom_id: number }>('/posts/' + post_id + '/comments', { user_id, content, created_at })
+      .then((response) => response.data.poscom_id);
+  }
+
+  getPosComs(post_id: number) {
+    return axios.get<PostComment[]>('/posts/' + post_id + '/comments').then((response) => response.data);
+  }
 }
 
 const postService = new PostService();
 
-export default { angelService, postService };
+
+export default { angelService, collectionService, postService };

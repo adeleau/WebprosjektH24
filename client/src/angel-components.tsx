@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component } from 'react-simplified';
 import { Alert, Card, Row, Column, Form, Button } from './widgets';
 import { NavLink } from 'react-router-dom';
-const { angelService, postService } = services;
+const { angelService, collectionService, postService } = services;
 import services, { Sonny_Angel, Post } from './angel-service';
 import { createHashHistory } from 'history';
 
@@ -43,7 +43,7 @@ export class AngelList extends Component {
  * Renders a specific angel.
  */
 export class AngelDetails extends Component<{ match: { params: { angel_id: number } } }> {
-  angel: Sonny_Angel = { angel_id: 0, series: '', name: '', description: '', image: '' };
+  angel: Sonny_Angel = { angel_id: 0, collection_id: 0, name: '', description: '', image: '' };
 
   render() {
     return (
@@ -54,8 +54,8 @@ export class AngelDetails extends Component<{ match: { params: { angel_id: numbe
             <Column>{this.angel.name}</Column>
           </Row>
           <Row>
-            <Column width={2}>Series:</Column>
-            <Column>{this.angel.series}</Column>
+            <Column width={2}>Collection:</Column>
+            <Column>{this.angel.collection_id}</Column>
           </Row>
           <Row>
             <Column width={2}>Description:</Column>
@@ -64,7 +64,7 @@ export class AngelDetails extends Component<{ match: { params: { angel_id: numbe
           <Row>
             <Column width={2}>Image:</Column>
             <Column>
-              <img src={this.angel.image}></img>
+              <img src={this.angel.image} style={{ maxWidth: '200px', maxHeight: '200px' }}></img>
             </Column>
           </Row>
         </Card>
@@ -117,9 +117,14 @@ export class PostList extends Component {
  * Renders a specific post.
  */
 export class PostDetails extends Component<{ match: { params: { post_id: number } } }> {
-  post: Post = { post_id: 0, title: '', content: '', img: '' };
+  post: Post = { post_id: 0, user_id:0, title: '', content: '', img: '' };
+  newCommentText = '';
+  loading = true;
 
   render() {
+    if (this.loading) {
+      return <p>Loading...</p>; 
+    }
     return (
       <>
         <Card title={this.post.title}>
@@ -134,7 +139,31 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
           <Row>
             <Column width={2}>Image:</Column>
             <Column>
-              <img src={this.post.img}></img>
+              <img src={this.post.img} style={{ maxWidth: '200px', maxHeight: '200px' }}></img>
+            </Column>
+          </Row>
+          <Row>
+            <Column width={2}>Likes</Column>
+            <Column>
+              <Button.Success onClick={() => this.incrementLikes()}>Like</Button.Success>
+                <span> {this.post.likes} likes</span> ////////////////////////////////////////////////////////
+            </Column>
+          </Row>
+          <Row>
+            <Column width={2}>Comments:</Column>
+            <Column>
+              {this.post.comments.map((comment, index) => ( //////////////////////////////////////////////
+                <div key={index}>
+                  <strong>{comment.user}:</strong> {comment.text}
+                </div>
+              ))}
+              <Form.Input
+                type="text"
+                value={this.newCommentText}
+                placeholder="Add a comment"
+                onChange={(event) => (this.newCommentText = event.currentTarget.value)}
+              />
+              <Button.Success onClick={() => this.addComment()}>Add Comment</Button.Success>
             </Column>
           </Row>
         </Card>
@@ -145,6 +174,19 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
         </Button.Success>
       </>
     );
+  }
+
+  incrementLikes() {
+    this.post.likes += 1;
+    this.forceUpdate();
+  }
+
+  addComment() {
+    if (this.newCommentText.trim()) {
+      this.post.comments.push({ user: 'Current User', text: this.newCommentText });
+      this.newCommentText = '';  
+      this.forceUpdate();  
+    }
   }
 
   mounted() {
@@ -159,7 +201,7 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
  * Renders form to edit a specific post.
  */
 export class PostEdit extends Component<{ match: { params: { post_id: number } } }> {
-  post: Post = { post_id: 0, title: '', content: '', img: '' };
+  post: Post = { post_id: 0, user_id: 0, title: '', content: '', img: ''};
 
   render() {
     return (
@@ -251,6 +293,7 @@ export class PostNew extends Component {
   title = '';
   content = '';
   img = '';
+  user_id = 0;
 
   render() {
     return (
@@ -266,6 +309,20 @@ export class PostNew extends Component {
                 value={this.title}
                 onChange={(event) => (this.title = event.currentTarget.value)}
               />
+            </Column>
+          </Row>
+          <Row>
+            <Column width={2}>
+              <Form.Label>By:</Form.Label>
+            </Column>
+            <Column>
+            <Form.Select
+              value={this.user_id}
+              onChange={(event) => (this.user_id = Number(event.currentTarget.value))}
+            >
+              <option value="">Select a user</option>
+              <option value="2">Jub</option>
+            </Form.Select>
             </Column>
           </Row>
           <Row>
@@ -296,7 +353,7 @@ export class PostNew extends Component {
         <Button.Success
           onClick={() => {
             postService
-              .create(this.title, this.content, this.img)
+              .create(this.title, this.user_id, this.content, this.img)
               .then((post_id) => history.push('/posts/' + post_id))
               .catch((error) => Alert.danger('Error creating post: ' + error.message));
           }}
