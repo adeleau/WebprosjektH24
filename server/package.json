@@ -2,7 +2,6 @@
   "name": "todo-server",
   "version": "1.0.0",
   "description": "A simple Todo REST server",
-  "license": "MIT",
   "scripts": {
     "start": "nodemon src/server.ts --exec \"npx babel-node -x .ts --require ./config\"",
     "test": "jest --setupFiles ./test/config.ts"

@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
+import React from "react";
 import "./login.css";
+import userService from "src/angel-service";
 
-const Login = () => {
+
+export const Login: React.FC<{}> = () => {
     return (
+        <>
         <div className="login">
             <div className="card">
                 <div className="left">
@@ -23,7 +27,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
+        </>
     );
     };
 
-export default Login; 
