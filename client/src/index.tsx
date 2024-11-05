@@ -102,7 +102,6 @@ let root = document.getElementById('root');
 if (root)
   createRoot(root).render(
     <HashRouter>
-      <div>
         <Alert />
         <Menu />
         <Route exact path="/" component={Home} />
@@ -113,6 +112,6 @@ if (root)
         <Route exact path="/posts/:post_id(\d+)" component={PostDetails} />
         <Route exact path="/posts/new" component={PostNew} />
         <Route exact path="/posts/:post_id(\d+)/edit" component={PostEdit} />
-      </div>
+
     </HashRouter>,
   );

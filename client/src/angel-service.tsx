@@ -4,7 +4,7 @@ axios.defaults.baseURL = 'http://localhost:3000/api/v2';
 
 export type Sonny_Angel = {
   angel_id: number;
-  collection_id: number;
+  series_id: number;
   name: string;
   description: string;
   image: string;
@@ -27,6 +27,13 @@ class AngelService {
 }
 
 const angelService = new AngelService();
+
+export type Product =
+
+
+
+
+
 
 export type Collection = {
   collection_id: number;
