@@ -70,15 +70,13 @@ router.put('/posts/:post_id', (request, response) => {
 
 router.post('/posts/:post_id/likes', (request, response) => {
   const post_id = Number(request.params.post_id);
-  const { user_id } = request.body;
-
-  if (user_id) {
+  if (post_id) {
     postService
-      .likePost(post_id, user_id)
-      .then((like_id) => response.status(201).send({ like_id }))
+      .likePost(post_id)
+      .then(() => response.status(201).send('Post liked successfully'))
       .catch((error) => response.status(500).send(error));
   } else {
-    response.status(400).send('Missing user ID');
+    response.status(400).send('Invalid post ID');
   }
 });
 
@@ -88,7 +86,7 @@ router.get('/posts/:post_id/likes', (request, response) => {
 
   postService
     .getPosLikes(post_id)
-    .then((likes) => response.send(likes))
+    .then((posLikeCount) => response.json({ post_id: post_id, like_count: posLikeCount }))
     .catch((error) => response.status(500).send(error));
 });
 
@@ -114,5 +112,7 @@ router.get('/posts/:post_id/comments', (request, response) => {
     .then((comments) => response.send(comments))
     .catch((error) => response.status(500).send(error));
 });
+
+/////// MÅ GJØRE ALT MED COLLECTION LIKES OF COMMENTS
 
 export default router;

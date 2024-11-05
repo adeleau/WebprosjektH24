@@ -57,7 +57,7 @@ export type CollectionComment = {
 export type CollectionLike = {
   collike_id: number;
   collection_id: number;
-  user_id: number;
+  like_count: number;
 };
 
 class CollectionService {
@@ -73,11 +73,10 @@ class CollectionService {
 
   getColLikes(collection_id: number) {
     return new Promise<number[]>((resolve, reject) => {
-      pool.query('SELECT user_id FROM CollectionLikes WHERE collection_id = ?', [collection_id], (error, results: RowDataPacket[]) => {
+      pool.query('SELECT like_count FROM CollectionLikes WHERE collection_id = ?', [collection_id], (error, results: RowDataPacket[]) => {
         if (error) return reject(error);
-
-        const userIds = results.map(row => row.user_id);
-        resolve(userIds);
+        const colLikeCount = results[0].like_count;
+        resolve(colLikeCount);
       });
     });
   }
@@ -125,7 +124,7 @@ export type PostComment = {
 export type PostLike = {
   poslike_id: number;
   post_id: number;
-  user_id: number;
+  like_count: number;
 };
 
 class PostService {
@@ -193,23 +192,22 @@ class PostService {
     });
   }
 
-  likePost(post_id: number, user_id: number) {
-    return new Promise<number>((resolve, reject) => {
-      pool.query('INSERT INTO PostLikes SET post_id=?, user_id=?', [post_id, user_id], (error, results: ResultSetHeader) => {
+  likePost(post_id: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      pool.query('UPDATE PostLikes SET like_count = like_count + 1 WHERE post_id=?', [post_id], (error, results: ResultSetHeader) => {
         if (error) return reject(error);
-
-        resolve(results.insertId);
+        if (results.affectedRows === 0) return reject(new Error('Post not found'))
+        resolve();
       });
     });
   }
 
   getPosLikes(post_id: number) {
     return new Promise<number[]>((resolve, reject) => {
-      pool.query('SELECT user_id FROM PostLikes WHERE post_id = ?', [post_id], (error, results: RowDataPacket[]) => {
+      pool.query('SELECT like_count FROM PostLikes WHERE post_id = ?', [post_id], (error, results: RowDataPacket[]) => {
         if (error) return reject(error);
-
-        const userIds = results.map(row => row.user_id);
-        resolve(userIds);
+        const posLikeCount = results[0].like_count;
+        resolve(posLikeCount);
       });
     });
   }

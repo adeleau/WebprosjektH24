@@ -46,7 +46,7 @@ export type CollectionComment = {
 export type CollectionLike = {
   collike_id: number;
   collection_id: number; 
-  user_id: number;  
+  like_count: number;  
 }
 
 class CollectionService{
@@ -61,6 +61,7 @@ export type Post = {
   user_id: number;
   content: string;
   img: string;
+  //likes: number;
 };
 
 export type PostComment = {
@@ -74,7 +75,7 @@ export type PostComment = {
 export type PostLike = {
   poslike_id: number;
   post_id: number; 
-  user_id: number;  
+  like_count: number;  
 }
 
 class PostService {
@@ -113,14 +114,16 @@ class PostService {
     return axios.delete<{ post_id: number }>('/posts/' + post_id).then((response) => response.data.post_id);
   }
 
-  likePost(post_id: number, user_id:number) {
+  likePost(post_id: number): Promise<void> {
     return axios
-    .post<{ poslike_id: number }>('/posts/' + post_id + '/likes', { user_id })
-    .then((response) => response.data.poslike_id);
+    .post('/posts/' + post_id + '/likes')
+    .then(() => {});
   }
 
-  getPosLikes(post_id: number) {
-    return axios.get<PostLike[]>('/posts/' + post_id + '/likes').then((response) => response.data);
+  getPosLikes(post_id: number): Promise<number> {
+    return axios
+      .get<{ like_count: number }>('/posts/' + post_id + '/likes')
+      .then((response) => response.data.like_count);
   }
 
   addPosCom(post_id: number, user_id: number, content: string, created_at: Date) {

@@ -119,11 +119,51 @@ export class PostList extends Component {
 export class PostDetails extends Component<{ match: { params: { post_id: number } } }> {
   post: Post = { post_id: 0, user_id:0, title: '', content: '', img: '' };
   newCommentText = '';
-  loading = true;
+  state = {
+    like_count: 0,
+    isLiked: false,
+    loading: true,
+  }
+
+  mounted() {
+    postService
+      .get(this.props.match.params.post_id)
+      .then((post) => {
+        this.post = post; 
+        this.setState({ loading: false });
+      })
+      .catch((error) => Alert.danger('Error getting post: ' + error.message));
+    this.getLikeCount();
+  }
+
+  getLikeCount() {
+    postService
+      .getPosLikes(this.props.match.params.post_id)
+      .then((like_count) => {
+        this.setState({ like_count })
+      })
+      .catch((error) => Alert.danger('Error getting like count: ' + error.message));
+  }
+
+  toggleLike = () => {
+    const { isLiked, like_count } = this.state;
+    this.setState(
+      {
+        like_count: isLiked ? like_count - 1 : like_count + 1,
+        isLiked: !isLiked,
+      },
+      () => {
+        postService
+          .likePost(this.props.match.params.post_id)
+          .catch((error) => Alert.danger('Error updating like count'))
+      }
+    )
+  }
 
   render() {
-    if (this.loading) {
-      return <p>Loading...</p>; 
+    const { like_count, isLiked, loading } = this.state;
+    if (loading) {
+      return <p>Loading...</p>
     }
     return (
       <>
@@ -145,13 +185,13 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
           <Row>
             <Column width={2}>Likes</Column>
             <Column>
-              <Button.Success onClick={() => this.incrementLikes()}>Like</Button.Success>
-                <span> {this.post.likes} likes</span> ////////////////////////////////////////////////////////
+              <Button.Success onClick={this.toggleLike}>{isLiked ? "Dislike" : "Like"}</Button.Success>
+                <span id="like-count"> {like_count} like(s)</span>
             </Column>
           </Row>
           <Row>
             <Column width={2}>Comments:</Column>
-            <Column>
+            {/* <Column>
               {this.post.comments.map((comment, index) => ( //////////////////////////////////////////////
                 <div key={index}>
                   <strong>{comment.user}:</strong> {comment.text}
@@ -164,7 +204,7 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
                 onChange={(event) => (this.newCommentText = event.currentTarget.value)}
               />
               <Button.Success onClick={() => this.addComment()}>Add Comment</Button.Success>
-            </Column>
+            </Column> */}
           </Row>
         </Card>
         <Button.Success
@@ -176,25 +216,15 @@ export class PostDetails extends Component<{ match: { params: { post_id: number 
     );
   }
 
-  incrementLikes() {
-    this.post.likes += 1;
-    this.forceUpdate();
-  }
+  
 
-  addComment() {
-    if (this.newCommentText.trim()) {
-      this.post.comments.push({ user: 'Current User', text: this.newCommentText });
-      this.newCommentText = '';  
-      this.forceUpdate();  
-    }
-  }
-
-  mounted() {
-    postService
-      .get(this.props.match.params.post_id)
-      .then((post) => (this.post = post))
-      .catch((error) => Alert.danger('Error getting post: ' + error.message));
-  }
+  // addComment() {
+  //   if (this.newCommentText.trim()) {
+  //     this.post.comments.push({ user: 'Current User', text: this.newCommentText });
+  //     this.newCommentText = '';  
+  //     this.forceUpdate();  
+  //   }
+  // }
 }
 
 /**
