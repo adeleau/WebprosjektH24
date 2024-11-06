@@ -2,8 +2,8 @@ import { RowDataPacket } from 'mysql2';
 import pool from '../mysql-pool';
 
 export type Series = {
-    series_id: number,
-    name: string
+    series_id: number;
+    name: string;
 }
 
 class SeriesService {
@@ -19,6 +19,4 @@ class SeriesService {
     }
 }
 
-
-
-export default new SeriesService
+export default new SeriesService;

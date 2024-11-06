@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:3000/api/v2';
-
+//////////////endre til postservice
 export type Sonny_Angel = {
   angel_id: number;
   series_id: number;
@@ -28,7 +28,9 @@ class AngelService {
 
 const angelService = new AngelService();
 
-export type Product =
+export type Product = {
+  
+}
 
 
 

@@ -15,4 +15,4 @@ class SeriesService {
 
 }
 
-export default new SeriesService
+export default new SeriesService();

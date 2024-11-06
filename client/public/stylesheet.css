@@ -382,7 +382,6 @@ body {
 }
 
 
-
 .nav-menu {
     background-color: white; 
     color: #333;
@@ -459,7 +458,7 @@ body {
 .dropdown-menu {
     display: none;
     list-style: none;
-    padding-left: 40px; 
+    padding-left: 20px; 
 }
 
 .dropdown-menu.active {

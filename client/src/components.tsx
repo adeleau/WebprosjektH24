@@ -3,7 +3,11 @@ import React from "react";
 import {useState, useEffect} from "react";
 import SeriesService from "./services/series-service"
 import type { Series } from "./services/series-service";
-import angelService from "./angel-service";
+import AngelService from "./services/angel-service";
+import type { Angel, AngelCardProps } from "./services/angel-service";
+import PostService from "./services/post-service";
+import type { Post } from "./services/post-service";
+
 
 
 export const Home: React.FC<{}> = () => {
@@ -16,7 +20,7 @@ export const Home: React.FC<{}> = () => {
 }
 
 
-/*export const Card: React.FC<{Angel: Product}> = (Angel) =>{
+/*export const Card: React.FC<{Angel: Angel}> = (Angel) =>{
     const thisAngel = Angel
     return (
         <>
@@ -149,6 +153,21 @@ export const Menu: React.FC<{}> = () => {
         </>
     )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const Login: React.FC<{}> = () => {
     return (
