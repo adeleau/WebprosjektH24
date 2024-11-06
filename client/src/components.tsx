@@ -16,7 +16,7 @@ export const Home: React.FC<{}> = () => {
 }
 
 
-export const Card: React.FC<{Angel: Product}> = (Angel) =>{
+/*export const Card: React.FC<{Angel: Product}> = (Angel) =>{
     const thisAngel = Angel
     return (
         <>
@@ -30,7 +30,7 @@ export const Card: React.FC<{Angel: Product}> = (Angel) =>{
         </div>
         </>
     )
-}
+}*/
 
 export const Navbar = () => {
     return (
