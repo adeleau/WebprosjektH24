@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   host: 'mysql.stud.ntnu.no',
   user: 'fs_dcst2002_1_gruppe3',
   password: 'Passord123',
-  database: 'fs_dcst2002_1_gr3db',
+  database: 'fs_dcst2002_1_gruppe3_dev',
   
   connectionLimit: 4,
   // Convert MySQL boolean values to JavaScript boolean values

@@ -1,11 +1,27 @@
 import express from 'express';
 import services from './angel-service';
 const { angelService, collectionService, postService } = services; 
-
+import SeriesService from "./services/series-service"
+import  type Series from  "./services/series-service"
 /**
  * Express router containing angel methods.
  */
 const router = express.Router();
+
+
+
+
+router.get("/series", (_req, res) => {
+  SeriesService.getAll()
+  .then((seriesList) => {res.send(seriesList)})
+  .catch((err) => {res.status(500).send(err)})
+});
+
+
+
+
+
+
 
 router.get('/angels', (_request, response) => {
   angelService
