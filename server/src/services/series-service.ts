@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2';
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../mysql-pool';
 
 export type Series = {
@@ -8,12 +8,22 @@ export type Series = {
 
 class SeriesService {
     getAll() {
-        return new Promise<Array<Series> | Error> ((resolve, reject) => {
+        return new Promise<Series[] | Error> ((resolve, reject) => {
             pool.query('select * from series', [], (err, res: RowDataPacket[]) => {
                 if (err) {
                     return reject(err);
                 }
-                resolve(res as Array<Series>)
+                resolve(res as Series[])
+            })
+        })
+    }
+    getById(series_id: number) {
+        return new Promise<Series | Error> ((resolve, reject) => {
+            pool.query('select * from series where series_id=?', [series_id], (err, res: RowDataPacket[]) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(res[0] as Series)
             })
         })
     }

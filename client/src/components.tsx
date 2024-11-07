@@ -5,8 +5,8 @@ import SeriesService from "./services/series-service"
 import type { Series } from "./services/series-service";
 import AngelService from "./services/angel-service";
 import type { Angel, AngelCardProps } from "./services/angel-service";
-import PostService from "./services/post-service";
-import type { Post } from "./services/post-service";
+// import PostService from "./services/post-service";
+// import type { Post } from "./services/post-service";
 
 
 
@@ -113,15 +113,15 @@ export const Leftbar: React.FC<{}>= () => {
           <li className="nav-text">
             <Link to="/master-list">Master List</Link>
           </li>
-          <li className={`nav-text categories ${isDropdownOpen ? 'active' : ''}`}>
+          <li className={`nav-text series ${isDropdownOpen ? 'active' : ''}`}>
             <span onClick={toggleDropdown}>
-              Categories {isDropdownOpen ? '↓' : '→'}
+              Series {isDropdownOpen ? '↓' : '→'}
             </span>
             {isDropdownOpen && (
               <ul className="dropdown-menu active">
                 {series.map((name, i) =>(
                     <li key={i} className = "nav-text">
-                        <Link to = {`/categories/${name}`}>{name}</Link>
+                        <Link to = {`/series/${name}`}>{name}</Link>
                     </li>
                 ))}
               </ul>

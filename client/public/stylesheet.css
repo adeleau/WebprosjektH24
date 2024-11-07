@@ -292,7 +292,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
+    padding: 30px 20px 10px 20px;
     font-family: 'Poppins', sans-serif;
     position: relative;
 }
@@ -429,7 +429,7 @@ body {
 .nav-menu-items li::before {
     content: '';
     position: absolute;
-    left: 20px; /* Adjust distance from the left */
+    left: 10px; /* Adjust distance from the left */
     top: 50%;
     transform: translateY(-50%);
     width: 6px;
@@ -458,7 +458,8 @@ body {
 .dropdown-menu {
     display: none;
     list-style: none;
-    padding-left: 20px; 
+    padding-left: 10px; 
+    margin:0;
 }
 
 .dropdown-menu.active {
@@ -493,3 +494,4 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
+
