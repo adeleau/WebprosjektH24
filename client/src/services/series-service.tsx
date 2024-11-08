@@ -6,13 +6,13 @@ export type Series = {
 }
 
 class SeriesService {
-    // trenger vi????
-    // getAll(){
-    //     return axios
-    //         .get<Series[]>('/series')
-    //         .then((response) => {return response.data})
-    //         .catch((error) => {console.log(error)})
-    // }
+    
+    getAll(){
+        return axios
+            .get<Series[]>('/series')
+            .then((response) => {return response.data})
+            .catch((error) => {console.log(error)})
+    }
 
     get(name: string) {
         return axios

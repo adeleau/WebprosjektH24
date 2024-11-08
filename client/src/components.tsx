@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect} from "react";
 import SeriesService from "./services/series-service"
@@ -247,14 +247,10 @@ export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
   
-  const [angel, setAngel] = useState({
-    angel_id: 0,
-    collection_id: 0,
-    name: '',
-    description: '',
-    image: '',
-  });
+  const [angel, setAngel] = useState<Angel>();
   const [error, setError] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     AngelService.get(Number(angel_id))
@@ -263,7 +259,8 @@ export const AngelDetails: React.FC<{}> = () => {
   }, [angel_id]);
 
   return (
-    <>|
+    <>
+    {angel ? 
     <div className="angel-details">
       {error && <div className="error-message">{error}</div>}
       
@@ -273,7 +270,7 @@ export const AngelDetails: React.FC<{}> = () => {
         <strong>Name:</strong> <span>{angel.name}</span>
       </div>
       <div className="detail-row">
-        <strong>Collection:</strong> <span>{angel.collection_id}</span>
+        <strong>Collection:</strong> <span>{angel.series_id}</span>
       </div>
       <div className="detail-row">
         <strong>Description:</strong> <span>{angel.description}</span>
@@ -296,6 +293,7 @@ export const AngelDetails: React.FC<{}> = () => {
         Edit
       </button>
     </div>
+    : <></>}
     </>
   );
 }
