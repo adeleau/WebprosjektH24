@@ -31,24 +31,48 @@ export type AngelCardProps = {
 class AngelService {
     getAll() {
         return new Promise<Angel[] | Error> ((resolve, reject) => {
-            pool.query('select * from angels', [], (err, res: RowDataPacket[]) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res as Angel[])
+            pool.query('SELECT * FROM Angels', [], (error, results: RowDataPacket[]) => {
+                if (error) return reject(error);
+                resolve(results as Angel[])
             })
         })
     }
 
-    getById(angel_id: number) {
+    get(angel_id: number) {
         return new Promise<Angel | Error> ((resolve, reject) => {
-            pool.query('select * from angels where angel_id=?', [angel_id], (err, res: RowDataPacket[]) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res[0] as Angel)
+            pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
+                if (error) return reject(error);
+                resolve(results[0] as Angel)
             })
         })
+    }
+
+    createAngel(name: string, description: string, image: string, release_year: number, user_id: number, created_at: Date, series_id: number) {
+        return new Promise<number>((resolve, reject) => {
+            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?, created_at=?, series_id=?', [name, description, image, release_year, user_id, created_at, series_id], (error, results: ResultSetHeader) => {
+              if (error) return reject(error);
+              resolve(results.insertId);
+            });
+          });
+    }
+
+    updateAngel(angel_id: number, name: string, description: string, image: string, release_year: number, updated_at: Date, series_id: number) {
+        return new Promise<void>((resolve, reject) => {
+          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?, updated_at=?, series_id=? WHERE angel_id=?', [name, description, image, release_year, updated_at, series_id, angel_id], (error, results: ResultSetHeader) => {
+            if (error) return reject(error);
+            resolve();
+          });
+        });
+    }
+
+    deleteAngel(angel_id: number) {
+        return new Promise<void>((resolve, reject) => {
+          pool.query('DELETE FROM Angels WHERE angel_id = ?', [angel_id], (error, results: ResultSetHeader) => {
+            if (error) return reject(error);
+            if (results.affectedRows == 0) return reject(new Error('No row deleted'));
+            resolve();
+          });
+        });
     }
 
     // likeAngel(angel_id: number, user_id: number) {
@@ -75,7 +99,6 @@ class AngelService {
         return new Promise<number>((resolve, reject) => {
           pool.query('INSERT INTO angel_comments SET angel_id=?, user_id=?, content=?, created_at=?', [angel_id, user_id, content, created_at], (error, results: ResultSetHeader) => {
             if (error) return reject(error);
-    
             resolve(results.insertId);
           });
         });
@@ -85,7 +108,6 @@ class AngelService {
         return new Promise<AngelComment[]>((resolve, reject) => {
           pool.query('SELECT * FROM angel_comments WHERE angel_id = ?', [angel_id], (error, results: RowDataPacket[]) => {
             if (error) return reject(error);
-    
             resolve(results as AngelComment[]);
           });
         });

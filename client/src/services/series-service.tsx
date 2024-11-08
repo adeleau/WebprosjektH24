@@ -6,20 +6,21 @@ export type Series = {
 }
 
 class SeriesService {
-    getAll(){
+    // trenger vi????
+    // getAll(){
+    //     return axios
+    //         .get<Series[]>('/series')
+    //         .then((response) => {return response.data})
+    //         .catch((error) => {console.log(error)})
+    // }
+
+    get(name: string) {
         return axios
-            .get<Array<Series>>("/series")
-            .then((res) => {return res.data})
-            .catch((err) => {console.log(err)})
-    }
-    // Fetch a single series by ID
-    getById(id: number) {
-        return axios
-            .get<Series>(`/series/${id}`)
-            .then((res) => res.data)
-            .catch((err) => {
-                console.error(`Error fetching series with id ${id}:`, err);
-                throw err;
+            .get<Series>('/series/' + name)
+            .then((response) => response.data)
+            .catch((error) => {
+                console.error('Error fetching series with name' + name + ':', error);
+                throw error;
             });
     }
 }

@@ -7,23 +7,20 @@ export type Series = {
 }
 
 class SeriesService {
-    getAll() {
-        return new Promise<Series[] | Error> ((resolve, reject) => {
-            pool.query('select * from series', [], (err, res: RowDataPacket[]) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res as Series[])
-            })
-        })
-    }
-    getById(series_id: number) {
+    // trenger vi????
+    // getAll() {
+    //     return new Promise<Series[] | Error> ((resolve, reject) => {
+    //         pool.query('SELECT * FROM Series', [], (error, results: RowDataPacket[]) => {
+    //             if (error) return reject(error);
+    //             resolve(results as Series[])
+    //         })
+    //     })
+    // }
+    get(name: string) {
         return new Promise<Series | Error> ((resolve, reject) => {
-            pool.query('select * from series where series_id=?', [series_id], (err, res: RowDataPacket[]) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res[0] as Series)
+            pool.query('SELECT * FROM Series WHERE name=?', [name], (error, results: RowDataPacket[]) => {
+                if (error) return reject(error);
+                resolve(results[0] as Series)
             })
         })
     }
