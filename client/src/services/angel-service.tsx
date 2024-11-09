@@ -43,7 +43,7 @@ class AngelService {
 
     get(angel_id: number) {
         return axios
-            .get<Angel>('/series/:name/angels/' + angel_id)
+            .get<Angel>('/angels/' + angel_id)
             .then((res) => res.data)
             .catch((err) => {
                 console.error(`Error fetching angel with id ${angel_id}:`, err);

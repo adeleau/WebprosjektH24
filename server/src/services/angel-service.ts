@@ -39,6 +39,7 @@ class AngelService {
     }
 
     get(angel_id: number) {
+      console.log(angel_id)
         return new Promise<Angel | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);

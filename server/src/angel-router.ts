@@ -15,12 +15,12 @@ router.get('/series/:name/angels', (_request, response) => {
 });
 
 // get spesific angel
-router.get('/series/:name/angels/:angel_id', (request, response) => {
+router.get('/angels/:angel_id', (request, response) => {
   const angel_id = Number(request.params.angel_id);
   angelService
     .get(angel_id)
-    .then((angel) => (angel ? response.send(angel) : response.status(404).send('Angel not found')))
-    .catch((error) => response.status(500).send(error));
+    .then((angel) => (response.send(angel)))
+    .catch((error) => response.status(500).send("pooooop"));
 });
 
 // post new angel

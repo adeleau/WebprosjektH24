@@ -11,7 +11,7 @@ if (root)
       <Route exact path="/about" component={App.About} />
       <Route exact path="/series/:series" component={App.SeriesDetails} />
       <Route exact path="/series/:series/angels" component={App.AngelList} />
-      <Route exact path="/series/:series/angels/:angel_id(\d+)" component={App.AngelDetails} />
+      <Route exact path="/angels/:angel_id" component={App.AngelDetails} />
       <Route exact path="/popular" component={App.Popular} />
       <Route exact path="/posts" component={App.PostList} />
       <Route exact path="/posts/new" component={App.PostNew} />
