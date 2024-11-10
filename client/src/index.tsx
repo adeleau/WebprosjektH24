@@ -12,6 +12,7 @@ if (root)
       <Route exact path="/series/:series" component={App.SeriesDetails} />
       <Route exact path="/series/:series/angels" component={App.AngelList} />
       <Route exact path="/angels/:angel_id" component={App.AngelDetails} />
+      <Route exact path="/masterlist" component={App.MasterList} />
       <Route exact path="/popular" component={App.Popular} />
       <Route exact path="/posts" component={App.PostList} />
       <Route exact path="/posts/new" component={App.PostNew} />

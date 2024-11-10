@@ -111,13 +111,13 @@ router.get('/series/:name/angels/:angel_id/comments', (request, response) => {
 
 
 // SERIES
-// get all series (trengs denne?)
-// router.get("/series", (_request, response) => {
-//   seriesService
-//   .getAll()
-//   .then((seriesList) => {response.send(seriesList)})
-//   .catch((error) => {response.status(500).send(error)})
-// });
+// get all series 
+ router.get("/series", (_request, response) => {
+   seriesService
+   .getAll()
+   .then((seriesList) => {response.send(seriesList)})
+   .catch((error) => {response.status(500).send(error)})
+ });
 
 // get spesific series
 router.get('/series/:name', (request, response) => {

@@ -1,13 +1,12 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import type { Series } from "./services/series-service";
 import AngelService from "./services/angel-service";
 import PostService from "./services/post-service";
 import type {Post} from "./services/post-service"
 import SeriesService from "./services/series-service";
-import type { Angel, AngelCardProps } from "./services/angel-service";
-
+import type { Angel } from "./services/angel-service";
 
 // import PostService from "./services/post-service";
 // import type { Post } from "./services/post-service";
@@ -17,66 +16,90 @@ export const Home: React.FC<{}> = () => {
         <>
         <Navbar></Navbar>
         <Leftbar></Leftbar>
-        <div className="Home-text">
-          <h2>Information</h2>
-        </div>
-        <div className="home-image">
-          <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2021/10/sa_christmas2021_banner.jpg"/>
-        </div>
+        <div className="home-content">
+          <div className="home-text">
+          </div>
+          <div className="home-image">
+            <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2021/10/sa_christmas2021_banner.jpg"/>
+          </div>
+            <h2>INFORMATION</h2>
+          <div className="home-information">
+            <div className="info-item">
+              <p className="date">05.11.2024</p>
+              <p className="text">Enjoy a dreamy christmas with Sonny Angel</p>
+            </div>
+          <div className="info-item">
+            <p className="date">15.10.2024</p>
+            <p className="text">Enjoy decoration with your new Sonny Angel Stickers</p>
 
+          </div>
+        </div>
+        </div>
         <Footer></Footer>
         </>
-        )
+      )
 }
-
 
 export const About: React.FC<{}> = () => {
     return (
-        
         <>
         <Navbar></Navbar>
         <Leftbar></Leftbar>
         <div className="about-container">
+          <div className="about-section">
                 <div className="about-text">
                     <h2>He may bring you happiness.</h2>
                     <hr className="about-divider" />
-                    <p>
+                    <p className="pink-bold">
                         Sonny Angel is a little angel boy who likes wearing all sorts of headgear.
                         He is always by your side to make you smile. Sonny Angel will provide
                         healing moments in your everyday life. He is a welcome sight at the
                         entrance to your home, next to your bed, on your desk, and so many other
-                        places.
+                        places. 20 years have passed since the birth of Sonny Angel, who was born 
+                        to make us all smile and add a little fun to our lives. From the corner of a 
+                        room to a prominent display on a shelf, he has been delivering smiles and healing 
+                        all around the world.
+                        <strong> Embrace these healing figures in your life.</strong>
                     </p>
-                    <button className="view-more-button">View more</button>
                 </div>
                 <div className="about-image">
                     <img
-                        src="https://www.sonnyangel.com/renewal/wp-content/uploads/2021/09/sa_hippers_banner.jpg" 
+                        src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0072_2cus.jpg" 
                         alt="Sonny Angel Figurines" 
                     />
                 </div>
+              </div>
+
+                <div className="about-section">
+                  <div className="about-image">
+                    <img
+                        src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0261_2cus.jpg" 
+                        alt="Sonny Angel Figurines" 
+                    />
                 <div className="about-text">
                     <h2>Try your luck.</h2>
                     <hr className="about-divider" />
-                    <p>
+                    <p className="pink-bold">
                        The major feature of Sonny Angel Mini Figures is
                        that each series is comprised of 12 different figures. 
                        Sonny Angel utilizes blind box packaging; you do not know 
-                       which figure you will receive until you buy one and open the box.
+                       which figure you will receive until you buy one and open the box. 
+                       Unboxing Sonny Angel adds to the excitement and fans get pleasure 
+                       from collecting them all. The wonder of meeting your Sonny Angel 
+                       is waiting for you. Each series also has a <strong>secret figure</strong>, which
+                        are randomly included in certain boxes and are the most collectible. 
+                        Robby Angel is a good friend of Sonny Angel. He can change his body color at any time, 
+                        like a chameleon, and he likes to dress up.
                     </p>
-                    <button className="view-more-button">View more</button>
                 </div>
-                <div className="about-image">
-                    <img
-                        src="https://kawaiiloversclub.com/cdn/shop/files/ScreenShot2023-05-14at3.43.06PM.png?v=1684105784&width=1445" 
-                        alt="Sonny Angel Figurines" 
-                    />
+                
                 </div>
             </div>
+          </div>
         <Footer></Footer>
         </>
-        )
-}
+      );
+};
 
 
 /*export const Card: React.FC<{Angel: Angel}> = (Angel) =>{
@@ -172,6 +195,9 @@ export const Leftbar: React.FC<{}>= () => {
         <Link to="/"><img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_logo_pink.png" alt="Sidebar Logo" className="sidebar-logo" /></Link>
 
         <ul className="nav-menu-items">
+        <li className="nav-text">
+            <Link to="/masterlist">Master List</Link>
+          </li>
           <li className="nav-text">
             <Link to="/about">About</Link>
           </li>
@@ -205,6 +231,92 @@ export const Leftbar: React.FC<{}>= () => {
     </>
   );
 };
+
+
+
+
+export const MasterList: React.FC = () => {
+  const [angels, setAngels] = useState<Angel[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  useEffect(() => {
+    AngelService.getAll()
+      .then((data) => setAngels(data))
+      .catch((err) => setError(`Error fetching angels: ${err.message}`));
+  }, []);
+
+  // Group angels by their starting letter
+  const groupedAngels = angels.reduce((acc: { [key: string]: Angel[] }, angel) => {
+    const firstLetter = angel.name.charAt(0).toUpperCase();
+    if (!acc[firstLetter]) acc[firstLetter] = [];
+    acc[firstLetter].push(angel);
+    return acc;
+  }, {});
+
+  const handleScrollToSection = (letter: string) => {
+    const section = sectionRefs.current[letter];
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+  
+      <div className="angel-master-list">
+        <h2>Angel Master List</h2>
+        <hr className="masterlist-divider" />
+  
+        {error && <div className="error-message">{error}</div>}
+  
+        {/* Alphabet Links */}
+        <div className="alphabet-links">
+          {Object.keys(groupedAngels)
+            .sort()
+            .map((letter) => (
+              <button 
+                key={letter}
+                onClick={() => handleScrollToSection(letter)}
+                className="alphabet-link"
+              >
+                {letter}
+              </button>
+            ))}
+        </div>
+  
+        {/* List of Angels by Alphabet */}
+        <div className="angel-list">
+          {Object.keys(groupedAngels)
+            .sort()
+            .map((letter) => (
+              <div
+                key={letter}
+                id={letter}
+                className="angel-group"
+                ref={(el) => (sectionRefs.current[letter] = el)}
+              >
+                <h2>{letter}</h2>
+                <ul>
+                  {groupedAngels[letter].map((angel) => (
+                    <li key={angel.angel_id}>
+                      <Link to={`/angels/${angel.angel_id}`} className="angel-link">
+                        {angel.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+        </div>
+      </div>
+      <Footer></Footer>
+    </>
+  );
+};
+
 
 export const Menu: React.FC<{}> = () => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
@@ -252,8 +364,6 @@ export const AngelDetails: React.FC<{}> = () => {
   const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
 
-
-
   useEffect(() => {
     AngelService.get(Number(angel_id))
       .then((data) => setAngel(data))
@@ -271,50 +381,76 @@ export const AngelDetails: React.FC<{}> = () => {
       tempAngel.views = tempAngel.views + 1;
       AngelService.updateAngel(tempAngel);
       setAngel(tempAngel);
-      console.log(angel)
     }
   },  [angel])
 
   return (
     <>
-    {angel ? 
-    <div className="angel-details">
-      {error && <div className="error-message">{error}</div>}
-      
-      <h2>{angel.name}</h2>
-      
-      <div className="detail-row">
-        <strong>Name:</strong> <span>{angel.name}</span>
-      </div>
-      <div className="detail-row">
-        <strong>Series:</strong> <span>{`${series}`}</span>
-      </div>
-      <div className="detail-row">
-        <strong>Description:</strong> <span>{angel.description}</span>
-      </div>
-      <div className="detail-row">
-        <strong>Image:</strong> 
-        {angel.image && (
-          <img
-            src={angel.image}
-            alt={angel.name}
-            style={{ maxWidth: '200px', maxHeight: '200px' }}
-          />
-        )}
-      </div>
-      
-      <button
-        className="button-success"
-        onClick={() => history.push(`/angels/${angel.angel_id}/edit`)}
-      >
-        Edit
-      </button>
-    </div>
-    : <></>}
+
+<Navbar></Navbar>
+<Leftbar></Leftbar>
+      {angel ? (
+        <div className="angel-details">
+          {error && <div className="error-message">{error}</div>}
+          
+            <div className="header-container">
+            <h2 className="angel-header">{angel.name}</h2>
+            <button
+              className="edit-button"
+              onClick={() => history.push(`/angels/${angel.angel_id}/edit`)} 
+              >Edit
+            </button>
+          </div>
+          
+          <div className="header-separator"></div>
+
+
+          <div className="details-content">
+            
+            {/* Text details (left) */}
+            <div className="details-text">
+              <div className="detail-row">
+                <strong>Series:</strong> 
+                <Link to={`/series/${angel.series_id}`} className="series-link">
+                  {series}
+                </Link>
+              </div>
+              <div className="detail-row">
+                <strong>Description:</strong> <span>{angel.description}</span>
+              </div>
+            </div>
+            
+            {/* Image (right) */}
+            {angel.image && (
+              <div className="image-container">
+                <img
+                  src={angel.image}
+                  alt={angel.name}
+                  className="angel-image"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="angel-info">
+            <div className="detail-row">
+              <strong>Views:</strong> <span>{angel.views}</span>
+            </div>
+            <div className="detail-row">
+              <strong>User ID:</strong> <span>{angel.user_id}</span>
+            </div>
+            <div className="detail-row">
+              <strong>Created At:</strong> <span>{angel.created_at}</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <Footer></Footer>
+
     </>
   );
 }
-  
+
 export const PostList: React.FC<{}> = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -344,7 +480,7 @@ export const PostList: React.FC<{}> = () => {
       </ul>
 
       <button 
-        className="button-success" 
+        className="edit-button" 
         onClick={() => history.push('/posts/new')}
       >
         New post
@@ -527,14 +663,13 @@ export const PostNew: React.FC<{}> = () => {
   );
 };
 
-
 export const PostEdit: React.FC<{}> = () => {
    const [post, setPost] = useState<Post>({
     post_id: 0,
     user_id: 0,
     title: '',
     content: '',
-    img: ''
+    i: ''
   });
   const [error, setError] = useState<string | null>(null);
   const { post_id } = useParams<{ post_id: string }>();
@@ -675,7 +810,7 @@ export const Login: React.FC<{}> = () => {
     };
 
 
-const Register = () => {
+export const Register = () => {
     return (
       <>
         <div className="register">
@@ -705,14 +840,33 @@ const Register = () => {
     );
     };
 
-export default Register; 
 
-const Footer =() => {
-    return (
+export const Footer =() => {
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      const bottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight;
+      setIsAtBottom(bottom);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <footer className={`footer ${isAtBottom ? 'visible' : ''}`}>
+      <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
+    </footer>
+  );
+};
+
+  
+    /*return (
     <>
       <footer className="footer">
         <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
       </footer>
     </>
     );
-  }
+  } */
