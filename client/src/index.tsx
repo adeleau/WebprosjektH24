@@ -9,7 +9,7 @@ if (root)
     <HashRouter>
       <Route exact path="/" component={App.Home} />
       <Route exact path="/about" component={App.About} />
-      <Route exact path="/series/:series" component={App.SeriesDetails} />
+      <Route exact path="/series/:series_id" component={App.SeriesList} />
       <Route exact path="/series/:series/angels" component={App.AngelList} />
       <Route exact path="/angels/:angel_id" component={App.AngelDetails} />
       <Route exact path="/masterlist" component={App.MasterList} />
@@ -19,8 +19,7 @@ if (root)
       <Route exact path="/posts/:post_id(\d+)" component={App.PostDetails} />
       <Route exact path="/posts/:post_id(\d+)/edit" component={App.PostEdit} />
       <Route exact path="/trading" component={App.Trading} />    
-    </HashRouter>,
-    
+    </HashRouter>
   );
 
 

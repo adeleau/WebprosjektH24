@@ -32,6 +32,12 @@ class SeriesService {
                 throw error;
     })
     }
+
+    
 }
+
+
+
+
 
 export default new SeriesService();

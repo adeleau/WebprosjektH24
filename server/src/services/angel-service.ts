@@ -79,6 +79,25 @@ class AngelService {
         });
     }
 
+    // get angels by series_id
+getBySeries(series_id: number): Promise<Angel[]> {
+  return new Promise<Angel[]>((resolve, reject) => {
+    pool.query(
+      'SELECT * FROM Angels WHERE series_id = ?', 
+      [series_id], 
+      (error, results) => {
+        if (error) {
+          console.error(`Error fetching angels for series_id ${series_id}:`, error);
+          return reject(error);
+        }
+        console.log(`Fetched angels for series_id ${series_id}:`, results);
+        resolve(results as Angel[]);
+      }
+    );
+  });
+}
+
+
     // likeAngel(angel_id: number, user_id: number) {
     //     return new Promise<number>((resolve, reject) => {
     //       pool.query('INSERT INTO AngelLikes SET angel_id=?, user_id=?', [angel_id, user_id], (error, results: ResultSetHeader) => {

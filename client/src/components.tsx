@@ -150,10 +150,63 @@ export const Navbar = () => {
     );
 };
 
+
+export const SeriesList: React.FC<{}> = () => {
+  const { series_id } = useParams<{ series_id: string }>(); 
+  const [angels, setAngels] = useState<Angel[]>([]); 
+  const [seriesName, setSeriesName] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null); 
+
+  useEffect(() => {
+    AngelService.getBySeries(Number(series_id))
+      .then((data) => setAngels(data))
+      .catch((err) => setError('Error getting angels: ' + err.message));
+
+    SeriesService.getName(Number(series_id)) 
+      .then((name) => setSeriesName(name))
+      .catch((err) => setError('Error getting series name: ' + err.message));
+  }, [series_id]);
+
+  return (
+    <div>
+      <Navbar />
+      <Leftbar />
+
+      {error && <div className="error-message">{error}</div>}
+      
+      {seriesName ? (
+        <div className="series-page">
+          <h1>{seriesName}</h1>
+          <div className="angel-cards">
+            {angels.map((angel) => (
+              <div key={angel.angel_id} className="angel-card">
+                {angel.image && (
+                  <img
+                    src={angel.image}
+                    alt={angel.name}
+                    className="angel-card-image"
+                  />
+                )}
+                <h3>{angel.name}</h3>
+                <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                  View Details
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <Footer></Footer>
+    </div>
+  );
+};
+
+
 export const Leftbar: React.FC<{}>= () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [series, setSeries] = useState<Array<string>>([]);
+  const [series, setSeries] = useState<Array<Series>>([]);
 
   useEffect(() => {
     const fetchSeries = async () => {
@@ -162,7 +215,7 @@ export const Leftbar: React.FC<{}>= () => {
             const serieslist = await SeriesService.getAll();
 
             if (serieslist) {
-                setSeries(serieslist.map((series) => series.name));
+                setSeries(serieslist.map((series) => series));
             } 
             else {
                 console.log('No series available');
@@ -207,11 +260,14 @@ export const Leftbar: React.FC<{}>= () => {
             </span>
             {isDropdownOpen && (
               <ul className="dropdown-menu active">
-                {series.map((name, i) =>(
+                {series.map((series, i) =>(
                     <li key={i} className = "nav-text">
-                        <Link to = {`/series/${name}`}>{name}</Link>
+                        <Link to = {`/series/${series.series_id}`}>{series.name}</Link>
                     </li>
-                ))}
+                ))
+                
+                
+                  }
               </ul>
             )}
           </li>
@@ -845,7 +901,8 @@ export const Register = () => {
 
 export const Footer =() => {
   const [isAtBottom, setIsAtBottom] = useState(false);
-  useEffect(() => {
+
+  /*useEffect(() => {
     const handleScroll = () => {
       const bottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight;
       setIsAtBottom(bottom);
@@ -861,14 +918,14 @@ export const Footer =() => {
       <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
     </footer>
   );
-};
+}; */
 
   
-    /*return (
+    return (
     <>
       <footer className="footer">
         <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
       </footer>
     </>
     );
-  } */
+  } 

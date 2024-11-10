@@ -55,6 +55,18 @@ class AngelService {
             .delete<Angel>('/series/:name/angels' + angel_id)
             .then((response) => response.data.angel_id)
     }
+
+    //get angels etter series_id
+    getBySeries(series_id: number) {
+        return axios
+            .get<Angel[]>(`/series/${series_id}`) 
+            .then((res) => res.data)
+            .catch((err) => {
+                console.error(`Error fetching angels for series with id ${series_id}:`, err);
+                throw err;
+            });
+    }
+
 }
 
 export default new AngelService();

@@ -646,16 +646,12 @@ body {
     color: white; 
     text-align: center;
     padding: 5px;
-    position: fixed;
-    width: 100%;
+    position: relative;
     bottom: 0;
     left: 0;
-    visibility: hidden;
+    visibility: visible;
   }
 
-.footer.visible {
-    visibility: visible; 
-}
 
 .about-container {
     display: flex;

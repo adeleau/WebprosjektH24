@@ -50,6 +50,15 @@ router.delete('/angels/:angel_id', (request, response) => {
     .catch((error) => response.status(500).send(error));
 });
 
+//get angels etter series_id
+router.get('/series/:series_id', (req, res) => {
+  const series_id = req.params.series_id;
+  angelService.getBySeries(Number(series_id))
+      .then((angels) => res.send(angels))
+      .catch((err) => res.status(500).send({ error: err.message }));
+});
+
+
 // edit spesific angel
 router.put('/angels/:angel_id', (request, response) => {
   const angel_id = Number(request.params.angel_id)
