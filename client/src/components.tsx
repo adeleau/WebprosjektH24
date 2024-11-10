@@ -365,14 +365,16 @@ export const AngelDetails: React.FC<{}> = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch angel details by angel_id
     AngelService.get(Number(angel_id))
-      .then((data) => setAngel(data))
+      .then((data) => {
+        setAngel(data);
+        // Fetch the series name using angel.series_id
+        SeriesService.getName(data.series_id)
+          .then((name) => setSeries(name))
+          .catch((err) => setError('Error getting series name: ' + err.message));
+      })
       .catch((err) => setError('Error getting angel: ' + err.message));
-
-    SeriesService.getName(Number(angel_id))
-      .then((name) => {setSeries(name)})
-      .catch((err) => setError('Error getting seriesname ' + err.message));
-    
   }, [angel_id]);
 
   useEffect(() => {
