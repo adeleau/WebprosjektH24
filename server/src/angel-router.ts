@@ -2,12 +2,13 @@ import express from 'express';
 import seriesService, { Series } from "./services/series-service"
 import angelService, { Angel, AngelComment } from "./services/angel-service" //legg til angellikes
 import postService, { Post, PostComment } from "./services/post-service" //legg til postlikes
+import { AxiosPromise } from 'axios';
 
 const router = express.Router();
 
 // ANGELS
 // get all angels
-router.get('/series/:name/angels', (_request, response) => {
+router.get('/angels', (_request, response) => {
   angelService
     .getAll()
     .then((angelList) => response.send(angelList))
@@ -23,6 +24,13 @@ router.get('/angels/:angel_id', (request, response) => {
     .catch((error) => response.status(500).send("pooooop"));
 });
 
+//get name of series by id
+router.get('/series/name/:id',(req, res) =>{
+  seriesService.getName(Number(req.params.id))
+    .then((name) => res.send(name))
+    .catch((err) => res.status(500).send(err))
+})
+
 // post new angel
 router.post('/series/:name/angels', (request, response) => {
   const data = request.body;
@@ -35,7 +43,7 @@ router.post('/series/:name/angels', (request, response) => {
 });
 
 // delete spesific angel
-router.delete('/series/:name/angels/:angel_id', (request, response) => {
+router.delete('/angels/:angel_id', (request, response) => {
   angelService
     .deleteAngel(Number(request.params.angel_id))
     .then((_result) => response.send())
@@ -43,16 +51,15 @@ router.delete('/series/:name/angels/:angel_id', (request, response) => {
 });
 
 // edit spesific angel
-router.put('/series/:name/angels/:angel_id', (request, response) => {
+router.put('/angels/:angel_id', (request, response) => {
   const angel_id = Number(request.params.angel_id)
-  const { name, description, image, release_year, updated_at, series_id } = request.body;
-  if (name) {
+  const angel: Angel = request.body;
+  if (angel) {
     angelService
-      .updateAngel(angel_id, name, description, image, release_year, updated_at, series_id)
-      .then(() => response.send())
+      .updateAngel(angel)
       .catch((error) => response.status(500).send(error));
   } else {
-    response.status(400).send('Missing angel name');
+    response.status(400).send('Missing angel');
   }
 });
 

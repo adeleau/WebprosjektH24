@@ -1,5 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../mysql-pool';
+import { format } from 'date-fns';
 
 export type Angel = {
     angel_id: number; 
@@ -9,8 +10,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    created_at: Date;
-    updated_at: Date;
+    created_at: string;
+    updated_at: string;
     series_id: number;
 };
 
@@ -43,7 +44,10 @@ class AngelService {
         return new Promise<Angel | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
-                resolve(results[0] as Angel)
+                let tempAngel: Angel = results[0] as Angel;
+                tempAngel.updated_at = format(tempAngel.updated_at, 'yyyy-MM-dd HH:mm:ss') as string;
+                tempAngel.created_at = format(tempAngel.created_at, 'yyyy-MM-dd HH:mm:ss') as string;
+                resolve(tempAngel)
             })
         })
     }
@@ -57,9 +61,9 @@ class AngelService {
           });
     }
 
-    updateAngel(angel_id: number, name: string, description: string, image: string, release_year: number, updated_at: Date, series_id: number) {
+    updateAngel(angel: Angel) {
         return new Promise<void>((resolve, reject) => {
-          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?, updated_at=?, series_id=? WHERE angel_id=?', [name, description, image, release_year, updated_at, series_id, angel_id], (error, results: ResultSetHeader) => {
+          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?, updated_at=?, series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.updated_at, angel.series_id,angel.views, angel.angel_id], (error, results: ResultSetHeader) => {
             if (error) return reject(error);
             resolve();
           });

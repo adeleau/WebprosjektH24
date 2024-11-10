@@ -1,12 +1,13 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect} from "react";
-import SeriesService from "./services/series-service"
 import type { Series } from "./services/series-service";
 import AngelService from "./services/angel-service";
 import PostService from "./services/post-service";
-import seriesService from "./services/series-service";
+import type {Post} from "./services/post-service"
+import SeriesService from "./services/series-service";
 import type { Angel, AngelCardProps } from "./services/angel-service";
+
 
 // import PostService from "./services/post-service";
 // import type { Post } from "./services/post-service";
@@ -215,12 +216,12 @@ export const Menu: React.FC<{}> = () => {
 }
 
 export const AngelList: React.FC<{}> = () => {
-  const [angels, setAngels] = useState([]);
+  const [angels, setAngels] = useState<Array<Angel>>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     AngelService.getAll()
-      .then((data) => setAngels(data))
+      .then((data) => {setAngels(data)})
       .catch((err) => setError('Error getting angels: ' + err.message));
   }, []);
 
@@ -248,6 +249,7 @@ export const AngelDetails: React.FC<{}> = () => {
   const history = useHistory();
   
   const [angel, setAngel] = useState<Angel>();
+  const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
 
 
@@ -256,7 +258,22 @@ export const AngelDetails: React.FC<{}> = () => {
     AngelService.get(Number(angel_id))
       .then((data) => setAngel(data))
       .catch((err) => setError('Error getting angel: ' + err.message));
+
+    SeriesService.getName(Number(angel_id))
+      .then((name) => {setSeries(name)})
+      .catch((err) => setError('Error getting seriesname ' + err.message));
+    
   }, [angel_id]);
+
+  useEffect(() => {
+    if(angel) {
+      let tempAngel: Angel = angel;
+      tempAngel.views = tempAngel.views + 1;
+      AngelService.updateAngel(tempAngel);
+      setAngel(tempAngel);
+      console.log(angel)
+    }
+  },  [angel])
 
   return (
     <>
@@ -270,7 +287,7 @@ export const AngelDetails: React.FC<{}> = () => {
         <strong>Name:</strong> <span>{angel.name}</span>
       </div>
       <div className="detail-row">
-        <strong>Collection:</strong> <span>{angel.series_id}</span>
+        <strong>Series:</strong> <span>{`${series}`}</span>
       </div>
       <div className="detail-row">
         <strong>Description:</strong> <span>{angel.description}</span>
@@ -341,7 +358,7 @@ export const PostList: React.FC<{}> = () => {
 
 export const PostDetails: React.FC<{}> = () => {
   const { post_id } = useParams<{ post_id: string }>(); // Retrieve post ID from URL params
-  const [post, setPost] = useState<Post>({ post_id: 0, user_id: 0, title: '', content: '', img: '' });
+  const [post, setPost] = useState<Post>({ post_id: 0, user_id: 0, title: '', content: '', image: '' });
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -393,7 +410,7 @@ export const PostDetails: React.FC<{}> = () => {
         <p><strong>Title:</strong> {post.title}</p>
         <p><strong>Content:</strong> {post.content}</p>
         <p><strong>Image:</strong></p>
-        <img src={post.img} alt={post.title} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+        <img src={post.image} alt={post.title} style={{ maxWidth: '200px', maxHeight: '200px' }} />
       </div>
 
       {/*<div className="post-likes">
@@ -540,7 +557,7 @@ export const PostEdit: React.FC<{}> = () => {
 
   const handleSave = () => {
     PostService
-      .updatePost(post.post_id, post.title, post.content, post.img)
+      .updatePost(post.post_id, post.title, post.content, post.image)
       .then(() => {
         history.push('/posts/' + post.post_id);
       })
@@ -592,7 +609,7 @@ export const PostEdit: React.FC<{}> = () => {
         <textarea
           id="img"
           name="img"
-          value={post.img}
+          value={post.image}
           onChange={handleInputChange}
           rows={10}
           className="form-control"
