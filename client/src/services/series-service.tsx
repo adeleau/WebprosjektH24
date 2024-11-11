@@ -26,7 +26,7 @@ class SeriesService {
     getName(id: number): Promise<string> {
         return axios
             .get<string>('/series/name/' + id)
-            .then((res) => {return res.data})
+            .then((response) => {return response.data})
             .catch((error) => {
                 console.error('Error getting name with id' + id + ':' + error)
                 throw error;

@@ -44,8 +44,8 @@ class AngelService {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
                 let tempAngel: Angel = results[0] as Angel;
-                tempAngel.updated_at = format(tempAngel.updated_at, 'yyyy-MM-dd HH:mm:ss') as string;
-                tempAngel.created_at = format(tempAngel.created_at, 'yyyy-MM-dd HH:mm:ss') as string;
+                tempAngel.updated_at = format(tempAngel.updated_at, 'dd/MM/yyyy HH:mm:ss') as string;
+                tempAngel.created_at = format(tempAngel.created_at, 'dd/MM/yyyy HH:mm:ss') as string;
                 resolve(tempAngel)
             })
         })

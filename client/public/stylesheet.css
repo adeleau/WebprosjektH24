@@ -441,11 +441,13 @@ body {
     padding: 30px 20px 10px 20px;
     font-family: 'Poppins', sans-serif;
     position: relative;
+    z-index: 1;
 }
 
 /* Search bar styling */
 .navbar_search {
     max-width: 100px;
+    position: relative;
     flex-shrink: 0;
     margin-right: 20px;
     margin-left: 10px;
@@ -461,6 +463,39 @@ body {
     color: #333;
     transition: background-color 0.5s ease, border-color 0.5s ease;
 }
+
+.search-results {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    width: 100%;
+    margin-top: 5px;
+    background-color: #f2a6b0;;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 2;
+    padding: 8px 0;
+}
+
+.result-item {
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
+    margin: 4px 0;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-item:hover {
+    background-color: #F2A6B0;
+    color: white;
+} 
 
 /* Styling when the search bar is focused */
 .navbar_search input:focus {
@@ -737,9 +772,10 @@ body {
     border: 0;
     height: 1px;
     background-color: #F2A6B0;
-    width: 50%;
+    width: 100%;
     margin-bottom: 20px;
     margin-left: 5px;
+
 }
 
 .alphabet-links {
@@ -781,6 +817,65 @@ body {
 
 .angel-link:hover {
     color: #F2A6B0;
+}
+
+
+
+
+.card{
+    max-width: 900px;
+    margin: 10px auto;
+    padding: 100px;
+    box-shadow: box-shadow 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+}
+
+h2 {
+    color:#F2A6B0 ;
+    text-align: center;
+    font-weight: normal;
+    font-size: 24px;
+
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+
+textarea {
+    flex: 1;
+    margin-right: 10px;
+}
+
+textarea, input, select {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.header {
+    background-color: #f2a6b0; 
+    color: white; 
+    padding: 20px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif; 
+    border-bottom: 2px solid #e08d9c; 
+}
+
+.header h1 {
+    font-size: 2.5em; 
+    margin: 0;
+    font-weight: bold;
+}
+
+.header .subtitle {
+    font-size: 1.2em; 
+    margin-top: 5px;
+    font-weight: 300;
 }
 
 

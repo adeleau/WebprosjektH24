@@ -1,0 +1,72 @@
+import { Link, useHistory, useParams } from "react-router-dom";
+import React from "react";
+import {useState, useEffect, useRef} from "react";
+import { createHashHistory } from 'history';
+
+import SeriesService from "../services/series-service";
+import type { Series } from "../services/series-service";
+import AngelService from "../services/angel-service";
+import type { Angel } from "../services/angel-service";
+import { Navbar, Leftbar, Footer } from "./other-components";
+
+
+export const SeriesList: React.FC<{}> = () => {
+    const { series_id } = useParams<{ series_id: string }>(); 
+    const [angels, setAngels] = useState<Angel[]>([]); 
+    const [seriesName, setSeriesName] = useState<string | null>(null); 
+    const [error, setError] = useState<string | null>(null); 
+  
+    useEffect(() => {
+      AngelService.getBySeries(Number(series_id))
+        .then((data) => setAngels(data))
+        .catch((err) => setError('Error getting angels: ' + err.message));
+  
+      SeriesService.getName(Number(series_id)) 
+        .then((name) => setSeriesName(name))
+        .catch((err) => setError('Error getting series name: ' + err.message));
+    }, [series_id]);
+  
+    return (
+      <div>
+        <Navbar />
+        <Leftbar />
+  
+        {error && <div className="error-message">{error}</div>}
+        
+        {seriesName ? (
+          <div className="series-page">
+            <h1>{seriesName}</h1>
+            <div className="angel-cards">
+              {angels.map((angel) => (
+                <div key={angel.angel_id} className="angel-card">
+                  {angel.image && (
+                    <img
+                      src={angel.image}
+                      alt={angel.name}
+                      className="angel-card-image"
+                      style={{maxHeight: 200}}
+                    />
+                  )}
+                  <h3>{angel.name}</h3>
+                  <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                    View Details
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+  
+        <Footer></Footer>
+      </div>
+    );
+  };
+
+  
+// export const SeriesDetails: React.FC<{}> = () => {
+//   const [Series, setSeries] = useState<Series[]>([]);
+
+//   useEffect(() => {
+    
+//   })
+// }

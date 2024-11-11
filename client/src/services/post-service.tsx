@@ -48,9 +48,9 @@ class PostService {
         .then((response) => response.data.post_id);
     }
   
-    updatePost(post_id: number, title: string, content: string, image: string, created_at: Date, updated_at: Date) {
+    updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date) {
       return axios
-        .put<Post>('/posts/' + post_id, { title: title, content: content, image: image, created_at: created_at, updated_at: updated_at })
+        .put<Post>('/posts/' + post_id, { title: title, content: content, image: image, updated_at: updated_at })
         .then((response) => response.data.post_id);
     }
   
