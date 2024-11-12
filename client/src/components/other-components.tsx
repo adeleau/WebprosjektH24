@@ -1,6 +1,6 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef } from "react";
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
@@ -154,28 +154,40 @@ export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Angel[]>([]);
   const [error, setError] = useState<string |null>(null);
+  const history = useHistory();
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
 
     if (!query) {
-      console.log("no query")
-      setResults([]); 
+      setResults([]);
       return;
     }
 
     try {
-      let searchResults: Angel[] = await AngelService.search(query);
+      const searchResults: Angel[] = await AngelService.search(query);
       setResults(searchResults);
-      console.log(searchResults, query)
       setError(null);
     } catch (error) {
       setResults([]);
+      setError('Error fetching search results');
     }
-  
   };
- 
+
+  const handleSearch = () => {
+    if (searchQuery) {
+      history.push(`/search/${searchQuery}`);
+      setResults([]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
     return (
       <>
         <div className="navbar">
@@ -185,20 +197,21 @@ export const Navbar = () => {
               placeholder="Search..."
               value= {searchQuery}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+
             />
             {searchQuery && (
               <div className="search-results">
                 {results.length > 0 && (
                   results.map((angel) => (
                     <div key={angel.angel_id} className="result-item">
-                      <a href={`/angels/${angel.angel_id}`}>{angel.name}</a>
+                      <a href={`/#/angels/${angel.angel_id}`}>{angel.name}</a>
                     </div>
                 ))
                 )}
               </div>
             )}
           </div>
-          {/* Center section: Main logo */}
           <div className="navbar_logo-container">
             <Link to="/">
               <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" 
@@ -224,6 +237,64 @@ export const Navbar = () => {
       </>
     );
 }; 
+
+export const SearchPage = () => {
+  const { searchQuery } = useParams<{ searchQuery: string }>();
+  const [results, setResults] = useState<Angel[]>([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (searchQuery) {
+      AngelService.search(searchQuery) 
+        .then((data) => {
+          setResults(data);
+          setError('');
+        })
+        .catch((err) => {
+          setError('No results found or error occurred.');
+        });
+    }
+  }, [searchQuery]);
+
+  return (
+    <>
+    <Navbar></Navbar>
+    <Leftbar></Leftbar>
+    <div className="series-page">
+      {searchQuery && (
+        <div>
+          <h1>Search Results for: {searchQuery}</h1>
+          <div className="search-header-line"></div> 
+        </div>
+      )}
+
+      {error && <p>{error}</p>}
+
+      <div className="angel-cards">
+        {results.length > 0 ? (
+          results.map((angel) => (
+            <div key={angel.angel_id} className="angel-card">
+              <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                <img
+                  src={angel.image}
+                  alt={angel.name}
+                  className="angel-card-image"
+                />
+                <h3>{angel.name}</h3>
+              </Link>
+            </div>
+          ))
+        ) : (
+          <p>No content found for this search.</p>
+        )}
+      </div>
+    </div>
+    <Footer></Footer>
+    </>
+  );
+};
+
+
 
 
 export const Leftbar: React.FC<{}> = () => {

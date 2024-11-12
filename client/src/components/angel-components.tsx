@@ -172,14 +172,16 @@ export const AngelDetails: React.FC<{}> = () => {
         }));
     };
 
-    const handlePostComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handlePostComment = (event: React.MouseEvent<HTMLButtonElement>) => {
         const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
-        AngelCommentService
-            .addAngelComment(comment)
-            .then(() => {
-                history.push('/angels/' + angel.angel_id);
-        })
-        .catch((error) => setError('Error updating angel: ' + error.message));
+        if (angel) {
+            AngelCommentService
+                .addAngelComment(comment)
+                .then(() => {
+                    history.push('/angels/' + angel.angel_id);
+                })
+                .catch((error) => setError('Error updating angel: ' + error.message));
+        }
    };
   
     return (

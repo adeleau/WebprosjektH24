@@ -265,18 +265,14 @@ router.get('/posts/:post_id/comments', (request, response) => {
 
 // søkefelt
 router.get('/angels/search/:search', async (request, response) => {
-  const searchTerm = request.params.search as string;
-
-  if (!searchTerm) {
-    return response.status(400).send("Query parameter 'q' is required.");
-  }
+  const searchTerm = request.params.search;
 
   try {
-    const results = await angelService.search(searchTerm); 
-    response.send(results); 
+      const results = await angelService.search(searchTerm); 
+      response.send(results); 
   } catch (error) {
-    console.error('Error fetching search results:', error);
-    response.status(500).send("Error fetching search results"); 
+      console.error('Error fetching search results:', error);
+      response.status(500).send("Error fetching search results"); 
   }
 });
 // søkefelt

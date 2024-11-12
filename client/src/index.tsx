@@ -12,6 +12,7 @@ if (root)
     <HashRouter>
       <Route exact path="/" component={Comp.Home} />
       <Route exact path="/about" component={Comp.About} />
+      <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
       <Route exact path="/series/:series_id" component={Series.SeriesList} />
       <Route exact path="/series/:series/angels" component={Angel.AngelList} />
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />

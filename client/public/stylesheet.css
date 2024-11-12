@@ -1,9 +1,16 @@
-body {
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    /*background: linear-gradient(to bottom, #f2a6b0, #ffffff);*/
-}
-/*container for hele home siden håper jeg */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #root {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Ensures #root takes up all available space */
+  }
 
 .home-content h2 {
     color: #f2a6b0;
@@ -465,11 +472,13 @@ body {
 
 /* Search bar styling */
 .navbar_search {
-    max-width: 100px;
+    max-width: 140px;
     flex-shrink: 0;
     margin-right: 20px;
+    margin-top: -20px;
     margin-left: 10px;
     padding-left: 20px;
+    position: relative;
 }
 
 .navbar_search input {
@@ -480,14 +489,59 @@ body {
     background-color: #f2a6b0;
     color: #333;
     transition: background-color 0.5s ease, border-color 0.5s ease;
+    box-sizing: border-box;
 }
 
-/* Styling when the search bar is focused */
 .navbar_search input:focus {
     outline: none;
     background-color: white;
     border-color: white;
     color: #333;
+}
+
+.search-results {
+    background-color: white;
+    position: absolute;
+    top: 100%;  
+    left: 0;  
+    width: 100%; 
+    border: 2px solid #f2a6b0;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;  
+    border-radius: 10px;
+    margin-top: 8px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); 
+    padding: 0;  
+}
+
+.search-results::-webkit-scrollbar {
+    display: none;  
+}
+
+.search-results {
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+}
+
+.result-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.result-item:hover {
+    background-color: #f2a6b0; 
+    color: white;
+}
+
+.result-item a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+}
+
+.result-item a:hover{
+    color:white; 
 }
 
 /* Center logo styling */
@@ -663,14 +717,12 @@ body {
 
 
 .footer {
-    background-color: #F2A6B0; 
-    color: white; 
+    background-color: #F2A6B0;
+    color: white;
     text-align: center;
     padding: 5px;
-    position: relative;
-    bottom: 0;
-    left: 0;
-    visibility: visible;
+    width: 100%;
+    margin-top: auto; /* Pushes footer to the bottom */
   }
 
 .series-page {
@@ -689,9 +741,12 @@ body {
 
 .angel-cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); 
+    grid-template-columns: repeat(3, 1fr); 
     gap: 60px; 
     margin-top: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .angel-card {
