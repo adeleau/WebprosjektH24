@@ -68,7 +68,7 @@ class AngelService {
     //søkefelt
     search(query: string): Promise<Angel[]> {
         return axios
-            .get<Angel[]>(`/angels/search?q=${encodeURIComponent(query)}`)
+            .get<Angel[]>(`/angels/search/:search`)
             .then((res) => res.data)
             .catch((err) => {
                 console.error(`Error searching for angels with query "${query}":`, err);

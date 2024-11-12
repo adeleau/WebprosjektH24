@@ -15,4 +15,12 @@ class LoginService {
             .then((response) => response.data)
     }
 
+getAll() {
+    return axios
+        .get<Users[]>('/users/')
+        .then((response) => response.data)
+};
+
 }
+
+

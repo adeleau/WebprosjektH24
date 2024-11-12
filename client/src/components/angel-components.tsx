@@ -258,7 +258,6 @@ export const AngelDetails: React.FC<{}> = () => {
                             name="comment-input"
                             type="text"
                             placeholder="Post a comment..."
-                            value={content}
                             onChange={handleInputChange}
                             className="form-control"
                         />

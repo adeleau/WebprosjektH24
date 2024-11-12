@@ -264,8 +264,8 @@ router.get('/posts/:post_id/comments', (request, response) => {
 });
 
 // søkefelt
-router.get('/angels/search', async (request, response) => {
-  const searchTerm = request.query.q as string; 
+router.get('/angels/search/:search', async (request, response) => {
+  const searchTerm = request.params.search as string;
 
   if (!searchTerm) {
     return response.status(400).send("Query parameter 'q' is required.");
@@ -273,7 +273,7 @@ router.get('/angels/search', async (request, response) => {
 
   try {
     const results = await angelService.search(searchTerm); 
-    response.json(results); 
+    response.send(results); 
   } catch (error) {
     console.error('Error fetching search results:', error);
     response.status(500).send("Error fetching search results"); 

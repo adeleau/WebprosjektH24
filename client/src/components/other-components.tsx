@@ -56,60 +56,82 @@ export const About: React.FC<{}> = () => {
         <Navbar></Navbar>
         <Leftbar></Leftbar>
         <div className="about-container">
-          <div className="about-section">
-                <div className="about-text">
-                    <h2>He may bring you happiness.</h2>
-                    <hr className="about-divider" />
-                    <p className="pink-bold">
-                        Sonny Angel is a little angel boy who likes wearing all sorts of headgear.
-                        He is always by your side to make you smile. Sonny Angel will provide
-                        healing moments in your everyday life. He is a welcome sight at the
-                        entrance to your home, next to your bed, on your desk, and so many other
-                        places. 20 years have passed since the birth of Sonny Angel, who was born 
-                        to make us all smile and add a little fun to our lives. From the corner of a 
-                        room to a prominent display on a shelf, he has been delivering smiles and healing 
-                        all around the world.
-                        <strong> Embrace these healing figures in your life.</strong>
-                    </p>
-                </div>
-                <div className="about-image">
-                    <img
-                        src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0072_2cus.jpg" 
-                        alt="Sonny Angel Figurines" 
-                    />
-                </div>
-              </div>
 
-                <div className="about-section">
-                  <div className="about-image">
-                    <img
-                        src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0261_2cus.jpg" 
-                        alt="Sonny Angel Figurines" 
-                    />
-                <div className="about-text">
-                    <h2>Try your luck.</h2>
-                    <hr className="about-divider" />
-                    <p className="pink-bold">
-                       The major feature of Sonny Angel Mini Figures is
-                       that each series is comprised of 12 different figures. 
-                       Sonny Angel utilizes blind box packaging; you do not know 
-                       which figure you will receive until you buy one and open the box. 
-                       Unboxing Sonny Angel adds to the excitement and fans get pleasure 
-                       from collecting them all. The wonder of meeting your Sonny Angel 
-                       is waiting for you. Each series also has a <strong>secret figure</strong>, which
-                        are randomly included in certain boxes and are the most collectible. 
-                        Robby Angel is a good friend of Sonny Angel. He can change his body color at any time, 
-                        like a chameleon, and he likes to dress up.
-                    </p>
-                </div>
-                
-                </div>
+          <div className="about-section">
+            <div className="about-text">
+              <h2>He may bring you happiness.</h2>
+              <hr className="about-divider" />
+                <p className="pink-bold">
+                  Sonny Angel is a little angel boy who likes wearing all sorts of headgear.
+                  He is always by your side to make you smile. Sonny Angel will provide
+                  healing moments in your everyday life. He is a welcome sight at the
+                  entrance to your home, next to your bed, on your desk, and so many other
+                  places. 20 years have passed since the birth of Sonny Angel, who was born 
+                  to make us all smile and add a little fun to our lives. From the corner of a 
+                  room to a prominent display on a shelf, he has been delivering smiles and healing 
+                  all around the world.
+                    <strong> Embrace these healing figures in your life.</strong>
+                </p>
+            </div>
+            <div className="about-image">
+              <img
+                src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0072_2cus.jpg" 
+                alt="Sonny Angel Figurines" 
+              />
             </div>
           </div>
+
+          <div className="about-section">
+            <div className="about-image">
+              <img
+                src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0261_2cus.jpg" 
+                alt="Sonny Angel Figurines" 
+              />
+            </div>
+            <div className="about-text">
+              <h2>Try your luck.</h2>
+              <hr className="about-divider" />
+              <p className="pink-bold">
+                The major feature of Sonny Angel Mini Figures is
+                that each series is comprised of 12 different figures. 
+                Sonny Angel utilizes blind box packaging; you do not know 
+                which figure you will receive until you buy one and open the box. 
+                Unboxing Sonny Angel adds to the excitement and fans get pleasure 
+                from collecting them all. The wonder of meeting your Sonny Angel 
+                is waiting for you. Each series also has a <strong>secret figure</strong>, which
+                are randomly included in certain boxes and are the most collectible. 
+                Robby Angel is a good friend of Sonny Angel. He can change his body color at any time, 
+                like a chameleon, and he likes to dress up.
+              </p>
+            </div>
+          </div>
+
+          <div className="about-section">
+            <div className="about-text">
+              <h2>All started from 18cm.</h2>
+              <hr className="about-divider" />
+              <p className="pink-bold">
+                The first mini figure series “Animal Series Ver. 1” was released with Sonny Angel 
+                wearing animal headgear. To date, more 1,300 types of figures were born. Currently, 
+                Sonny Angel is sold in 33 countries.As an interior design element or a world traveling 
+                companion. Sonny Angel is not just a decorative figure. He is a very photogenic buddy 
+                for social media posts and his presence provides smiles and a sense of well-being and 
+                healing to fans around the world. Each of us finds unique ways to enjoy Sonny Angel.
+              </p>
+            </div>
+            <div className="about-image">
+              <img
+                src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_original_image-1-768x512.jpg" 
+                alt="Sonny Angel Figurines" 
+              />
+            </div>
+          </div>
+
+        </div>
         <Footer></Footer>
         </>
       );
-};
+    };
 
 
 /*export const Card: React.FC<{Angel: Angel}> = (Angel) =>{
@@ -138,17 +160,20 @@ export const Navbar = () => {
     setSearchQuery(query);
 
     if (!query) {
+      console.log("no query")
       setResults([]); 
       return;
     }
 
     try {
-      const searchResults = await AngelService.search(query);
+      let searchResults: Angel[] = await AngelService.search(query);
       setResults(searchResults);
+      console.log(searchResults, query)
       setError(null);
     } catch (error) {
       setResults([]);
     }
+  
   };
  
     return (

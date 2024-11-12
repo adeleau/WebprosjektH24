@@ -749,7 +749,6 @@ body {
     }
 }
 
-
 .about-container {
     display: flex;
     flex-direction: column;
@@ -764,6 +763,24 @@ body {
     align-items: center;
     gap: 40px;
     margin-bottom: 20px;
+    width: 100%;
+}
+
+.about-section:nth-child(odd) {
+    flex-direction: row;  
+}
+
+.about-section:nth-child(even) {
+    display: flex;
+    flex-direction: row;
+}
+
+.about-section:nth-child(even) .about-text {
+    order: 2;  
+}
+
+.about-section:nth-child(even) .about-image {
+    order: 1; 
 }
 
 .about-text {
@@ -798,19 +815,6 @@ body {
 .pink-bold strong {
     color: #F2A6B0; 
     font-weight: bold;
-}
-
-.about-section:nth-child(2) .about-text {
-    padding-left: 75px; 
-    max-width: 55%;
-}
-
-.about-section:nth-child(2) {
-    margin-bottom: 50px;
-}
-
-.about-section:nth-child(1) {
-    margin-bottom: 5px;
 }
 
 .about-image {
@@ -852,7 +856,7 @@ body {
     border: 1px solid #e0e0e0; 
     border-radius: 10px;
     margin: 20px auto;
-    max-width: 80%;
+    max-width: 85%;
 }
 
 .alphabet-link {
@@ -878,12 +882,39 @@ body {
 }
 
 .angel-group ul {
-    list-style-type: "🌷";
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 350px; 
+    overflow-y: hidden; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    grid-gap: 20px; 
+    width: calc(100% - 60px); 
+    margin-top: 10px;
+}
+
+.angel-group li {
+    padding-left: 25px; 
+    position: relative; 
+}
+
+.angel-group li::before {
+    /*content: "🌷"; */
+    position: absolute; 
+    left: 0; 
+    top: 50%;
+    transform: translateY(-50%); 
+    font-size: 20px;
 }
 
 .angel-link {
-    color: black;
+    color: #333;
     text-decoration: none;
+    font-size: 15px;
+    transition: color 0.3s ease;
+    display: block; 
+    padding: 2px 0;
 }
 
 .angel-link:hover {
@@ -912,11 +943,9 @@ body {
     justify-content: flex-start;
 }
 
-
 .angel-group:not(:last-child) {
     border-bottom: 1px solid #e0e0e0;
 }
-
 
 .card{
     max-width: 900px;
@@ -944,7 +973,6 @@ body {
     flex-direction: column;
     margin-bottom: 15px;
 }
-
 
 textarea {
     flex: 1;

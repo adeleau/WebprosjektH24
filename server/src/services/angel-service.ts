@@ -101,7 +101,6 @@ class AngelService {
             console.error(`Error fetching angels for series_id ${series_id}:`, error);
             return reject(error);
             }
-            console.log(`Fetched angels for series_id ${series_id}:`, results);
             resolve(results as Angel[]);
         }
         );
