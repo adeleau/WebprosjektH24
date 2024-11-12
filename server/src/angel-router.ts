@@ -1,6 +1,7 @@
 import express from 'express';
 import seriesService, { Series } from "./services/series-service"
-import angelService, { Angel, AngelComment } from "./services/angel-service" //legg til angellikes
+import angelService, { Angel } from "./services/angel-service" //legg til angellikes
+import angelCommentService, { AngelComment } from "./services/angelcomment-service"
 import postService, { Post, PostComment } from "./services/post-service" //legg til postlikes
 import { AxiosPromise } from 'axios';
 
@@ -21,18 +22,11 @@ router.get('/angels/:angel_id', (request, response) => {
   angelService
     .get(angel_id)
     .then((angel) => (response.send(angel)))
-    .catch((error) => response.status(500).send("pooooop"));
+    .catch((error) => response.status(500).send(error));
 });
 
-//get name of series by id
-router.get('/series/name/:id',(req, res) =>{
-  seriesService.getName(Number(req.params.id))
-    .then((name) => res.send(name))
-    .catch((err) => res.status(500).send(err))
-})
-
 // post new angel
-router.post('/series/:name/angels', (request, response) => {
+router.post('/angels', (request, response) => {
   const data = request.body;
   if (data && data.name && data.name.length != 0)
     angelService
@@ -72,6 +66,14 @@ router.put('/angels/:angel_id', (request, response) => {
   }
 });
 
+//get username of user by angel
+router.get('angels/:angel_id/username', (request, response) => {
+  const angel_id = Number(request.params.angel_id)
+  angelService.getUsername(angel_id)
+    .then((username) => response.send(username))
+    .catch((error) => response.status(500).send({ error: error.message}))
+})
+
 // like spesific angel
 // router.post('/angels/:angel_id/likes', (request, response) => {
 //   const angel_id = Number(request.params.angel_id);
@@ -96,11 +98,11 @@ router.put('/angels/:angel_id', (request, response) => {
 // });
 
 // add a comment on an angel
-router.post('/series/:name/angels/:angel_id/comments', (request, response) => {
+router.post('/angels/:angel_id/comments', (request, response) => {
   const angel_id = Number(request.params.angel_id);
   const { user_id, content, created_at } = request.body;
   if (angel_id && user_id && content) {
-    angelService
+    angelCommentService
       .addAngelComment(angel_id, user_id, content, created_at)
       .then((angelcomment_id) => response.status(201).send({ angelcomment_id }))
       .catch((error) => response.status(500).send(error));
@@ -110,13 +112,29 @@ router.post('/series/:name/angels/:angel_id/comments', (request, response) => {
 });
 
 // get all comments on an angel
-router.get('/series/:name/angels/:angel_id/comments', (request, response) => {
+router.get('/angels/:angel_id/comments', (request, response) => {
   const angel_id = Number(request.params.angel_id);
-  angelService
+  angelCommentService
     .getAngelComments(angel_id)
     .then((comments) => response.send(comments))
     .catch((error) => response.status(500).send(error));
 });
+
+// edit comment
+// router.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
+//   const angelcomment_id = Number(request.params.angelcomment_id);
+//   const angelcomment: AngelComment = request.body;
+//   if (angelcomment) {
+//     angelCommentService
+//       .updateAngelComment(angelcomment)
+//       .then(() => response.send())
+//       .catch((error) => response.status(500).send(error));
+//   } else {
+//     response.status(400).send('Missing angelcomment');
+//   }
+// })
+
+// delete comment
 
 
 // SERIES
@@ -129,13 +147,20 @@ router.get('/series/:name/angels/:angel_id/comments', (request, response) => {
  });
 
 // get spesific series
-router.get('/series/:name', (request, response) => {
-  const name = String(request.params.name);
-  seriesService
-    .get(name)
-    .then((series) => (series ? response.send(series) : response.status(404).send('Series not found')))
-    .catch((error) => response.status(500).send(error));
-});
+//router.get('/series/:name', (request, response) => {
+//  const name = String(request.params.name);
+//  seriesService
+//    .get(name)
+//    .then((series) => (series ? response.send(series) : response.status(404).send('Series not found')))
+//    .catch((error) => response.status(500).send(error));
+// });
+
+//get name of series by id
+router.get('/series/name/:id',(req, res) =>{
+  seriesService.getName(Number(req.params.id))
+    .then((name) => res.send(name))
+    .catch((err) => res.status(500).send(err))
+})
 
 
 // POSTS
@@ -166,6 +191,7 @@ router.post('/posts', (request, response) => {
       .catch((error) => response.status(500).send(error));
   else response.status(400).send('Missing post title');
 });
+//eventuelle enderinger som skal gjøres i denne: console.log(data) --> for å finne hva som feiler
 
 // delete spesific post
 router.delete('/posts/:post_id', (request, response) => {
@@ -236,5 +262,25 @@ router.get('/posts/:post_id/comments', (request, response) => {
     .then((comments) => response.send(comments))
     .catch((error) => response.status(500).send(error));
 });
+
+// søkefelt
+router.get('/angels/search', async (request, response) => {
+  const searchTerm = request.query.q as string; 
+
+  if (!searchTerm) {
+    return response.status(400).send("Query parameter 'q' is required.");
+  }
+
+  try {
+    const results = await angelService.search(searchTerm); 
+    response.json(results); 
+  } catch (error) {
+    console.error('Error fetching search results:', error);
+    response.status(500).send("Error fetching search results"); 
+  }
+});
+// søkefelt
+
+
 
 export default router;

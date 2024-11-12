@@ -3,8 +3,26 @@ import React from "react";
 import {useState, useEffect, useRef} from "react";
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
+import AngelService, {Angel} from "../services/angel-service";
 
 export const Home: React.FC<{}> = () => {
+  const imgs = [
+    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/09/img_costume_series2_banner.jpg",
+    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/09/img_dog_time_banner.png",
+    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/10/sticker2_banner.png",
+    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/07/SA_CASETiFY_banner.jpg",
+    "https://www.sonnyangel.com/renewal/wp-content/uploads/2023/10/img_mc3_banner.jpg"
+  ];
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % imgs.length);
+  };
+
+  // Go to previous image
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + imgs.length) % imgs.length);
+  };
+
     return (
         <>
         <Navbar></Navbar>
@@ -24,13 +42,12 @@ export const Home: React.FC<{}> = () => {
           <div className="info-item">
             <p className="date">15.10.2024</p>
             <p className="text">Enjoy decoration with your new Sonny Angel Stickers</p>
-
           </div>
         </div>
         </div>
         <Footer></Footer>
         </>
-      )
+      );
 }
 
 export const About: React.FC<{}> = () => {
@@ -113,50 +130,58 @@ export const About: React.FC<{}> = () => {
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<string[]>([]);
+  const [results, setResults] = useState<Angel[]>([]);
+  const [error, setError] = useState<string |null>(null);
 
-  const data =[ 'hei', 'hade', 'hallo', 'hi']; //sample
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
 
-    const filteredResults = data.filter(item =>
-      item.toLowerCase().includes(query.toLowerCase())
-    );
-    setResults(filteredResults);
+    if (!query) {
+      setResults([]); 
+      return;
+    }
+
+    try {
+      const searchResults = await AngelService.search(query);
+      setResults(searchResults);
+      setError(null);
+    } catch (error) {
+      setResults([]);
+    }
   };
  
     return (
       <>
         <div className="navbar">
-            <div className="navbar_search">
-              <input 
+          <div className="navbar_search">
+            <input 
               type="text" 
               placeholder="Search..."
               value= {searchQuery}
               onChange={handleInputChange}
-              />
-              {searchQuery && (
-          <div className="search-results">
-            {results.map((item, index) => (
-              <div key={index} className="result-item">
-                {item}
+            />
+            {searchQuery && (
+              <div className="search-results">
+                {results.length > 0 && (
+                  results.map((angel) => (
+                    <div key={angel.angel_id} className="result-item">
+                      <a href={`/angels/${angel.angel_id}`}>{angel.name}</a>
+                    </div>
+                ))
+                )}
               </div>
-        ))} 
-        </div>
-        )}
-      </div>
-
-            {/* Center section: Main logo */}
-            <div className="navbar_logo-container">
-                <Link to="/">
-                    <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" 
-                    alt="Main Logo" 
-                    className="navbar_logo" 
-                    />
-                </Link>
-            </div>
+            )}
+          </div>
+          {/* Center section: Main logo */}
+          <div className="navbar_logo-container">
+            <Link to="/">
+              <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" 
+                alt="Main Logo" 
+                className="navbar_logo" 
+              />
+            </Link>
+          </div>
 
             {/* Right section: Profile picture 
             <div className="navbar_profile">
@@ -169,97 +194,118 @@ export const Navbar = () => {
                 </div>
 
             </div> */}
-
         </div>
+        {error && <div className="error-message">{error}</div>}
       </>
     );
-};
+}; 
 
 
-export const Leftbar: React.FC<{}>= () => {
+export const Leftbar: React.FC<{}> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [series, setSeries] = useState<Array<Series>>([]);
 
   useEffect(() => {
     const fetchSeries = async () => {
+      try {
+        const serieslist = await SeriesService.getAll();
 
-        try {
-            const serieslist = await SeriesService.getAll();
-
-            if (serieslist) {
-                setSeries(serieslist.map((series) => series));
-            } 
-            else {
-                console.log('No series available');
-            }
-        } 
-        catch (error) {
-            console.log(error);
+        if (serieslist) {
+          setSeries(serieslist.map((series) => series));
+        } else {
+          console.log('No series available');
         }
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     fetchSeries();
-    
-}, []);
-    
+  }, []);
+
   const toggleSidebar: () => void = () => {
     setIsSidebarOpen(!isSidebarOpen);
     if (isDropdownOpen) setIsDropdownOpen(false); // Close dropdown when closing sidebar
   };
 
-  const toggleDropdown: () => void = () => {setIsDropdownOpen(!isDropdownOpen)};
+  const toggleDropdown: () => void = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
     <>
-    <div>
-      <button className={`menu-toggle ${isSidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}>
-        {isSidebarOpen ? 'X' : '≡'}
-      </button>
+      <div>
+        <button
+          className={`menu-toggle ${isSidebarOpen ? 'active' : ''}`}
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? 'X' : '≡'}
+        </button>
 
-      <nav className={`nav-menu ${isSidebarOpen ? 'active' : ''}`}>
-        <Link to="/"><img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_logo_pink.png" alt="Sidebar Logo" className="sidebar-logo" /></Link>
+        <nav className={`nav-menu ${isSidebarOpen ? 'active' : ''}`}>
+          <Link to="/" onClick={toggleSidebar}>
+            <img
+              src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_logo_pink.png"
+              alt="Sidebar Logo"
+              className="sidebar-logo"
+            />
+          </Link>
 
-        <ul className="nav-menu-items">
-        <li className="nav-text">
-            <Link to="/masterlist">Master List</Link>
-          </li>
-          <li className="nav-text">
-            <Link to="/about">About</Link>
-          </li>
-          <li className={`nav-text series ${isDropdownOpen ? 'active' : ''}`}>
-            <span onClick={toggleDropdown}>
-              Series {isDropdownOpen ? '↓' : '→'}
-            </span>
-            {isDropdownOpen && (
-              <ul className="dropdown-menu active">
-                {series.map((series, i) =>(
-                    <li key={i} className = "nav-text">
-                        <Link to = {`/series/${series.series_id}`}>{series.name}</Link>
+          <ul className="nav-menu-items">
+            <li className="nav-text">
+              <Link to="/masterlist" onClick={toggleSidebar}>
+                Master List
+              </Link>
+            </li>
+            <li className="nav-text">
+              <Link to="/about" onClick={toggleSidebar}>
+                About
+              </Link>
+            </li>
+            <li className={`nav-text series ${isDropdownOpen ? 'active' : ''}`}>
+              <span onClick={toggleDropdown}>
+                Series {isDropdownOpen ? '↓' : '→'}
+              </span>
+              {isDropdownOpen && (
+                <ul className="dropdown-menu active">
+                  {series.map((series, i) => (
+                    <li key={i} className="nav-text">
+                      <Link
+                        to={`/series/${series.series_id}`}
+                        onClick={toggleSidebar} // Close sidebar on click
+                      >
+                        {series.name}
+                      </Link>
                     </li>
-                ))
-                
-                
-                  }
-              </ul>
-            )}
-          </li>
-          <li className="nav-text">
-            <Link to="/popular">Most Popular</Link>
-          </li>
-          <li className="nav-text">
-            <Link to="/posts">Community</Link>
-          </li>
-          <li className="nav-text">
-            <Link to="/trading">Trading</Link>
-          </li>
-        </ul>
-      </nav>
-      {isSidebarOpen && <div className="overlay" onClick={toggleSidebar}></div>}
-    </div>
+                  ))}
+                </ul>
+              )}
+            </li>
+            <li className="nav-text">
+              <Link to="/popular" onClick={toggleSidebar}>
+                Most Popular
+              </Link>
+            </li>
+            <li className="nav-text">
+              <Link to="/posts" onClick={toggleSidebar}>
+                Community
+              </Link>
+            </li>
+            <li className="nav-text">
+              <Link to="/trading" onClick={toggleSidebar}>
+                Trading
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        {isSidebarOpen && <div className="overlay" onClick={toggleSidebar}></div>}
+      </div>
     </>
   );
 };
+
 
 export const Menu: React.FC<{}> = () => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
@@ -342,25 +388,6 @@ export const Register = () => {
 export const Footer =() => {
   const [isAtBottom, setIsAtBottom] = useState(false);
 
-  /*useEffect(() => {
-    const handleScroll = () => {
-      const bottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight;
-      setIsAtBottom(bottom);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <footer className={`footer ${isAtBottom ? 'visible' : ''}`}>
-      <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
-    </footer>
-  );
-}; */
-
-  
     return (
     <>
       <footer className="footer">

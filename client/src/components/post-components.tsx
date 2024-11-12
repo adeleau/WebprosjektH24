@@ -3,9 +3,12 @@ import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
 
+
 import PostService from "../services/post-service";
 import type {Post} from "../services/post-service"
 import { Navbar, Leftbar, Footer } from "./other-components";
+import postService from "../services/post-service";
+
 
 
 export const PostList: React.FC<{}> = () => {
@@ -92,6 +95,8 @@ export const PostList: React.FC<{}> = () => {
     if (loading) {
       return <p>Loading...</p>;
     } */}
+
+    
   
     return (
       <>
@@ -99,7 +104,7 @@ export const PostList: React.FC<{}> = () => {
       <Leftbar></Leftbar>
       <div className="post-details">
         {error && <div className="error-message">{error}</div>}
-  
+        <button className="back-button" onClick={() => history.push('/posts')}>Back</button>
         <h2>{post.title}</h2>
         <div className="post-content">
           <p><strong>Title:</strong> {post.title}</p>
@@ -119,6 +124,24 @@ export const PostList: React.FC<{}> = () => {
           Edit
         </button>
       </div>
+      {/* <div className="comment-section">
+        <h2>Comments</h2>
+        <div className="comments">
+
+        </div>
+        <div className="comment-input">
+            <div className="form-group">
+            <input
+                id="comment-input"
+                name="comment-input"
+                type="text"
+                value={content}
+                onChange={handleInputChange}
+                className="form-control"
+            />
+            </div>
+        </div>
+      </div> */}
       </>
     );
   };
@@ -129,7 +152,7 @@ export const PostList: React.FC<{}> = () => {
     const [image, setImage] = useState('');
     const [user_id, setUserId] = useState(0);
     const [error, setError] = useState<string | null>(null);
-  
+    const history = useHistory();
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = event.target;
       if (name === 'title') {
@@ -147,10 +170,11 @@ export const PostList: React.FC<{}> = () => {
   
     const handleCreatePost = () => {
       const created_at = new Date().toISOString().slice(0,19).replace('T',' '); // vet ikke om denne kanskje lagrer dato for når bruker trykker på create post istedet for post
-      PostService //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
+      console.log('Attempting to create post with:', { title, user_id, content, image, created_at }); //legger inn dette for å finne feilen
+      PostService                                                //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
         .createPost(title, user_id, content, image, created_at)
         .then((post_id) => {
-          window.location.href = `/posts/${post_id}`; // Redirect to the new post page
+          history.push(`/posts/${post_id}`); // Redirect to the new post page
         })
         .catch((error) => setError('Error creating post: ' + error.message));
     };
@@ -279,6 +303,8 @@ export const PostList: React.FC<{}> = () => {
   
     return (
       <>
+      <Navbar></Navbar>
+      <Leftbar></Leftbar>
       <div className="card">
         {error && <div className="error-message">{error}</div>}
   
@@ -309,10 +335,10 @@ export const PostList: React.FC<{}> = () => {
         </div>
   
         <div className="form-group">
-          <label htmlFor="img">Image URL:</label>
+          <label htmlFor="image">Image URL:</label>
           <textarea
-            id="img"
-            name="img"
+            id="image"
+            name="image"
             value={post.image}
             onChange={handleInputChange}
             rows={10}

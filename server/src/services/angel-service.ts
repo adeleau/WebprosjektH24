@@ -13,15 +13,8 @@ export type Angel = {
     created_at: string;
     updated_at: string;
     series_id: number;
+    user_name: string; 
 };
-
-export type AngelComment = {
-    angelcomment_id: number;
-    angel_id: number;
-    user_id: number;
-    content: string;
-    created_at: Date;
-}
 
 //AngelLike
 
@@ -79,23 +72,41 @@ class AngelService {
         });
     }
 
-    // get angels by series_id
-getBySeries(series_id: number): Promise<Angel[]> {
-  return new Promise<Angel[]>((resolve, reject) => {
-    pool.query(
-      'SELECT * FROM Angels WHERE series_id = ?', 
-      [series_id], 
-      (error, results) => {
-        if (error) {
-          console.error(`Error fetching angels for series_id ${series_id}:`, error);
-          return reject(error);
-        }
-        console.log(`Fetched angels for series_id ${series_id}:`, results);
-        resolve(results as Angel[]);
+    //søkeflet
+    search(query: string): Promise<Angel[]> {
+        return new Promise<Angel[]>((resolve, reject) => {
+          pool.query(
+            'SELECT * FROM Angels WHERE name LIKE ? OR description LIKE ?',
+            [`%${query}%`, `%${query}%`], 
+            (error, results: RowDataPacket[]) => {
+              if (error) {
+                console.error('Error fetching search results:', error);
+                return reject(error);
+              }
+              resolve(results as Angel[]);
+            }
+          );
+        });
       }
-    );
-  });
-}
+    //Søkfelt
+
+    // get angels by series_id
+    getBySeries(series_id: number): Promise<Angel[]> {
+    return new Promise<Angel[]>((resolve, reject) => {
+        pool.query(
+        'SELECT * FROM Angels WHERE series_id = ?', 
+        [series_id], 
+        (error, results) => {
+            if (error) {
+            console.error(`Error fetching angels for series_id ${series_id}:`, error);
+            return reject(error);
+            }
+            console.log(`Fetched angels for series_id ${series_id}:`, results);
+            resolve(results as Angel[]);
+        }
+        );
+    });
+    }
 
 
     // likeAngel(angel_id: number, user_id: number) {
@@ -117,23 +128,15 @@ getBySeries(series_id: number): Promise<Angel[]> {
     //       });
     //     });
     // }
-    
-    addAngelComment(angel_id: number, user_id: number, content: string, created_at: Date) {
-        return new Promise<number>((resolve, reject) => {
-          pool.query('INSERT INTO angel_comments SET angel_id=?, user_id=?, content=?, created_at=?', [angel_id, user_id, content, created_at], (error, results: ResultSetHeader) => {
-            if (error) return reject(error);
-            resolve(results.insertId);
-          });
-        });
-    }
-    
-    getAngelComments(angel_id: number) {
-        return new Promise<AngelComment[]>((resolve, reject) => {
-          pool.query('SELECT * FROM angel_comments WHERE angel_id = ?', [angel_id], (error, results: RowDataPacket[]) => {
-            if (error) return reject(error);
-            resolve(results as AngelComment[]);
-          });
-        });
+
+    //midlertidig for å se brukernavn
+    getUsername(angel_id: number) {
+        return new Promise<string | Error> ((resolve, reject) => {
+            pool.query('SELECT username FROM Users JOIN Angels ON Users.user_id = Angels.user.id WHERE Angels.angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
+                error ? reject(error) : resolve(results[0].username as string)
+            }
+            )
+        })
     }
 }
 

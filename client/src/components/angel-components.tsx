@@ -5,6 +5,9 @@ import { createHashHistory } from 'history';
 
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
+import AngelCommentService from "../services/angelcomment-service";
+import type { AngelComment } from "../services/angelcomment-service";
+
 import SeriesService from "../services/series-service";
 
 import { Navbar, Leftbar, Footer } from "./other-components";
@@ -115,7 +118,7 @@ export const AngelList: React.FC<{}> = () => {
             </ul>
           ))}
         </div>
-        <button className="button-success" onClick={() => history.push('/angels/new')}> //fjernet window. foran history
+        <button className="button-success" onClick={() => history.push('/angels/new')}>
           New Sonny Angel
         </button>
       </>
@@ -129,6 +132,15 @@ export const AngelDetails: React.FC<{}> = () => {
     const [angel, setAngel] = useState<Angel>();
     const [series, setSeries] = useState<string>();
     const [error, setError] = useState<string | null>(null);
+
+    const [comment, setComment] = useState<AngelComment>({
+        angelcomment_id: 0,
+        angel_id: 0,
+        user_id: 0,
+        content: '',
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
   
     useEffect(() => {
       // Fetch angel details by angel_id
@@ -151,13 +163,33 @@ export const AngelDetails: React.FC<{}> = () => {
         setAngel(tempAngel);
       }
     },  [angel])
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.target;
+        setComment((prevComment) => ({
+          ...prevComment,
+          [name]: value
+        }));
+    };
+
+    const handlePostComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
+        AngelCommentService
+            .addAngelComment(comment)
+            .then(() => {
+                history.push('/angels/' + angel.angel_id);
+        })
+        .catch((error) => setError('Error updating angel: ' + error.message));
+   };
   
     return (
       <>
   
   <Navbar></Navbar>
   <Leftbar></Leftbar>
+        <button className="back-button" onClick={() => history.push('/masterlist')}>Go to Masterlist</button>
         {angel ? (
+
           <div className="angel-details">
             {error && <div className="error-message">{error}</div>}
             
@@ -186,6 +218,20 @@ export const AngelDetails: React.FC<{}> = () => {
                 <div className="detail-row">
                   <strong>Description: </strong><span>{angel.description}</span>
                 </div>
+                <div className="detail-row">
+                  <strong>Release year: </strong><span>{angel.release_year}</span>
+                </div>
+                <div className="angel-info">
+                    <div className="detail-row">
+                        <strong>Views: </strong><span>{angel.views}</span>
+                    </div>
+                    <div className="detail-row">
+                        {/* <strong>User: </strong><span>{AngelService.getUsername(angel.user_id)}</span> */}
+                    </div>
+                    <div className="detail-row">
+                        <strong>Created at: </strong><span>{angel.created_at}</span>
+                    </div>
+                </div>
               </div>
               
               {/* Image (right) */}
@@ -200,17 +246,25 @@ export const AngelDetails: React.FC<{}> = () => {
                 </div>
               )}
             </div>
-  
-            <div className="angel-info">
-              <div className="detail-row">
-                <strong>Views: </strong><span>{angel.views}</span>
-              </div>
-              <div className="detail-row">
-                <strong>User: </strong><span>{angel.user_id}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Created at: </strong><span>{angel.created_at}</span>
-              </div>
+            <div className="comment-section">
+            <h2>Comments</h2>
+                <div className="comments">
+
+                </div>
+                <div className="comment-input">
+                    <div className="form-group">
+                        <input
+                            id="comment-input"
+                            name="comment-input"
+                            type="text"
+                            placeholder="Post a comment..."
+                            value={content}
+                            onChange={handleInputChange}
+                            className="form-control"
+                        />
+                    </div>
+                    <button className="post-button" onClick={handlePostComment}>Post</button>
+                </div> 
             </div>
           </div>
         ) : null}
@@ -255,47 +309,49 @@ export const AngelEdit: React.FC<{}> = () => {
    const handleSave = () => {
      const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
      AngelService
-       .updateAngel(angel.angel_id, angel.name, angel.description, angel.image, angel.release_year, angel.views, updated_at)
+       .updateAngel(angel)
        .then(() => {
-         history.push('/posts/' + post.post_id);
+         history.push('/angels/' + angel.angel_id);
        })
-       .catch((error) => setError('Error updating post: ' + error.message));
+       .catch((error) => setError('Error updating angel: ' + error.message));
    };
  
    const handleDelete = () => {
-     PostService
-       .deletePost(post.post_id)
+     AngelService
+       .deleteAngel(angel.angel_id)
        .then(() => {
-         history.push('/posts'); // Redirect to post list after deletion
+         history.push('/angels'); // Redirect to angel list after deletion
        })
-       .catch((error) => setError('Error deleting post: ' + error.message));
+       .catch((error) => setError('Error deleting angel: ' + error.message));
    };
  
    return (
      <>
+     <Navbar></Navbar>
+     <Leftbar></Leftbar>
      <div className="card">
        {error && <div className="error-message">{error}</div>}
  
-       <h2>Edit Post</h2>
+       <h2>Edit angel</h2>
  
        <div className="form-group">
-         <label htmlFor="title">Title:</label>
+         <label htmlFor="name">Name:</label>
          <input
-           id="title"
-           name="title"
+           id="name"
+           name="name"
            type="text"
-           value={post.title}
+           value={angel.name}
            onChange={handleInputChange}
            className="form-control"
          />
        </div>
  
        <div className="form-group">
-         <label htmlFor="content">Content:</label>
+         <label htmlFor="description">Descripton:</label>
          <textarea
-           id="content"
-           name="content"
-           value={post.content}
+           id="descripton"
+           name="description"
+           value={angel.description}
            onChange={handleInputChange}
            rows={10}
            className="form-control"
@@ -303,11 +359,23 @@ export const AngelEdit: React.FC<{}> = () => {
        </div>
  
        <div className="form-group">
-         <label htmlFor="img">Image URL:</label>
+         <label htmlFor="image">Image URL:</label>
          <textarea
-           id="img"
-           name="img"
-           value={post.image}
+           id="image"
+           name="image"
+           value={angel.image}
+           onChange={handleInputChange}
+           rows={10}
+           className="form-control"
+         />
+       </div>
+
+       <div className="form-group">
+         <label htmlFor="release_year">Release year:</label>
+         <textarea
+           id="release_year"
+           name="release_year"
+           value={angel.release_year}
            onChange={handleInputChange}
            rows={10}
            className="form-control"

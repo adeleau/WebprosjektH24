@@ -1,6 +1,7 @@
 body {
     margin: 0;
     padding: 0;
+    /*background: linear-gradient(to bottom, #f2a6b0, #ffffff);*/
 }
 /*container for hele home siden håper jeg */
 
@@ -36,6 +37,7 @@ body {
     
 }
 
+
 .home-information{
     width:80%;
     max-width: 600px;
@@ -61,6 +63,7 @@ body {
     line-height: 1.5;
 }
 
+  
 .angel-details {
     max-width: 1000px;
     margin: 20px auto;
@@ -69,6 +72,7 @@ body {
     border: 2px solid #f2a6b0; /* Pink border */
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
 }  
 
 .header-container {
@@ -90,7 +94,7 @@ body {
     margin: 10px 0;
 }
 
-.edit-button {
+.edit-button, .back-button {
     background-color: white;
     border: 2px solid #f2a6b0;
     border-radius: 20px;
@@ -99,21 +103,38 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3 ease;
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
-.edit-button:hover {
+.edit-button:hover, .back-button:hover {
     background-color: #f2a6b0;
     border: 2px solid #f2a6b0;
     color: white;
 }
 
+
 .details-content {
     display: flex;
     justify-content: space-between;
     gap: 20px;
+    /* height: 100%; */
 }
 
-.details.row {
+/* prøvde få angel-info til å ligge i bunn av details-text, slik at den infoen stopper i bunn av bildet og ikke ligger under */
+
+/* .details-text {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+} */
+
+/* .angel-info {
+    margin-top: auto;
+} */
+
+
+.details-row {
     margin-bottom: 10px;
     font-size: 1.1em;
 }
@@ -141,8 +162,7 @@ body {
 }
 
 
-  
-  
+
 .login {
     height: 100vh;
     background-color: #f2a6b0;
@@ -432,7 +452,7 @@ body {
   
 
   /* General styling for Navbar */
-.navbar {
+  .navbar {
     min-height: 70px;
     background-color: #f2a6b0;
     display: flex;
@@ -441,13 +461,11 @@ body {
     padding: 30px 20px 10px 20px;
     font-family: 'Poppins', sans-serif;
     position: relative;
-    z-index: 1;
 }
 
 /* Search bar styling */
 .navbar_search {
     max-width: 100px;
-    position: relative;
     flex-shrink: 0;
     margin-right: 20px;
     margin-left: 10px;
@@ -463,39 +481,6 @@ body {
     color: #333;
     transition: background-color 0.5s ease, border-color 0.5s ease;
 }
-
-.search-results {
-    position: absolute;
-    top: 100%; 
-    left: 0;
-    width: 100%;
-    margin-top: 5px;
-    background-color: #f2a6b0;;
-    border-radius: 10px;
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    z-index: 2;
-    padding: 8px 0;
-}
-
-.result-item {
-    padding: 8px 16px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: white;
-    margin: 4px 0;
-}
-
-.result-item:last-child {
-    border-bottom: none;
-}
-
-.result-item:hover {
-    background-color: #F2A6B0;
-    color: white;
-} 
 
 /* Styling when the search bar is focused */
 .navbar_search input:focus {
@@ -527,7 +512,6 @@ body {
     width: auto;
     flex-shrink: 0;
 }
-
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
     .navbar {
@@ -676,6 +660,8 @@ body {
     z-index: 999;
 }
 
+
+
 .footer {
     background-color: #F2A6B0; 
     color: white; 
@@ -686,6 +672,82 @@ body {
     left: 0;
     visibility: visible;
   }
+
+.series-page {
+    padding: 20px;
+    background-color: white;
+}
+
+.series-page h1 {
+    text-align: center;
+    font-weight: bold;
+    color: #f2a6b0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f2a6b0;
+    padding-bottom: 10px;
+}
+
+.angel-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 60px; 
+    margin-top: 40px;
+}
+
+.angel-card {
+    border: 2px solid #f2a6b0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    position: relative; 
+    transition: transform 0.3s ease; 
+    height: 280px; 
+    background-color: white; 
+}
+
+.angel-card:hover {
+    transform: scale(1.05); 
+}
+
+.angel-card img {
+    width: 80%; 
+    height: 80%; 
+    object-fit: contain; 
+    border-radius: 8px; 
+    margin-top: 10px;
+}
+
+.angel-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f2a6b0; 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent; 
+    margin: 0;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.angel-card:hover h3 {
+    background-color: #f2a6b0;
+    color: white; 
+}
+
+@media (max-width: 768px) {
+    .angel-cards {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 480px) {
+    .angel-cards {
+        grid-template-columns: 1fr; 
+    }
+}
 
 
 .about-container {
@@ -714,6 +776,7 @@ body {
     font-weight: bold;
     font-size: 24px;
     margin-bottom: 10px;
+    text-align: left;
 }
 
 .about-divider {
@@ -763,7 +826,7 @@ body {
     border-radius: 8px;
 }
 
-.angel-master-list h2{
+.angel-master-list h2 {
     color: #F2A6B0;
     margin-left: 20px;
 }
@@ -779,13 +842,17 @@ body {
 }
 
 .alphabet-links {
-    padding: 10px 20px;
+    padding: 20px 40px;
     background-color: transparent;
     color: #F2A6B0;
-    font-size: 16px;
+    font-size: 24px;
     display: flex;
     gap: 10px; 
     flex-wrap: wrap;
+    border: 1px solid #e0e0e0; 
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 80%;
 }
 
 .alphabet-link {
@@ -796,7 +863,7 @@ body {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
     text-align: center;
 }
@@ -810,6 +877,10 @@ body {
     outline: none; 
 }
 
+.angel-group ul {
+    list-style-type: "🌷";
+}
+
 .angel-link {
     color: black;
     text-decoration: none;
@@ -819,7 +890,32 @@ body {
     color: #F2A6B0;
 }
 
+.angel-list .angel-group h2 {
+    font-size: 50px; 
+    font-weight: bold;
+    text-transform: uppercase; 
+    color: #F2A6B0; 
+    letter-spacing: 5px; 
+    margin-bottom: 20px; 
+    padding-left: 10px; 
+    text-align: left;
+    background-color: #fff; 
+    padding-left: 15px; 
+}
 
+.angel-group {
+    margin-bottom: 20px; 
+    background-color: #fff; 
+    padding: 20px; 
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start;
+}
+
+
+.angel-group:not(:last-child) {
+    border-bottom: 1px solid #e0e0e0;
+}
 
 
 .card{
@@ -829,12 +925,17 @@ body {
     box-shadow: box-shadow 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
     font-family: 'Poppins', sans-serif;
 }
-
-h2 {
-    color:#F2A6B0 ;
+.angel-master-list h2 {
     text-align: center;
-    font-weight: normal;
-    font-size: 24px;
+    margin-right: 70px;
+}
+
+.angel-list h2 {
+    color:#F2A6B0 ;
+    text-align: left;
+    font-weight: bold;
+    font-size: 30px;
+    padding-left: 20px;
 
 }
 
@@ -877,5 +978,3 @@ textarea, input, select {
     margin-top: 5px;
     font-weight: 300;
 }
-
-

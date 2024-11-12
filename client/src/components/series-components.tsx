@@ -32,24 +32,20 @@ export const SeriesList: React.FC<{}> = () => {
         <Leftbar />
   
         {error && <div className="error-message">{error}</div>}
-        
+  
         {seriesName ? (
           <div className="series-page">
             <h1>{seriesName}</h1>
             <div className="angel-cards">
               {angels.map((angel) => (
                 <div key={angel.angel_id} className="angel-card">
-                  {angel.image && (
+                  <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
                     <img
                       src={angel.image}
                       alt={angel.name}
                       className="angel-card-image"
-                      style={{maxHeight: 200}}
                     />
-                  )}
-                  <h3>{angel.name}</h3>
-                  <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
-                    View Details
+                    <h3>{angel.name}</h3>
                   </Link>
                 </div>
               ))}

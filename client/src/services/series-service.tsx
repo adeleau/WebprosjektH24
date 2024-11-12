@@ -13,8 +13,8 @@ class SeriesService {
             .then((response) => {return response.data})
             .catch((error) => {console.log(error)})
     }
-
-    get(name: string) {
+    // bruker ikke?
+    /*get(name: string) 
         return axios
             .get<Series>('/series/' + name)
             .then((response) => response.data)
@@ -22,7 +22,8 @@ class SeriesService {
                 console.error('Error fetching series with name' + name + ':', error);
                 throw error;
             });
-    }
+    */
+
     getName(id: number): Promise<string> {
         return axios
             .get<string>('/series/name/' + id)
@@ -35,9 +36,6 @@ class SeriesService {
 
     
 }
-
-
-
 
 
 export default new SeriesService();

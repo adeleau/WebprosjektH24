@@ -15,8 +15,6 @@ export type Angel = {
 };
 
 
-
-
 // AngelService class to interact with the backend API
 class AngelService {
     getAll(): Promise<Angel[]> {
@@ -41,7 +39,7 @@ class AngelService {
 
     createAngel(angel: Angel) {
         return axios
-            .post<Angel>('/series/:name/angels', angel)
+            .post<Angel>(`/angels`, angel)
             .then((response) => response.data.angel_id);
     }
 
@@ -52,7 +50,7 @@ class AngelService {
 
     deleteAngel(angel_id: number) {
         return axios
-            .delete<Angel>('/series/:name/angels' + angel_id)
+            .delete<Angel>(`/angels/${angel_id}`)
             .then((response) => response.data.angel_id)
     }
 
@@ -66,6 +64,28 @@ class AngelService {
                 throw err;
             });
     }
+
+    //søkefelt
+    search(query: string): Promise<Angel[]> {
+        return axios
+            .get<Angel[]>(`/angels/search?q=${encodeURIComponent(query)}`)
+            .then((res) => res.data)
+            .catch((err) => {
+                console.error(`Error searching for angels with query "${query}":`, err);
+                throw err;
+            });
+    } //søkefelt
+
+    getUsername(angel_id: number) {
+        return axios
+            .get<{ username: string }>(`/angels/${angel_id}/username`)
+            .then((res) => res.data.username)
+            .catch((err) => {
+                console.error('Error fetching username', err)
+                throw err;
+            })
+    }
+    
 
 }
 

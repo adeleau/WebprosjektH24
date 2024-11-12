@@ -15,14 +15,8 @@ class SeriesService {
             })
         })
     }
-    get(name: string) {
-        return new Promise<Series | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Series WHERE name=?', [name], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                resolve(results[0] as Series)
-            })
-        })
-    }
+
+ 
 
     getName(id: number) {
         return new Promise<string | Error> ((resolve, reject) => {
@@ -32,10 +26,6 @@ class SeriesService {
             )
         })
     }
-
-    
-
-
 }
 
 export default new SeriesService;
