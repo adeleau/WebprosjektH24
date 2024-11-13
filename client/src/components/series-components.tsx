@@ -18,9 +18,12 @@ export const SeriesList: React.FC<{}> = () => {
   
     useEffect(() => {
       AngelService.getBySeries(Number(series_id))
-        .then((data) => setAngels(data))
-        .catch((err) => setError('Error getting angels: ' + err.message));
-  
+      .then((data) => {
+        const sortedData = data.sort((a, b) => a.name.localeCompare(b.name)); 
+        setAngels(sortedData);
+      })
+      .catch((err) => setError('Error getting angels: ' + err.message));
+
       SeriesService.getName(Number(series_id)) 
         .then((name) => setSeriesName(name))
         .catch((err) => setError('Error getting series name: ' + err.message));

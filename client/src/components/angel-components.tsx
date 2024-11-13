@@ -13,7 +13,6 @@ import SeriesService from "../services/series-service";
 import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
 
-
 export const MasterList: React.FC = () => {
     const [angels, setAngels] = useState<Angel[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -172,107 +171,103 @@ export const AngelDetails: React.FC<{}> = () => {
         }));
     };
 
-    const handlePostComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handlePostComment = (event: React.MouseEvent<HTMLButtonElement>) => {
         const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
-        AngelCommentService
-            .addAngelComment(comment)
-            .then(() => {
-                history.push('/angels/' + angel.angel_id);
-        })
-        .catch((error) => setError('Error updating angel: ' + error.message));
+        if (angel) {
+            AngelCommentService
+                .addAngelComment(comment)
+                .then(() => {
+                    history.push('/angels/' + angel.angel_id);
+                })
+                .catch((error) => setError('Error updating angel: ' + error.message));
+        }
    };
+   return (
+    <>
+      <Navbar />
+      <Leftbar />
   
-    return (
-      <>
+      {/* "Go to Masterlist" button on the far left, outside the post */}
+      <button className="back-button" onClick={() => history.push('/masterlist')}>View all angels</button>
   
-  <Navbar></Navbar>
-  <Leftbar></Leftbar>
-        <button className="back-button" onClick={() => history.push('/masterlist')}>Go to Masterlist</button>
-        {angel ? (
-
-          <div className="angel-details">
-            {error && <div className="error-message">{error}</div>}
-            
-              <div className="header-container">
-              <h2 className="angel-header">{angel.name}</h2>
-              <button
-                className="edit-button"
-                onClick={() => history.push(`/angels/${angel.angel_id}/edit`)} 
-                >Edit
-              </button>
-            </div>
-            
-            <div className="header-separator"></div>
+      {angel ? (
+        <div className="angel-details">
+          {/* Floating Edit button in the top right corner */}
+          <button
+            className="edit-button-top-right"
+            onClick={() => history.push(`/angels/${angel.angel_id}/edit`)}
+          >
+            Edit
+          </button>
   
+          {error && <div className="error-message">{error}</div>}
   
-            <div className="details-content">
-              
-              {/* Text details (left) */}
-              <div className="details-text">
-                <div className="detail-row">
-                  <strong>Series: </strong> 
-                  <Link to={`/series/${angel.series_id}`} className="series-link">
-                    {series}
-                  </Link>
-                </div>
-                <div className="detail-row">
-                  <strong>Description: </strong><span>{angel.description}</span>
-                </div>
-                <div className="detail-row">
-                  <strong>Release year: </strong><span>{angel.release_year}</span>
-                </div>
-                <div className="angel-info">
-                    <div className="detail-row">
-                        <strong>Views: </strong><span>{angel.views}</span>
-                    </div>
-                    <div className="detail-row">
-                        {/* <strong>User: </strong><span>{AngelService.getUsername(angel.user_id)}</span> */}
-                    </div>
-                    <div className="detail-row">
-                        <strong>Created at: </strong><span>{angel.created_at}</span>
-                    </div>
-                </div>
+          <div className="header-container">
+            <h2 className="angel-header">{angel.name}</h2>
+          </div>
+  
+          <div className="header-separator"></div>
+  
+          <div className="details-content">
+            {/* Text details (left) */}
+            <div className="details-text">
+              <div className="detail-row series-row">
+                <strong>Series: </strong>
+                <Link to={`/series/${angel.series_id}`} className="series-link">
+                  {series}
+                </Link>
               </div>
-              
-              {/* Image (right) */}
-              {angel.image && (
-                <div className="image-container">
-                  <img
-                    src={angel.image}
-                    alt={angel.name}
-                    className="angel-image"
-                    style={{maxHeight: 200}}
-                  />
-                </div>
-              )}
+              <div className="detail-row">
+                <strong>Description: </strong><span>{angel.description}</span>
+              </div>
+              <div className="detail-row">
+                <strong>Release year: </strong><span>{angel.release_year}</span>
+              </div>
             </div>
-            <div className="comment-section">
+  
+            {/* Enlarged, square image (right) */}
+            {angel.image && (
+              <div className="image-container">
+                <img
+                  src={angel.image}
+                  alt={angel.name}
+                  className="angel-image"
+                />
+              </div>
+            )}
+          </div>
+  
+          {/* Views and Created At row */}
+          <div className="info-row">
+            <span className="info-item">Views: {angel.views}</span>
+            <span className="info-item">Created at: {angel.created_at}</span>
+          </div>
+  
+          {/* Comment Section */}
+          <div className="comment-section">
             <h2>Comments</h2>
-                <div className="comments">
-
-                </div>
-                <div className="comment-input">
-                    <div className="form-group">
-                        <input
-                            id="comment-input"
-                            name="comment-input"
-                            type="text"
-                            placeholder="Post a comment..."
-                            value={content}
-                            onChange={handleInputChange}
-                            className="form-control"
-                        />
-                    </div>
-                    <button className="post-button" onClick={handlePostComment}>Post</button>
-                </div> 
+            <div className="comments"></div>
+            <div className="comment-input">
+              <div className="form-group">
+                <input
+                  id="comment-input"
+                  name="comment-input"
+                  type="text"
+                  placeholder="Post a comment..."
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <button className="post-button" onClick={handlePostComment}>Post</button>
             </div>
           </div>
-        ) : null}
-        <Footer></Footer>
+        </div>
+      ) : null}
   
-      </>
-    );
-}
+      <Footer />
+    </>
+  );  
+}  
 
 export const AngelEdit: React.FC<{}> = () => {
     const [angel, setAngel] = useState<Angel>({
@@ -393,5 +388,4 @@ export const AngelEdit: React.FC<{}> = () => {
      </div>
      </>
    );
-}
-  
+  }

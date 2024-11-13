@@ -5,13 +5,20 @@ import * as Comp from './components/other-components'
 import * as Series from './components/series-components'
 import * as Angel from './components/angel-components'
 import * as Post from './components/post-components'
+import * as Register from './components/register-components';
+import * as Login from './components/login-components';
+
+
 
 let root = document.getElementById('root');
 if (root)
   createRoot(root).render(
     <HashRouter>
-      <Route exact path="/" component={Comp.Home} />
+      <Route exact path="/" component={Comp.Home} />     
+      <Route exact path="/register" component={Register.Register} />
+
       <Route exact path="/about" component={Comp.About} />
+      <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
       <Route exact path="/series/:series_id" component={Series.SeriesList} />
       <Route exact path="/series/:series/angels" component={Angel.AngelList} />
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />

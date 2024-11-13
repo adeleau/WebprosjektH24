@@ -1,0 +1,78 @@
+.series-page {
+    padding: 20px;
+    background-color: white;
+}
+
+.series-page h1 {
+    text-align: center;
+    font-weight: bold;
+    color: #f2a6b0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f2a6b0;
+    padding-bottom: 10px;
+}
+
+.angel-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 60px; 
+    margin-top: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.angel-card {
+    border: 2px solid #f2a6b0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    position: relative; 
+    transition: transform 0.3s ease; 
+    height: 280px; 
+    background-color: white; 
+}
+
+.angel-card:hover {
+    transform: scale(1.05); 
+}
+
+.angel-card img {
+    width: 80%; 
+    height: 80%; 
+    object-fit: contain; 
+    border-radius: 8px; 
+    margin-top: 10px;
+}
+
+.angel-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f2a6b0; 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent; 
+    margin: 0;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.angel-card:hover h3 {
+    background-color: #f2a6b0;
+    color: white; 
+}
+
+@media (max-width: 768px) {
+    .angel-cards {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 480px) {
+    .angel-cards {
+        grid-template-columns: 1fr; 
+    }
+}
