@@ -21,7 +21,7 @@ export const Login: React.FC = () => {
             history.push("/Home");  
         } catch (error){
             console.error("Login failed:" , error);
-            setError("Invalid Username or password");
+            setError("Invalid Username or password"); 
         }
     };
 

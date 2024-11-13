@@ -3,13 +3,10 @@ import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
 
-
 import PostService from "../services/post-service";
 import type {Post} from "../services/post-service"
 import { Navbar, Leftbar, Footer } from "./other-components";
 import postService from "../services/post-service";
-
-
 
 export const PostList: React.FC<{}> = () => {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -40,7 +37,7 @@ export const PostList: React.FC<{}> = () => {
         </ul>
   
         <button 
-          className="edit-button" 
+          className="btn-new" 
           onClick={() => history.push('/posts/new')}
         >
           New post
@@ -97,7 +94,6 @@ export const PostList: React.FC<{}> = () => {
     } */}
 
     
-  
     return (
       <>
       <Navbar></Navbar>
@@ -243,7 +239,7 @@ export const PostList: React.FC<{}> = () => {
         </div>
   
         <button 
-          className="btn btn-success" 
+          className="btn btn-create" 
           onClick={handleCreatePost}
         >
           Create Post
