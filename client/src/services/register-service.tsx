@@ -20,7 +20,7 @@ class RegisterService {
             .then((response) => response.data);
     }
 
-    registerUser( username:string, email:string, password_hash:string )
+    registerUser( username:string, email:string, password_hash:string ){
         return axios
             .post('/users/register', {username, email, password_hash})
             .then((response) => response.data)
@@ -28,7 +28,7 @@ class RegisterService {
                 console.error("Error during registration", error);
                 throw error;
             });
-
+    }
 }
 
 export default new RegisterService();

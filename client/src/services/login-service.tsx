@@ -1,4 +1,4 @@
-import axios from "axios";
+/*import axios from "axios";
 
 export type Users = {
    user_id: number;
@@ -8,7 +8,25 @@ export type Users = {
    created_at: Date; 
 };
 
-class LoginService {
+class LoginService{
+
+
+    .loginUser{
+
+    }
+}
+*/
+
+
+
+
+
+
+
+
+
+export default new Login;
+/*class LoginService {
     get(user_id: number){
         return axios
             .get<Users>('/users/' + user_id)
@@ -21,6 +39,8 @@ getAll() {
         .then((response) => response.data)
 };
 
-}
+}*/
+
+
 
 

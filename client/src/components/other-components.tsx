@@ -6,23 +6,6 @@ import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
 
 export const Home: React.FC<{}> = () => {
-  const imgs = [
-    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/09/img_costume_series2_banner.jpg",
-    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/09/img_dog_time_banner.png",
-    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/10/sticker2_banner.png",
-    "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/07/SA_CASETiFY_banner.jpg",
-    "https://www.sonnyangel.com/renewal/wp-content/uploads/2023/10/img_mc3_banner.jpg"
-  ];
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const nextImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-  };
-
-  // Go to previous image
-  const prevImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + imgs.length) % imgs.length);
-  };
-
     return (
         <>
         <Navbar></Navbar>
@@ -42,6 +25,10 @@ export const Home: React.FC<{}> = () => {
           <div className="info-item">
             <p className="date">15.10.2024</p>
             <p className="text">Enjoy decoration with your new Sonny Angel Stickers</p>
+          </div>
+          <div className="home-image">
+            <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2024/05/photo_contest_2024_banner.png"/>
+            <img src= "https://www.sonnyangel.com/renewal/wp-content/uploads/2024/06/banner_vote-2024.png"/>
           </div>
         </div>
         </div>
@@ -75,7 +62,7 @@ export const About: React.FC<{}> = () => {
             </div>
             <div className="about-image">
               <img
-                src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0072_2cus.jpg" 
+                src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0170_-2.jpg" 
                 alt="Sonny Angel Figurines" 
               />
             </div>

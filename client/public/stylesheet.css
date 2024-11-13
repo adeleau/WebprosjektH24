@@ -1,3 +1,4 @@
+/*OTHER*/
 html, body {
     height: 100%;
     margin: 0;
@@ -35,15 +36,14 @@ html, body {
     padding-top: 10px;
     padding-bottom: 0;
     margin-bottom: 10px;
+    gap: 17px;
 }
 
 .home-image img {
     max-width: 100%;         
     height: auto;
     display:block;
-    
 }
-
 
 .home-information{
     width:80%;
@@ -69,39 +69,25 @@ html, body {
     margin: 5px 0;
     line-height: 1.5;
 }
-
-  
+/*OTHER*/
+/*ANGEL*/
+  /* Container for angel details */
 .angel-details {
-    max-width: 1000px;
+    max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    background-color: white; /* Light pink background */
-    border: 2px solid #f2a6b0; /* Pink border */
+    background-color: #fff;
+    border: 2px solid #f2a6b0;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    
-}  
-
-.header-container {
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
-}
-
-.angel-header {
-    font-size: 2.2em;
-    font-weight: bold;
-    color: #f2a6b0;
-    margin: 0; 
-}
-
-.header-seperator {
-    height: 2px;
-    background-color: #f2a6b0;
-    margin: 10px 0;
-}
-
-.edit-button, .back-button {
+    position: relative;
+  }
+  
+  /* Floating Edit button in the top right corner */
+  .edit-button-top-right {
+    position: absolute;
+    top: 15px;
+    right: 15px;
     background-color: white;
     border: 2px solid #f2a6b0;
     border-radius: 20px;
@@ -109,65 +95,145 @@ html, body {
     color: #f2a6b0;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3 ease;
-    margin-top: 10px;
-    margin-left: 10px;
-}
-
-.edit-button:hover, .back-button:hover {
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-button-top-right:hover {
     background-color: #f2a6b0;
-    border: 2px solid #f2a6b0;
     color: white;
-}
-
-
-.details-content {
+  }
+  
+  /* Back button aligned to the far left, outside the post */
+  .back-button {
+    position: absolute;
+    left: 20px;
+    top: 100px;
+    background-color: white;
+    border: 2px solid #f2a6b0;
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: #f2a6b0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #f2a6b0;
+    color: white;
+  }
+  
+  /* Header container */
+  .header-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .angel-header {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #f2a6b0;
+    margin: 0;
+  }
+  
+  .header-separator {
+    height: 2px;
+    background-color: #f2a6b0;
+    margin: 10px 0;
+  }
+  
+  /* Content layout */
+  .details-content {
     display: flex;
     gap: 20px;
-}
-
-/* prøvde få angel-info til å ligge i bunn av details-text, slik at den infoen stopper i bunn av bildet og ikke ligger under */
-
-/* .details-text {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-} */
-
-/* .angel-info {
-    margin-top: auto;
-} */
-
-
-.details-row {
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-
-.series-link  {
-    color: #333;
-    text-decoration: none;
-}
-
-.series-link:hover {
-    color: #f2a6b0;
-    text-decoration: underline;
-}
+  }
   
-.image-container {
+  /* Text details styling */
+  .details-text {
+    flex: 1;
+  }
+  
+  .detail-row {
+    margin-bottom: 12px;
+    font-size: 1.1em;
+  }
+  
+  /* Larger series link and more padding between sections */
+  .series-row {
+    font-size: 1.3em;
+    margin-bottom: 20px;
+  }
+  
+  .series-link {
+    color: #333;
+    text-decoration: underline;
+  }
+  
+  .series-link:hover {
+    color: #f2a6b0;
+  }
+  
+  /* Enlarged, square image styling */
+  .image-container {
     flex: 1;
     text-align: center;
-}
-
-.angel-image {
-    max-width: 100%;
+  }
+  
+  .angel-image {
+    width: 100%;
+    max-width: 250px;
+    height: 250px;
+    object-fit: cover;
     border-radius: 15px;
     border: 3px solid #f2a6b0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-
+  }
+  
+  /* Views and Created At row */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #888;
+  }
+  
+  /* Comment section styling */
+  .comment-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .comment-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .form-control {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .post-button {
+    padding: 8px 16px;
+    background-color: #f2a6b0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .post-button:hover {
+    background-color: #d98a97;
+  }
+/*ANGEL*/
+/*LOGIN*/
 .login {
     height: 100vh;
     background-color: #f2a6b0;
@@ -313,7 +379,8 @@ html, body {
         padding: 8px 15px;
     }
   }
-
+/*LOGIN*/
+/*REGISTER*/
   .register {
     height: 100vh;
     background-color: #f2a6b0;
@@ -454,8 +521,8 @@ html, body {
         padding: 8px 15px;
     }
   }
-  
-
+/*REGISTER*/
+/*OTHER*/
   /* General styling for Navbar */
   .navbar {
     min-height: 70px;
@@ -541,6 +608,7 @@ html, body {
 .result-item a:hover{
     color:white; 
 }
+
 
 /* Center logo styling */
 .navbar_logo-container {
@@ -712,8 +780,6 @@ html, body {
     z-index: 999;
 }
 
-
-
 .footer {
     background-color: #F2A6B0;
     color: white;
@@ -722,7 +788,8 @@ html, body {
     width: 100%;
     margin-top: auto; /* Pushes footer to the bottom */
   }
-
+/*OTHER*/
+/*SERIES*/
 .series-page {
     padding: 20px;
     background-color: white;
@@ -801,7 +868,8 @@ html, body {
         grid-template-columns: 1fr; 
     }
 }
-
+/*SERIES*/
+/*OTHER*/
 .about-container {
     display: flex;
     flex-direction: column;
@@ -809,14 +877,15 @@ html, body {
     max-width: 1200px;
     margin: 0 auto;
     gap: 40px;
+    align-items: center;
 }
 
 .about-section {
     display: flex;
     align-items: center;
     gap: 40px;
-    margin-bottom: 20px;
-    width: 100%;
+    margin-bottom: 10px;
+    width: 90%;
 }
 
 .about-section:nth-child(odd) {
@@ -878,11 +947,12 @@ html, body {
 
 .about-image img {
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     object-fit: contain;
     border-radius: 8px;
 }
-
+/*OTHER*/
+/*ANGEL*/
 .angel-master-list h2 {
     color: #F2A6B0;
     margin-left: 20px;
@@ -1059,3 +1129,4 @@ textarea, input, select {
     margin-top: 5px;
     font-weight: 300;
 }
+/*ANGEL*/
