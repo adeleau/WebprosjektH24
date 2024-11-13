@@ -123,9 +123,7 @@ html, body {
 
 .details-content {
     display: flex;
-    justify-content: space-between;
     gap: 20px;
-    /* height: 100%; */
 }
 
 /* prøvde få angel-info til å ligge i bunn av details-text, slik at den infoen stopper i bunn av bildet og ikke ligger under */
