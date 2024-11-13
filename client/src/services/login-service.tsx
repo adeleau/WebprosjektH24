@@ -1,4 +1,4 @@
-/*import axios from "axios";
+import axios from "axios";
 
 export type Users = {
    user_id: number;
@@ -9,13 +9,18 @@ export type Users = {
 };
 
 class LoginService{
-
-
-    .loginUser{
-
+    loginUser(username:string, password:string){
+        return axios 
+            .post(//må sette inn riktig endpoint,{username, password});
+            .then((response) => response.data)
+            .catch((error) => {
+                console.error("Error during login:", error);
+                throw error;
+            });
     }
-}
-*/
+
+}   
+
 
 
 

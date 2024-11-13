@@ -117,7 +117,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 } 
 
-
 /* Views and Created At row */
 .info-row {
   display: flex;
@@ -245,7 +244,7 @@
 .angel-group li {
   padding-left: 25px; 
   position: relative;
-  max-width: 40px;
+  max-width: 150px;
 }
 
 .angel-group li::before {
