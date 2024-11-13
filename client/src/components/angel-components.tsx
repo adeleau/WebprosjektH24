@@ -9,6 +9,10 @@ import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment } from "../services/angelcomment-service";
 
 import SeriesService from "../services/series-service";
+import type { Series } from "../services/series-service";
+
+// import UserService from "../services/user-service";
+// import type { User } from "../services/user-service";
 
 import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
@@ -117,29 +121,30 @@ export const AngelList: React.FC<{}> = () => {
             </ul>
           ))}
         </div>
-        <button className="button-success" onClick={() => history.push('/angels/new')}>
-          New Sonny Angel
-        </button>
+        
       </>
     );
 };
 
 export const AngelDetails: React.FC<{}> = () => {
-    const { angel_id } = useParams<{ angel_id: string }>();
-    const history = useHistory();
+  const { angel_id } = useParams<{ angel_id: string }>();
+  const history = useHistory();
     
-    const [angel, setAngel] = useState<Angel>();
-    const [series, setSeries] = useState<string>();
-    const [error, setError] = useState<string | null>(null);
+  const [angel, setAngel] = useState<Angel>();
+  const [series, setSeries] = useState<string>();
+  const [error, setError] = useState<string | null>(null);
 
-    const [comment, setComment] = useState<AngelComment>({
-        angelcomment_id: 0,
-        angel_id: 0,
-        user_id: 0,
-        content: '',
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+  const [content, setContent] = useState('');
+  const [user_id, setUserId] = useState(0);
+
+  const [comment, setComment] = useState<AngelComment>({
+    angelcomment_id: 0,
+    angel_id: 0,
+    user_id: 0,
+    content: '',
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
   
     useEffect(() => {
       // Fetch angel details by angel_id
@@ -246,7 +251,9 @@ export const AngelDetails: React.FC<{}> = () => {
           {/* Comment Section */}
           <div className="comment-section">
             <h2>Comments</h2>
-            <div className="comments"></div>
+            <div className="comments">
+              her skal alle comments listes
+            </div>
             <div className="comment-input">
               <div className="form-group">
                 <input
@@ -268,6 +275,169 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );  
 }  
+
+export const AngelNew: React.FC<{}> = () => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  const [release_year, setReleaseYear] = useState(0);
+  const [user_id, setUserId] = useState(0);
+  const [series_id, setSeriesId] = useState(0);
+
+  //const series: Series = ;
+  const angel: Angel = ({
+    angel_id: 0,
+    name: '',
+    description: '',
+    image: '',
+    release_year: 0,
+    views: 0,
+    user_id: 0,
+    created_at: new Date(),
+    updated_at: new Date(),
+    series_id: 0,
+  });
+  // const user: User = ({
+  
+  // })
+  const [error, setError] = useState<string | null>(null);
+
+  const history = useHistory();
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'description') {
+      setDescription(value);
+    } else if (name === 'image') {
+      setImage(value);
+    } else if (name === 'release_year') {
+      setReleaseYear(Number(value));
+    }
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    if (name === 'user_id') {
+      setUserId(Number(value));
+    } else if (name === 'series_id') {
+      setSeriesId(Number(value));
+    }
+    // setUserId(Number(event.target.value));
+    // setSeriesId(Number(event.target.value));
+  };
+
+  const handleCreateAngel = () => {
+    const created_at = new Date().toISOString().slice(0,19).replace('T',' '); // vet ikke om denne kanskje lagrer dato for når bruker trykker på create post istedet for post
+    
+    console.log('Attempting to create angel with:', { name, user_id, description, image, created_at }); //legger inn dette for å finne feilen
+    AngelService                                                //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
+      .createAngel(angel)
+      .then((angel_id) => {
+        history.push(`/angels/${angel_id}`); // Redirect to the new post page
+      })
+      .catch((error) => setError('Error creating angel: ' + error.message));
+  };
+
+  return (
+    <>
+      <Navbar></Navbar>
+      <Leftbar></Leftbar>
+    <div className="card">
+      {error && <div className="error-message">{error}</div>}
+
+      <h2>New Angel</h2>
+      
+      <div className="form-group">
+        <label htmlFor="name">Name:</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          value={name}
+          onChange={handleInputChange}
+          className="form-control"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="user_id">By:</label>
+        <select
+          id="user_id"
+          name="user_id"
+          value={user_id}
+          onChange={handleSelectChange}
+          className="form-control"
+        >
+          <option value="">Select a user</option>
+          <option value="2">Jub</option>
+          {/* {users.map((user) => (
+            <option value={user_id}>x</option>
+          ))} */}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="series_id">Series:</label>
+        <select
+          id="series_id"
+          name="series_id"
+          value={series_id}
+          onChange={handleSelectChange}
+          className="form-control"
+        >
+          <option value="">Select a series</option>
+          <option value="1">Animal</option>
+          {/* {series.map((series) => (
+            <option value={series_id}>{series.series}</option>
+          ))} */}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="description">Description:</label>
+        <textarea
+          id="description"
+          name="description"
+          value={description}
+          onChange={handleInputChange}
+          rows={10}
+          className="form-control"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="release_year">Release year:</label>
+        <textarea
+          id="release_year"
+          name="release_year"
+          value={Number(release_year)}
+          onChange={handleInputChange}
+          className="form-control"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="img">Image URL:</label>
+        <textarea
+          id="image" //endrer begge fra img til image for å prøve å endre bilde på edit
+          name="image"
+          value={image}
+          onChange={handleInputChange}
+          className="form-control"
+        />
+      </div>
+
+      <button 
+        className="btn btn-create" 
+        onClick={handleCreateAngel}
+      >
+        Create Angel
+      </button>
+    </div>
+    </>
+  );
+};
 
 export const AngelEdit: React.FC<{}> = () => {
     const [angel, setAngel] = useState<Angel>({
@@ -352,18 +522,6 @@ export const AngelEdit: React.FC<{}> = () => {
            className="form-control"
          />
        </div>
- 
-       <div className="form-group">
-         <label htmlFor="image">Image URL:</label>
-         <textarea
-           id="image"
-           name="image"
-           value={angel.image}
-           onChange={handleInputChange}
-           rows={10}
-           className="form-control"
-         />
-       </div>
 
        <div className="form-group">
          <label htmlFor="release_year">Release year:</label>
@@ -376,6 +534,18 @@ export const AngelEdit: React.FC<{}> = () => {
            className="form-control"
          />
        </div>
+
+      <div className="form-group">
+        <label htmlFor="img">Image URL:</label>
+        <textarea
+          id="image" //endrer begge fra img til image for å prøve å endre bilde på edit
+          name="image"
+          value={angel.image}
+          onChange={handleInputChange}
+          rows={10}
+          className="form-control"
+        />
+      </div>
  
        <div className="form-actions">
          <button className="btn btn-success" onClick={handleSave}>
@@ -388,4 +558,4 @@ export const AngelEdit: React.FC<{}> = () => {
      </div>
      </>
    );
-  }
+}

@@ -20,7 +20,7 @@ if (root)
       <Route exact path="/about" component={Comp.About} />
       <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
       <Route exact path="/series/:series_id" component={Series.SeriesList} />
-      <Route exact path="/series/:series_id/new" component={Post.AngelNew} />
+      <Route exact path="/angels/new" component={Angel.AngelNew} />
 
       {/* <Route exact path="/angels" component={Angel.AngelList} /> */}
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />

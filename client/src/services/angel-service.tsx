@@ -9,8 +9,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    created_at: string;
-    updated_at: string;
+    created_at: Date;
+    updated_at: Date;
     series_id: number;
 };
 

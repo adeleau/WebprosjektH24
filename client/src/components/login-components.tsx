@@ -41,7 +41,7 @@ export const Login: React.FC = () => {
                     <div>
                         <input type="text" value={username} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/>
                         <input type="password" value={password} placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
-                    <button type="login" onClick={handleLogin}>Login</button>
+                    <button type="button" onClick={handleLogin}>Login</button>
                     </div>
                 </div>
             </div>
