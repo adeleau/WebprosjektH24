@@ -1,4 +1,5 @@
 import axios from "axios";
+axios.defaults.baseURL = 'http://localhost:3000/';
 
 export type Users = {
     user_id: number;
@@ -33,17 +34,46 @@ class RegisterService {
                 throw error;
             });
     }
+    checkUserExists(username: string, email:string):Promise<boolean> {
+        const timestamp = new Date().getTime();
 
-    // Sjekker om en bruker allerede eksisterer basert på brukernavn eller e-post
-    checkUserExists(username: string, email: string) {
+        return axios.get('/user/check',{
+            params: { username, email, timestamp }
+        })
+        .then((response) => {
+            console.log('Check user exists response:', response.data);
+            return response.data.exists;
+        })
+        .catch((error) => {
+            console.error('Error checking user existense', error);
+            return false;
+        });
+    }
+
+
+
+}
+
+export default new RegisterService();
+
+//Sjekker om en bruker allerede eksisterer basert på brukernavn eller e-post
+    /*checkUserExists(username: string, email: string) {
         return axios
-            .get(`/users/check?username=${username}&email=${email}`)
+            axios.get(`/users/check?username=${username}&email=${email}`)
             .then((response) => response.data.exists)  // Returnerer true/false
             .catch((error) => {
                 console.error("Error checking user existence", error);
                 throw error;
             });
     }
-}
+}*/
 
-export default new RegisterService();
+/*checkUserExists(username: string, email: string) {
+    return axios
+        .get(`/users/check?username=${username}&email=${email}&timestamp=${new Date().getTime()}`)
+        .then((response) => response.data.exists)
+        .catch((error) => {
+            console.error("Error checking user existence", error);
+            return false;
+        });
+    }*/

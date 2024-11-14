@@ -27,19 +27,19 @@ export const PostList: React.FC<{}> = () => {
       <div className="post-list">
         {error && <div className="error-message">{error}</div>}
         
-        <h2>Recent posts</h2>
+        <h2>RECENT POSTS</h2>
 
         <div className="post-list-content">
           {posts.map((post) => (
             <div key={post.post_id} className="post-preview-card">
+            <Link to={`/posts/${post.post_id}`} className="post-link"> 
               <img src="//www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&amp;width=80" 
               alt="Sonny Angel Hipper" 
               className="post-preview-hipper"/>
-              <h3 className = "post-title">
-              <Link to={`/posts/${post.post_id}`}>{post.title}</Link>
-              </h3>
+              <h3 className = "post-title"> {post.title} </h3>
               <p className="post-preview-content">{post.content.slice(0, 100)}</p>
-              <Link to={`/posts/${post.post_id}`} className="read-more-link">Read more</Link>
+              <p className="read-more-link">Read more</p>
+            </Link> {/*to={`/posts/${post.post_id}`} className="read-more-link">Read more</Link>*/}
             </div>
           ))}
         </div>
@@ -265,6 +265,7 @@ export const PostList: React.FC<{}> = () => {
           Create Post
         </button>
       </div>
+      <Footer></Footer>
       </>
     );
   };
@@ -371,6 +372,7 @@ export const PostList: React.FC<{}> = () => {
           </button>
         </div>
       </div>
+      <Footer></Footer>
       </>
     );
   }

@@ -11,7 +11,6 @@ import { Navbar, Leftbar, Footer } from "./other-components";
 
 const history = createHashHistory();
 
-
 export const SeriesList: React.FC<{}> = () => {
     const { series_id } = useParams<{ series_id: string }>(); 
     const [angels, setAngels] = useState<Angel[]>([]); 
@@ -55,7 +54,7 @@ export const SeriesList: React.FC<{}> = () => {
                 </div>
               ))}
             </div>
-            <button className="btn-create-angel" onClick={() => history.push('/angels/new')}>
+            <button className="btn-create-angel" onClick={() => history.push('/series/'+series_id+'/new')}>
               New Sonny Angel
             </button>
           </div>

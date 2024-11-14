@@ -20,10 +20,11 @@ if (root)
       <Route exact path="/about" component={Comp.About} />
       <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
       <Route exact path="/series/:series_id" component={Series.SeriesList} />
-      <Route exact path="/angels/new" component={Angel.AngelNew} />
+      <Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
 
       {/* <Route exact path="/angels" component={Angel.AngelList} /> */}
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />
+      <Route exact path="/angels/:angel_id/edit" component={Angel.AngelEdit} />
       <Route exact path="/masterlist" component={Angel.MasterList} />
       {/* <Route exact path="/popular" component={Comp.Popular} /> */}
       <Route exact path="/posts" component={Post.PostList} />

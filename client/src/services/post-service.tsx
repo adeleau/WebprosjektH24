@@ -43,17 +43,13 @@ class PostService {
         .then((response) => response.data);
     }
   
-    createPost(title: string, user_id: number, content: string, image: string, created_at: string)/*bytter om fra Date til String, rettelse byttet om igjen*/  {
+    createPost(title: string, user_id: number, content: string, image: string, created_at: string)/*bytter om fra Date til String, rettelse byttet om igjen, står date over?*/  {
       return axios
         .post<Post>('/posts', { title: title, user_id: user_id, content: content, image: image, created_at: created_at })
         .then((response) => { //response.data.post_id);
           console.log('Post created with response:', response.data);
           return response.data.post_id; //consol logger for å få opp en feil
         })
-
-        
-             
-        
     }
   
     updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date ) {

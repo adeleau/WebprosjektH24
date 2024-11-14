@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Angel type to represent individual angel details
 export type Angel = {
-    angel_id: number; 
+    angel_id?: number; 
     name: string;
     description: string;
     image: string;
@@ -85,8 +85,6 @@ class AngelService {
                 throw err;
             })
     }
-    
-
 }
 
 export default new AngelService();
