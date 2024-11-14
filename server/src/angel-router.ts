@@ -3,6 +3,7 @@ import seriesService, { Series } from "./services/series-service"
 import angelService, { Angel } from "./services/angel-service" //legg til angellikes
 import angelCommentService, { AngelComment } from "./services/angelcomment-service"
 import postService, { Post, PostComment } from "./services/post-service" //legg til postlikes
+import registerService from './services/register-service';
 import { AxiosPromise } from 'axios';
 import userService from './services/user-service';
 
@@ -53,7 +54,6 @@ router.get('/series/:series_id', (req, res) => {
       .catch((err) => res.status(500).send({ error: err.message }));
 });
 
-
 // edit spesific angel
 router.put('/angels/:angel_id', (request, response) => {
   const angel_id = Number(request.params.angel_id)
@@ -98,7 +98,7 @@ router.get('angels/:angel_id/username', (request, response) => {
 //     .catch((error) => response.status(500).send(error));
 // });
 
-// add a comment on an angel
+//COMMENTS
 router.post('/angels/:angel_id/comments', (request, response) => {
   const angel_id = Number(request.params.angel_id);
   const { user_id, content, created_at } = request.body;
@@ -112,31 +112,59 @@ router.post('/angels/:angel_id/comments', (request, response) => {
   }
 });
 
-// get all comments on an angel
+//get all comments on angel
 router.get('/angels/:angel_id/comments', (request, response) => {
   const angel_id = Number(request.params.angel_id);
+  if (isNaN(angel_id)) {
+    return response.status(400).send('Invalid angel ID');
+  }
+
   angelCommentService
     .getAngelComments(angel_id)
-    .then((comments) => response.send(comments))
-    .catch((error) => response.status(500).send(error));
+    .then((comments) => response.json(comments))
+    .catch((error) => response.status(500).json({ error: error.message }));
 });
 
-// edit comment
-// router.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
-//   const angelcomment_id = Number(request.params.angelcomment_id);
-//   const angelcomment: AngelComment = request.body;
-//   if (angelcomment) {
-//     angelCommentService
-//       .updateAngelComment(angelcomment)
-//       .then(() => response.send())
-//       .catch((error) => response.status(500).send(error));
-//   } else {
-//     response.status(400).send('Missing angelcomment');
-//   }
-// })
+//edit comment
+/*router.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
+   const angelcomment_id = Number(request.params.angelcomment_id);
+   const angelcomment: AngelComment = request.body;
+  if (angelcomment) {
+     angelCommentService
+      .updateAngelComment(angelcomment)
+       .then(() => response.send())
+      .catch((error) => response.status(500).send(error));
+   } else {
+     response.status(400).send('Missing angelcomment');
+   }
+})*/
+router.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
+  const angelcomment_id = Number(request.params.angelcomment_id);
+  const { content } = request.body; // Only extract content from the request body
+
+  if (!content) {
+    return response.status(400).send('Missing comment content');
+  }
+
+  angelCommentService
+    .updateAngelComment(angelcomment_id, content)
+    .then(() => response.status(200).send('Comment updated successfully'))
+    .catch((error) => response.status(500).json({ error: error.message }));
+});
 
 // delete comment
+router.delete('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
+  const angelcomment_id = Number(request.params.angelcomment_id);
 
+  if (isNaN(angelcomment_id)) {
+    return response.status(400).send('Invalid comment ID');
+  }
+
+  angelCommentService
+    .deleteAngelComment(angelcomment_id)
+    .then(() => response.status(200).send('Comment deleted successfully'))
+    .catch((error) => response.status(500).json({ error: error.message }));
+});
 
 // SERIES
 // get all series 
@@ -345,6 +373,63 @@ router.get('/angels/search/:search', async (request, response) => {
 });
 // søkefelt
 
+//Registrering
+// get all users
+router.get('/user', (_request, response) =>{
+  registerService
+    .getAllUsers()
+    .then((userList) =>  response.send(userList))
+    .catch((error) => response.status(500).send(error));
+});
 
+// get a user
+router.get('/user/:user_id', (_request, response) =>{
+  const user_id = Number(_request.params.user_id);
+  registerService
+    .getUserById(user_id)
+    .then((user_id) =>  response.send(user_id))
+    .catch((error) => response.status(500).send(error));
+});
+
+
+router.post('/register', (request,response) =>{
+  const {username, email, password_hash} = request.body;
+
+  if ( username && email && password_hash) {
+    registerService
+      .registerUser(username, email, password_hash)
+      .then((userId) => { response.status(201).send({ user_id: userId });
+    })
+    .catch((error) => {
+      console.error('Error during registration:', error);
+      response.status(500).send('Error during registration');
+    });
+} else {
+  response.status(400).send('Missing username, email, or password hash');
+}
+});
+
+//sjekker om brukeren allerede eksisterer
+router.get('/check/user', (request, response) => {
+  const {username, email} = request.query;
+
+  if (username && email) {
+    registerService
+      .checkUserExists(String(username), String(email))
+      .then((exists) => {
+        if (exists){
+          response.send('User exists');
+        }else{
+          response.send('User does not exist');
+        }
+      })
+      .catch((error) => {
+        console.error('Error checking user existens:', error);
+        response.status(500).send('Error checking user existense');
+      });
+  }else{
+    response.status(400).send('username or email are required');
+  }
+});
 
 export default router;

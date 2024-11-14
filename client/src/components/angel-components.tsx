@@ -9,6 +9,10 @@ import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment } from "../services/angelcomment-service";
 
 import SeriesService from "../services/series-service";
+import type { Series } from "../services/series-service";
+
+// import UserService from "../services/user-service";
+// import type { User } from "../services/user-service";
 
 import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
@@ -95,51 +99,53 @@ export const MasterList: React.FC = () => {
     );
 };
 
-export const AngelList: React.FC<{}> = () => {
-    const [angels, setAngels] = useState<Array<Angel>>([]);
-    const [error, setError] = useState<string | null>(null);
+//bruker vi?
+// export const AngelList: React.FC<{}> = () => {
+//     const [angels, setAngels] = useState<Array<Angel>>([]);
+//     const [error, setError] = useState<string | null>(null);
   
-    useEffect(() => {
-      AngelService.getAll()
-        .then((data) => {setAngels(data)})
-        .catch((err) => setError('Error getting angels: ' + err.message));
-    }, []);
+//     useEffect(() => {
+//       AngelService.getAll()
+//         .then((data) => {setAngels(data)})
+//         .catch((err) => setError('Error getting angels: ' + err.message));
+//     }, []);
   
-    return (
-      <>
-        {error && <div className="danger">{error}</div>}
-        <div title="Sonny Angel Collection">
-          {angels.map((angel) => (
-            <ul key={angel.angel_id}>
-              <li>
-                <Link to={`/angels/${angel.angel_id}`}>{angel.name}</Link>
-              </li>
-            </ul>
-          ))}
-        </div>
-        <button className="button-success" onClick={() => history.push('/angels/new')}>
-          New Sonny Angel
-        </button>
-      </>
-    );
-};
+//     return (
+//       <>
+//         {error && <div className="danger">{error}</div>}
+//         <div title="Sonny Angel Collection">
+//           {angels.map((angel) => (
+//             <ul key={angel.angel_id}>
+//               <li>
+//                 <Link to={`/angels/${angel.angel_id}`}>{angel.name}</Link>
+//               </li>
+//             </ul>
+//           ))}
+//         </div>
+        
+//       </>
+//     );
+// };
 
 export const AngelDetails: React.FC<{}> = () => {
-    const { angel_id } = useParams<{ angel_id: string }>();
-    const history = useHistory();
+  const { angel_id } = useParams<{ angel_id: string }>();
+  const history = useHistory();
     
-    const [angel, setAngel] = useState<Angel>();
-    const [series, setSeries] = useState<string>();
-    const [error, setError] = useState<string | null>(null);
+  const [angel, setAngel] = useState<Angel>(); 
+  const [series, setSeries] = useState<string>();
+  const [error, setError] = useState<string | null>(null);
 
-    const [comment, setComment] = useState<AngelComment>({
-        angelcomment_id: 0,
-        angel_id: 0,
-        user_id: 0,
-        content: '',
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+  const [content, setContent] = useState('');
+  const [user_id, setUserId] = useState(0);
+
+  const [comment, setComment] = useState<AngelComment>({
+    angelcomment_id: 0,
+    angel_id: 0,
+    user_id: 0,
+    content: '',
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
   
     useEffect(() => {
       // Fetch angel details by angel_id
@@ -172,20 +178,41 @@ export const AngelDetails: React.FC<{}> = () => {
     };
 
     const handlePostComment = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
-        if (angel) {
-            AngelCommentService
-                .addAngelComment(comment)
-                .then(() => {
-                    history.push('/angels/' + angel.angel_id);
-                })
-                .catch((error) => setError('Error updating angel: ' + error.message));
-        }
-   };
-   return (
+      event.preventDefault();
+      if (!comment.content || !comment.content.trim()) {
+        setError("Comment cannot be empty.");
+        return;
+      }
+
+      const angelId = angel?.angel_id;  // Replace with actual angel ID from the state
+      if (!angelId) {
+        setError("Angel not found.");
+        return;
+      }
+
+     const userId = currentUser?.id;  // Assuming currentUser is correctly available
+      if (!userId) {
+        setError("User not logged in.");
+        return;
+      }
+
+      AngelCommentService
+        .addAngelComment(angelId, userId, comment.content)
+        .then((angelcomment_id) => {
+          console.log("Comment added successfully with ID:", angelcomment_id);
+          history.push(`/angels/${angel_id}`);
+        })
+        .catch((error) => {
+          console.error("Error adding comment:", error);
+          setError("Failed to post comment.");
+        });
+      
+    }; 
+
+    return (
     <>
-      <Navbar />
-      <Leftbar />
+      <Navbar/>
+      <Leftbar/>
   
       {/* "Go to Masterlist" button on the far left, outside the post */}
       <button className="back-button" onClick={() => history.push('/masterlist')}>View all angels</button>
@@ -199,7 +226,12 @@ export const AngelDetails: React.FC<{}> = () => {
           >
             Edit
           </button>
-  
+          { /* Send-knapp */ }
+           {/* <a href="mailto:example@gmail.com? subject=Look%20at%20this%20Sonny%20Angel!&body=LINKEN">
+            <button className="send-button">Send</button>  
+           </a> */}
+            
+    
           {error && <div className="error-message">{error}</div>}
   
           <div className="header-container">
@@ -237,25 +269,30 @@ export const AngelDetails: React.FC<{}> = () => {
             )}
           </div>
   
-          {/* Views and Created At row */}
+          {/* Views, created at, updated at and history row */}
           <div className="info-row">
             <span className="info-item">Views: {angel.views}</span>
             <span className="info-item">Created at: {angel.created_at}</span>
+            <span className="info-item">Last updated at: {angel.updated_at}</span>
+            <button className="history-button" onClick={() => history.push(angel_id+'/history')}>History</button>
           </div>
   
           {/* Comment Section */}
           <div className="comment-section">
             <h2>Comments</h2>
-            <div className="comments"></div>
+            <div className="comments">
+              her skal alle comments listes
+            </div>
             <div className="comment-input">
               <div className="form-group">
                 <input
+                  type="text"
+                  placeholder = "Post a comment..."
+                  value={comment.content}
+                  className="form-control"
                   id="comment-input"
                   name="comment-input"
-                  type="text"
-                  placeholder="Post a comment..."
                   onChange={handleInputChange}
-                  className="form-control"
                 />
               </div>
               <button className="post-button" onClick={handlePostComment}>Post</button>
@@ -264,10 +301,221 @@ export const AngelDetails: React.FC<{}> = () => {
         </div>
       ) : null}
   
-      <Footer />
+      <Footer/>
     </>
   );  
-}  
+}
+
+export const AngelNew: React.FC<{}> = () => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  const [release_year, setReleaseYear] = useState(0);
+  const [user_id, setUserId] = useState(0);
+  const [series_id, setSeriesId] = useState(0);
+
+  //const series: Series = ;
+  const angel: Angel = ({
+    angel_id: 0,
+    name: '',
+    description: '',
+    image: '',
+    release_year: 0,
+    views: 0,
+    user_id: 0,
+    created_at: new Date(),
+    updated_at: new Date(),
+    series_id: 0,
+  });
+  // DETTE FUNKER ETTER VI HAR LAGT TIL USER-SERVICE
+  // const { user_id: routeUserId } = useParams<{ user_id: string }>();
+  // const [userList, setUserList] = useState<Users[]>([]);
+  // const [selectedUserId, setSelectedUserId] = useState<number>(Number(routeUserId));
+  // useEffect(() => {
+  //   // Hent alle serier fra databasen ved å bruke SeriesService
+  //   UserService.getAll()
+  //     .then((data) => {
+  //       setUserList(data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching users:", error);
+  //     });
+  // }, []);
+
+  const { series_id: routeSeriesId } = useParams<{ series_id: string }>();
+  const [seriesList, setSeriesList] = useState<Series[]>([]);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<number>(Number(routeSeriesId));
+  useEffect(() => {
+    // Hent alle serier fra databasen ved å bruke SeriesService
+    SeriesService.getAll()
+      .then((data) => {
+        setSeriesList(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching series:", error);
+      });
+  }, []);
+  const [error, setError] = useState<string | null>(null);
+
+  const history = useHistory();
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'description') {
+      setDescription(value);
+    } else if (name === 'image') {
+      setImage(value);
+    } else if (name === 'release_year') {
+      setReleaseYear(Number(value));
+    }
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    if (name === 'user_id') {
+      setUserId(Number(value));
+      // BYTT TIL DENNE ETTER Å HA LAGT TIL USER-SERVICE
+      // setSelectedUserId(Number(value));
+    } else if (name === 'series_id') {
+      setSelectedSeriesId(Number(value));
+    }
+  };
+
+  const handleCreateAngel = () => {
+    const created_at = new Date().toISOString().slice(0,19).replace('T',' '); // vet ikke om denne kanskje lagrer dato for når bruker trykker på create post istedet for post
+    const newAngel: Angel = {
+      name: name,
+      description: description,
+      image: image,
+      release_year: release_year,
+      views: 0, 
+      user_id: user_id, //endre til selectedUserId etterpå
+      created_at: new Date(),
+      updated_at: new Date(),
+      series_id: selectedSeriesId,
+    };
+    console.log('Attempting to create angel with:'+ newAngel); //legger inn dette for å finne feilen
+    AngelService                                                //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
+      .createAngel(newAngel)
+      .then((angel_id) => {
+        history.push(`/angels/${angel_id}`); // Redirect to the new post page
+      })
+      .catch((error) => setError('Error creating angel: ' + error.message));
+  };
+
+  return (
+    <>
+      <Navbar/>
+      <Leftbar/>
+      <div className="card">
+        {error && <div className="error-message">{error}</div>}
+
+        <h2>New Angel</h2>
+        
+        <div className="form-group">
+          <label htmlFor="name">Name:</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={name}
+            onChange={handleInputChange}
+            className="form-control"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="user_id">By:</label>
+          <select
+            id="user_id"
+            name="user_id"
+            value={user_id/*selectedUserId - bytt til denne etterpå*/}
+            onChange={handleSelectChange}
+            className="form-control"
+          >
+            <option value="">Select a user</option>
+            <option value="2">Jub</option>
+            {/* BYTT TIL DETTE ETTERPÅ
+            {userList.map((users) => {
+              return (
+                <option
+                  key={users.user_id}
+                  value={users.user_id}
+                >
+                  {users.username}
+                </option>
+              )
+            })} */}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="series_id">Series:</label>
+          <select
+            id="series_id"
+            name="series_id"
+            value={selectedSeriesId}
+            onChange={handleSelectChange}
+            className="form-control"
+          >
+            {seriesList.map((series) => {
+              return (
+                <option
+                  key={series.series_id}
+                  value={series.series_id}                >
+                  {series.name}
+                </option>
+              )
+            })}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="description">Description:</label>
+          <textarea
+            id="description"
+            name="description"
+            value={description}
+            onChange={handleInputChange}
+            rows={10}
+            className="form-control"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="release_year">Release year:</label>
+          <textarea
+            id="release_year"
+            name="release_year"
+            value={Number(release_year)}
+            onChange={handleInputChange}
+            className="form-control"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="img">Image URL:</label>
+          <textarea
+            id="image" //endrer begge fra img til image for å prøve å endre bilde på edit
+            name="image"
+            value={image}
+            onChange={handleInputChange}
+            className="form-control"
+          />
+        </div>
+
+        <button 
+          className="btn btn-create" 
+          onClick={handleCreateAngel}
+        >
+          Create Angel
+        </button>
+      </div>
+      <Footer/>
+    </>
+  );
+};
 
 export const AngelEdit: React.FC<{}> = () => {
     const [angel, setAngel] = useState<Angel>({
@@ -302,7 +550,19 @@ export const AngelEdit: React.FC<{}> = () => {
    };
  
    const handleSave = () => {
-     const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
+    //  const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
+    //  const newAngel: Angel = {
+    //   angel_id: 0, 
+    //   name: angelName,
+    //   description: description,
+    //   image: image,
+    //   release_year: release_year,
+    //   views: 0,
+    //   user_id: user_id, //endre til selectedUserId
+    //   created_at: created_at,
+    //   updated_at: new Date(),
+    //   series_id: selectedSeriesId,
+    // };
      AngelService
        .updateAngel(angel)
        .then(() => {
@@ -312,18 +572,19 @@ export const AngelEdit: React.FC<{}> = () => {
    };
  
    const handleDelete = () => {
+      const seriesId = angel.series_id;
      AngelService
        .deleteAngel(angel.angel_id)
        .then(() => {
-         history.push('/angels'); // Redirect to angel list after deletion
+         history.push('/series/' + seriesId); // Redirect to angel list after deletion
        })
        .catch((error) => setError('Error deleting angel: ' + error.message));
    };
  
    return (
      <>
-     <Navbar></Navbar>
-     <Leftbar></Leftbar>
+     <Navbar/>
+     <Leftbar/>  
      <div className="card">
        {error && <div className="error-message">{error}</div>}
  
@@ -352,18 +613,6 @@ export const AngelEdit: React.FC<{}> = () => {
            className="form-control"
          />
        </div>
- 
-       <div className="form-group">
-         <label htmlFor="image">Image URL:</label>
-         <textarea
-           id="image"
-           name="image"
-           value={angel.image}
-           onChange={handleInputChange}
-           rows={10}
-           className="form-control"
-         />
-       </div>
 
        <div className="form-group">
          <label htmlFor="release_year">Release year:</label>
@@ -376,6 +625,18 @@ export const AngelEdit: React.FC<{}> = () => {
            className="form-control"
          />
        </div>
+
+      <div className="form-group">
+        <label htmlFor="img">Image URL:</label>
+        <textarea
+          id="image" //endrer begge fra img til image for å prøve å endre bilde på edit
+          name="image"
+          value={angel.image}
+          onChange={handleInputChange}
+          rows={10}
+          className="form-control"
+        />
+      </div>
  
        <div className="form-actions">
          <button className="btn btn-success" onClick={handleSave}>
@@ -386,6 +647,7 @@ export const AngelEdit: React.FC<{}> = () => {
          </button>
        </div>
      </div>
+     <Footer/>
      </>
    );
-  }
+}

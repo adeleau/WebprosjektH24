@@ -19,14 +19,19 @@ if (root)
       <Route exact path="/about" component={Comp.About} />
       <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
       <Route exact path="/series/:series_id" component={Series.SeriesList} />
+<<<<<<< HEAD
       <Route exact path="/series/:series_id/new" component={Post.AngelNew} />
       <Route exact path="/userprofile/edit" component={User.UserSettings} />
       <Route exact path="/userprofile" component={User.UserProfile} />
 
 
+=======
+      <Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
+>>>>>>> ea9568b9e0e0af8d7541ea818614bab01a72e757
 
       {/* <Route exact path="/angels" component={Angel.AngelList} /> */}
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />
+      <Route exact path="/angels/:angel_id/edit" component={Angel.AngelEdit} />
       <Route exact path="/masterlist" component={Angel.MasterList} />
       {/* <Route exact path="/popular" component={Comp.Popular} /> */}
       <Route exact path="/posts" component={Post.PostList} />

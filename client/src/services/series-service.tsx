@@ -7,11 +7,11 @@ export type Series = {
 
 class SeriesService {
     
-    getAll(){
+    getAll(): Promise<Series[]>{
         return axios
             .get<Series[]>('/series')
             .then((response) => {return response.data})
-            .catch((error) => {console.log(error)})
+            .catch((error) => {console.log(error); return [];})
     }
     // bruker ikke?
     /*get(name: string) 

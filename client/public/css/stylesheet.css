@@ -1033,11 +1033,12 @@ html, body {
 
 .angel-link {
     color: #333;
+    color: #333;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 18px;
     transition: color 0.3s ease;
     display: block; 
-    padding: 2px 0;
+    padding: 10px 0;
 }
 
 .angel-link:hover {

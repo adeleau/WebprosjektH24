@@ -3,7 +3,7 @@ import pool from '../mysql-pool';
 import { format } from 'date-fns';
 
 export type Angel = {
-    angel_id: number; 
+    angel_id?: number; 
     name: string;
     description: string;
     image: string;

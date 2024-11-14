@@ -22,19 +22,27 @@ export const PostList: React.FC<{}> = () => {
   
     return (
       <>
-      <Navbar></Navbar>
-      <Leftbar></Leftbar>
+      <Navbar/>
+      <Leftbar/>
       <div className="post-list">
         {error && <div className="error-message">{error}</div>}
         
-        <h2>Community</h2>
-        <ul className="post-list-ul">
+        <h2>RECENT POSTS</h2>
+
+        <div className="post-list-content">
           {posts.map((post) => (
-            <li key={post.post_id}>
-              <Link to={`/posts/${post.post_id}`}>{post.title}</Link>
-            </li>
+            <div key={post.post_id} className="post-preview-card">
+            <Link to={`/posts/${post.post_id}`} className="post-link"> 
+              <img src="//www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&amp;width=80" 
+              alt="Sonny Angel Hipper" 
+              className="post-preview-hipper"/>
+              <h3 className = "post-title"> {post.title} </h3>
+              <p className="post-preview-content">{post.content.slice(0, 100)}</p>
+              <p className="read-more-link">Read more</p>
+            </Link> {/*to={`/posts/${post.post_id}`} className="read-more-link">Read more</Link>*/}
+            </div>
           ))}
-        </ul>
+        </div>
   
         <button 
           className="btn-new" 
@@ -43,7 +51,7 @@ export const PostList: React.FC<{}> = () => {
           New post
         </button>
       </div>
-      <Footer></Footer>
+      <Footer/>
       </>
       
     );
@@ -51,7 +59,14 @@ export const PostList: React.FC<{}> = () => {
   
   export const PostDetails: React.FC<{}> = () => {
     const { post_id } = useParams<{ post_id: string }>(); // Retrieve post ID from URL params
-    const [post, setPost] = useState<Post>({ post_id: 0, user_id: 0, title: '', content: '', image: '', created_at: new Date(), updated_at: new Date() });
+    const [post, setPost] = useState<Post>({ 
+      post_id: 0, 
+      user_id: 0, 
+      title: '', 
+      content: '', 
+      image: '', 
+      created_at: new Date(), 
+      updated_at: new Date() });
     const [likeCount, setLikeCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -72,7 +87,7 @@ export const PostList: React.FC<{}> = () => {
       //fetchLikeCount();
     }, [post_id]);
   
-   {/* const fetchLikeCount = () => {
+  {/* const fetchLikeCount = () => {
       postService
         .getPostLikes(Number(post_id))
         .then((count) => setLikeCount(count))
@@ -87,26 +102,29 @@ export const PostList: React.FC<{}> = () => {
       postService.likePost(Number(post_id)).catch((error) => {
         setError('Error updating like count: ' + error.message);
       });
-    };
+    }; 
   
     if (loading) {
       return <p>Loading...</p>;
-    } */}
-
-    
+    */}
+  
     return (
       <>
-      <Navbar></Navbar>
-      <Leftbar></Leftbar>
+      <Navbar/>
+      <Leftbar/>
       <div className="post-details">
         {error && <div className="error-message">{error}</div>}
         <button className="back-button" onClick={() => history.push('/posts')}>Back</button>
-        <h2>{post.title}</h2>
+
+        <h2 className="post-title">{post.title}</h2>
+
         <div className="post-content">
-          <p><strong>Title:</strong> {post.title}</p>
-          <p><strong>Content:</strong> {post.content}</p>
-          <p><strong>Image:</strong></p>
-          <img src={post.image} alt={post.title} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+          <p className="post-text"><strong>Content:</strong> {post.content}</p>
+          {post.image && (
+            <div className="post-img-container">
+              <img src={post.image} alt={post.title} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+            </div>
+          )}
         </div>
   
         {/*<div className="post-likes">
@@ -120,6 +138,7 @@ export const PostList: React.FC<{}> = () => {
           Edit
         </button>
       </div>
+      
       {/* <div className="comment-section">
         <h2>Comments</h2>
         <div className="comments">
@@ -138,6 +157,7 @@ export const PostList: React.FC<{}> = () => {
             </div>
         </div>
       </div> */}
+      <Footer />
       </>
     );
   };
@@ -245,6 +265,7 @@ export const PostList: React.FC<{}> = () => {
           Create Post
         </button>
       </div>
+      <Footer></Footer>
       </>
     );
   };
@@ -351,6 +372,7 @@ export const PostList: React.FC<{}> = () => {
           </button>
         </div>
       </div>
+      <Footer></Footer>
       </>
     );
-  };
+  }

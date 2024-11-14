@@ -315,9 +315,6 @@ export const SearchPage = () => {
   );
 };
 
-
-
-
 export const Leftbar: React.FC<{}> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -390,7 +387,7 @@ export const Leftbar: React.FC<{}> = () => {
                     <li key={i} className="nav-text">
                       <Link
                         to={`/series/${series.series_id}`}
-                        onClick={toggleSidebar} // Close sidebar on click
+                        onClick={toggleSidebar} 
                       >
                         {series.name}
                       </Link>
@@ -423,7 +420,6 @@ export const Leftbar: React.FC<{}> = () => {
   );
 };
 
-
 export const Menu: React.FC<{}> = () => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
 
@@ -432,8 +428,6 @@ export const Menu: React.FC<{}> = () => {
         </>
     )
 }
-
-
 
 // export const Popular: React.FC<{}> = () => {
   

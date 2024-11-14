@@ -15,7 +15,6 @@ html, body {
 .home-content h2 {
     color: #f2a6b0;
     font-family: 'Quicksand', sans-serif;
-
 }
 
 .home-content {
@@ -263,17 +262,17 @@ html, body {
 
 .nav-menu-items li {
     position: relative;
-    padding: 15px 35px; /* More space from left and between items */
+    padding: 15px 35px; 
     cursor: pointer;
     text-transform: uppercase;
     font-size: 16px;
     color: #333;
 }
 
-.nav-menu-items li::before {
+.nav-menu-items > li::before {
     content: '';
     position: absolute;
-    left: 10px; /* Adjust distance from the left */
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     width: 6px;
@@ -282,12 +281,14 @@ html, body {
     background-color: pink;
 }
 
-/* Remove bullet point for 'Categories' when dropdown is open */
+.dropdown-menu li::before {
+    content: none;
+}
+
 .nav-menu-items li.categories.active::before {
     content: none;
 }
 
-/* Remove underline for links and change color on hover */
 .nav-menu-items li a {
     text-decoration: none;
     color: inherit;
@@ -298,17 +299,24 @@ html, body {
     color: pink;
 }
 
-/* Dropdown menu styling */
 .dropdown-menu {
     display: none;
     list-style: none;
-    padding-left: 10px; 
+    padding: 0; 
     margin:0;
+    margin-top: 10px;
 }
 
 .dropdown-menu.active {
     display: block;
 }
+
+ul.dropdown-menu.active .nav-text{
+    font-size: 15px;
+    margin: 0;
+    padding: 5px 0;
+    text-indent: 0;
+} 
 
 .menu-toggle {
     position: fixed;
@@ -338,8 +346,6 @@ html, body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
-
-
 
 .footer {
     background-color: #F2A6B0;
@@ -401,9 +407,9 @@ html, body {
     border: 0;
     height: 1px;
     background-color: #F2A6B0;
-    width: 50%;
+    width: 60%;
     margin-bottom: 20px;
-    margin-left: 5px;
+    margin-left: 1px;
 }
 
 .about-text p {
@@ -430,7 +436,5 @@ html, body {
     object-fit: contain;
     border-radius: 8px;
 }
-
-
 
 
