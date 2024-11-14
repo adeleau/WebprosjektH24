@@ -1,7 +1,6 @@
 import axios from "axios";
-axios.defaults.baseURL = 'http://localhost:3000/';
 
-export type Users = {
+export type User = {
     user_id: number;
     username: string;
     email: string;
@@ -13,14 +12,14 @@ class RegisterService {
     // Henter en bruker basert på user_id
     get(user_id: number) {
         return axios
-            .get<Users>(`/users/${user_id}`)
+            .get<User>(`/users/${user_id}`)
             .then((response) => response.data);
     }
 
     // Henter alle brukere
     getAll() {
         return axios
-            .get<Users[]>('/users/')
+            .get<User[]>('/users/')
             .then((response) => response.data);
     }
 

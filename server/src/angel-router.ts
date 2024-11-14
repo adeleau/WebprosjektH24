@@ -306,10 +306,20 @@ router.get('/angels/search/:search', async (request, response) => {
 // søkefelt
 
 //Registrering
+// get all users
 router.get('/user', (_request, response) =>{
   registerService
     .getAllUsers()
     .then((userList) =>  response.send(userList))
+    .catch((error) => response.status(500).send(error));
+});
+
+// get a user
+router.get('/user/:user_id', (_request, response) =>{
+  const user_id = Number(_request.params.user_id);
+  registerService
+    .getUserById(user_id)
+    .then((user_id) =>  response.send(user_id))
     .catch((error) => response.status(500).send(error));
 });
 
@@ -337,7 +347,7 @@ router.get('/check/user', (request, response) => {
 
   if (username && email) {
     registerService
-      .checkUserExists(string(username), string(email))
+      .checkUserExists(String(username), String(email))
       .then((exists) => {
         if (exists){
           response.send('User exists');

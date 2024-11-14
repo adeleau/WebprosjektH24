@@ -1,12 +1,7 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../mysql-pool';
-const PORT = 3000;
-import RegisterService from './services/register-service';
 
-const router = express.Router();
-
-
-export type Users = {
+export type User = {
     user_id: number;
     username: string;
     email: string;
