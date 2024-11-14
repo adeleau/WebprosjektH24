@@ -84,8 +84,7 @@ html, body {
     max-width: 140px;
     flex-shrink: 0;
     margin-right: 20px;
-    margin-top: -20px;
-    margin-left: 10px;
+    margin-left: 20px;
     padding-left: 20px;
     position: relative;
 }
@@ -176,6 +175,22 @@ html, body {
     width: auto;
     flex-shrink: 0;
 }
+
+.navbar_profile .user {
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse; /* Places the image to the right of the name */
+}
+
+.navbar_profile img {
+    width: 40px; /* Adjust the size as needed */
+    height: 40px;
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image scales properly within the circle */
+    margin-left: 10px; /* Space between the name and the image */
+}
+
+
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
     .navbar {
@@ -415,5 +430,7 @@ html, body {
     object-fit: contain;
     border-radius: 8px;
 }
+
+
 
 

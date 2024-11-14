@@ -4,6 +4,8 @@ import {useState, useEffect, useRef } from "react";
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
+import userService from "../services/user-service";
+
 
 export const Home: React.FC<{}> = () => {
     return (
@@ -140,8 +142,10 @@ export const About: React.FC<{}> = () => {
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Angel[]>([]);
-  const [error, setError] = useState<string |null>(null);
+  const [error, setError] = useState<string | null>(null);
   const history = useHistory();
+  const [username, setUsername] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -175,55 +179,85 @@ export const Navbar = () => {
     }
   };
 
-    return (
-      <>
-        <div className="navbar">
-          <div className="navbar_search">
-            <input 
-              type="text" 
-              placeholder="Search..."
-              value= {searchQuery}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
+  const userId = 1; // Hardcoded user_id for testing
 
-            />
-            {searchQuery && (
-              <div className="search-results">
-                {results.length > 0 && (
-                  results.map((angel) => (
-                    <div key={angel.angel_id} className="result-item">
-                      <a href={`/#/angels/${angel.angel_id}`}>{angel.name}</a>
-                    </div>
-                ))
-                )}
-              </div>
-            )}
-          </div>
-          <div className="navbar_logo-container">
-            <Link to="/">
-              <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" 
-                alt="Main Logo" 
-                className="navbar_logo" 
-              />
-            </Link>
-          </div>
+  useEffect(() => {
+    userService.getById(userId)
+      .then(user => {
+        if (user) {
+          setUsername(user.username);
+          if (typeof user.profile_picture === 'string') {
+            setProfilePicture(user.profile_picture);
+          } else if (user.profile_picture) {
+            setProfilePicture(URL.createObjectURL(user.profile_picture));
+          }
+        } else {
+          console.error('User is null');
+        }
+      })
+      .catch(err => console.error('Error fetching user:', err));
+  }, [userId]);
 
-            {/* Right section: Profile picture 
-            <div className="navbar_profile">
-                IKON for profile picture
-                <div className="user">
-                    <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" 
-                        alt="" />
-                    <span>John Doe</span>
-
+  return (
+    <>
+      <div className="navbar">
+        <div className="navbar_search">
+          <input 
+            type="text" 
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+          />
+          {searchQuery && (
+            <div className="search-results">
+              {results.length > 0 && results.map((angel) => (
+                <div key={angel.angel_id} className="result-item">
+                  <a href={`/#/angels/${angel.angel_id}`}>{angel.name}</a>
                 </div>
-
-            </div> */}
+              ))}
+            </div>
+          )}
         </div>
-        {error && <div className="error-message">{error}</div>}
-      </>
-    );
-}; 
+
+        <div className="navbar_logo-container">
+          <Link to="/">
+            <img 
+              src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" 
+              alt="Main Logo" 
+              className="navbar_logo" 
+            />
+          </Link>
+        </div>
+
+        <div className="navbar_profile">
+          {username ? (
+            <div className="user">
+              <img 
+                src={profilePicture || "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"} 
+                alt="User" 
+              />
+              <Link to="/userprofile" className="user-link">
+                <span>{username || 'Loading'}</span>
+              </Link>
+            </div>
+          ) : (
+            <Link to="/login" className="login-link">
+              Log in
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+    </>
+  );
+};
+
+
+
+
+
 
 export const SearchPage = () => {
   const { searchQuery } = useParams<{ searchQuery: string }>();
