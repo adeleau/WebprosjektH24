@@ -12,14 +12,14 @@ export type Users = {
 
 class RegisterService {
     // Henter en bruker basert på user_id
-    get(user_id: number) {
+    getUserById(user_id: number) {
         return axios
             .get<Users>(`/users/${user_id}`)
             .then((response) => response.data);
     }
 
     // Henter alle brukere
-    getAll() {
+    getAllUsers() {
         return axios
             .get<Users[]>('/users')
             .then((response) => response.data);
@@ -31,8 +31,8 @@ class RegisterService {
             .post('/register', { username, email, password_hash })
             .then((response) => response.data)
             .catch((error) => {
-                console.error("Error during registration", error);
-                throw error;
+                console.error("Error during registration", error.response?.data || error.message);
+                throw error.response?.data || error.message;
             });
     }
     checkUserExists(username: string, email:string):Promise<boolean> {
@@ -50,8 +50,6 @@ class RegisterService {
             return false;
         });
     }
-
-
 
 }
 

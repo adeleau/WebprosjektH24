@@ -125,22 +125,6 @@ export const About: React.FC<{}> = () => {
     };
 
 
-/*export const Card: React.FC<{Angel: Angel}> = (Angel) =>{
-    const thisAngel = Angel
-    return (
-        <>
-        <div className = "card">
-            <div className = "top">
-                thisAngel.image_url
-            </div>
-            <div className = "bottom">
-                thisAngel.name
-            </div>
-        </div>
-        </>
-    )
-}*/
-
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Angel[]>([]);
@@ -163,6 +147,11 @@ export const Navbar = () => {
       }
     }
   }, [])
+
+  const handleLogout = () => {
+    setUser(undefined); 
+    Cookies.set("user", "0", { domain: "localhost" }); // Set the user cookie to "0"
+  };
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -233,12 +222,13 @@ export const Navbar = () => {
           {user ? (
             <div className="user">
               <img 
-                src={user.profile_picture || "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"} 
+                src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"} 
                 alt="User" 
               />
               <Link to="/userprofile" className="user-link">
                 <span>{user.username || 'Loading'}</span>
               </Link>
+              <button onClick={handleLogout}>Logout</button>
             </div>
           ) : (
             <Link to="/login" className="login-link">

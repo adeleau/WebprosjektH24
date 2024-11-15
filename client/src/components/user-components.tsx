@@ -21,30 +21,53 @@ export const UserProfile: React.FC = () => {
     if (!user) return <p>Loading...</p>;
 
     const handleEditClick = () => {
-        history.push('/userprofile/edit'); // Route to edit page
+        history.push('/userprofile/edit'); 
     };
 
-    const handleLikesClick = () => {
-        history.push('/user-likes'); // Route to likes page
-    };
+    const handleLogout = () => {
+        setUser(undefined); 
+        Cookies.set("user", "0", { domain: "localhost" });
+      };
 
-    return (
-        <div className="user-profile">
-            <h2>{user.username}'s Profile</h2>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Bio:</strong> {user.bio || "No bio provided"}</p>
-            <img   src={user.profile_picture || "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"} 
-                   alt="User Profile" 
-                     className="user-profile-image" 
-            />
 
-            <div className="profile-actions">
+      return (
+        <div className="profile-container">
+            <div className="action-buttons">
                 <button onClick={handleEditClick}>Edit Profile</button>
+                <button onClick={() => history.push("/")}>Go Back to Homepage</button>
+            </div>
+    
+            <div className="user-profile">
+                <div className="profile-header">
+                    <h2>{user.username}</h2>
+                    <img
+                        src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"}
+                        alt="User Profile"
+                        className="user-profile-image"
+                    />
+                </div>
+    
+                <div className="profile-divider"></div>
+    
+                <div className="profile-info">
+                    <p><strong>Bio:</strong> {user.bio || "No bio provided"}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                </div>
+    
+                <div className="profile-sections">
+                    <button className="profile-section-button">My Likes</button>
+                    <button className="profile-section-button">My Wishlist</button>
+                    <button className="profile-section-button">My Contributions</button>
+                </div>
+    
+                <div className="logout-button">
+                    <button onClick={() => { handleLogout(); history.push("/"); }}>Logout</button>
+                </div>
             </div>
         </div>
     );
-};
-
+    
+};    
 
 
 export const UserSettings: React.FC = () => {

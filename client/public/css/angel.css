@@ -23,13 +23,11 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+  .edit-button-top-right:hover {
+    background-color: #f2a6b0;
+    color: white;
+  }
 
-.edit-button-top-right:hover {
-  background-color: #f2a6b0;
-  color: white;
-}
-
-/* Back button aligned to the far left, outside the post */
 .back-button {
   position: absolute;
   left: 20px;
@@ -45,10 +43,10 @@
   transition: background-color 0.3s ease;
 }
 
-.back-button:hover {
-  background-color: #f2a6b0;
-  color: white;
-}
+  .back-button:hover {
+    background-color: #f2a6b0;
+    color: white;
+  }
 
 /* Header container */
 .header-container {
@@ -95,11 +93,9 @@
   color: #333;
   text-decoration: underline;
 }
-
-.series-link:hover {
-  color: #f2a6b0;
-}
-
+  .series-link:hover {
+    color: #f2a6b0;
+  }
 
 .image-container {
   flex: 1;
@@ -156,10 +152,9 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
-.post-button:hover {
-  background-color: #d98a97;
-}
+  .post-button:hover {
+    background-color: #d98a97;
+  }
 
 /*MASTERLIST*/
 .angel-master-list h2 {
@@ -176,7 +171,6 @@
   width: 100%;
   margin-bottom: 20px;
   margin-left: 5px;
-
 }
 
 .alphabet-links {
@@ -205,15 +199,14 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   text-align: center;
 }
-
-.alphabet-link:hover {
-  background-color: #F2A6B0;
-  color: white;
-}
-
-.alphabet-link:focus {
-  outline: none; 
-}
+  .alphabet-link:hover {
+    background-color: #F2A6B0;
+    color: white;
+  }
+  
+  .alphabet-link:focus {
+    outline: none; 
+  }
 
 .angel-group {
   margin-bottom: 20px; 

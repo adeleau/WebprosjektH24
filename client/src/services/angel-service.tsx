@@ -9,8 +9,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    created_at: Date;
-    updated_at?: Date;
+    // created_at: Date;
+    // updated_at?: Date;
     series_id: number;
 };
 
@@ -27,11 +27,12 @@ class AngelService {
     }
 
     get(angel_id: number) {
+        const angelId = Number(angel_id)
         return axios
-            .get<Angel>('/angels/' + angel_id)
+            .get<Angel>('/angels/' + angelId)
             .then((res) =>  res.data)
             .catch((err) => {
-                console.error(`Error fetching angel with id ${angel_id}:`, err);
+                console.error(`Error fetching angel with id ${angelId}:`, err);
                 throw err;
             });
     } 
@@ -84,6 +85,28 @@ class AngelService {
                 throw err;
             })
     }
+
+    getCreatedAt(angel_id: number) {
+        const angelId = Number(angel_id)
+        return axios
+            .get<{ created_at: string }>(`/angels/${angelId}/created_at`)
+            .then((res) => res.data.created_at)
+            .catch((err) => {
+                console.error('Error fetching created timestamp on angel: ' + angel_id, err)
+                throw err;
+            })
+      }
+  
+      getUpdatedAt(angel_id: number) {
+        const angelId = Number(angel_id)
+        return axios
+            .get<{ updated_at: string }>(`/angels/${angelId}/updated_at`)
+            .then((res) => res.data.updated_at)
+            .catch((err) => {
+                console.error('Error fetching updated timestamp on angel: ' + angel_id, err)
+                throw err;
+            })
+      }
 }
 
 export default new AngelService();
