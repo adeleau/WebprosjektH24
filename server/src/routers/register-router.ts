@@ -14,7 +14,7 @@ const registerrouter = express.Router();
 registerrouter.get('/users', (_request, response) =>{
     registerService
       .getAllUsers()
-      .then((userList) =>  response.send(userList))
+      .then((users) =>  response.send(users))
       .catch((error) => response.status(500).send(error));
 });
   
@@ -35,14 +35,17 @@ registerrouter.post('/register', (request,response) =>{
   
   if ( username && email && password_hash) {
       registerService
-        .registerUser(username, email, password_hash)
-        .then((userId) => { response.status(201).send({ user_id: userId });
+        .register(username, email, password_hash)
+        .then((users) => { 
+          console.log('User register successfully:', users)
+          response.status(201).send({ username /*-> her stod det user_id*/ : users });
         })
         .catch((error) => {
           console.error('Error during registration:', error);
           response.status(500).send('Error during registration');
         });
   } else {
+    console.warn('Missing registration fields');
     response.status(400).send('Missing username, email, or password hash');
   }
 });
@@ -65,6 +68,5 @@ registerrouter.get('/check/users', (request, response) => {
     response.status(400).send('username or email are required');
   }
 });
-
 
 export default registerrouter;

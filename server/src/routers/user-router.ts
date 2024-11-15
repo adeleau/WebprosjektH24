@@ -100,12 +100,5 @@ userrouter.post("/users/login", async (req, res) => {
         .catch((err) => res.status(500).send(err))
 })
 
-  //get username of user by angel
-userrouter.get('angels/:angel_id/username', (request, response) => {
-    const angel_id = Number(request.params.angel_id)
-    angelService.getUsername(angel_id)
-      .then((username) => response.send(username))
-      .catch((error) => response.status(500).send({ error: error.message}))
-})
 
 export default userrouter;

@@ -172,5 +172,40 @@ angelrouter.get('/angels/search/:search', async (request, response) => {
   }
 });
 
+// CREATED/UPDATED AT
+angelrouter.get('/angels/:angel_id/created_at', (request, response) => {
+  console.log('Request received for angel_id:', request.params.angel_id);
+  const angel_id = Number(request.params.angel_id)
+  if (isNaN(angel_id)) {
+    return response.status(400).send({ error: 'Invalid angel_id'})
+  }
+  angelService
+    .getCreatedAt(angel_id)
+    .then((created_at) => {
+      console.log('Created at: ' + created_at);
+      (response.send({created_at}))
+    })
+    .catch((error) => {
+      console.error("her er feilen");
+      response.status(500).send(error)
+    });
+})
+
+angelrouter.get('/angels/:angel_id/updated_at', (request, response) => {
+  const angel_id = Number(request.params.angel_id)
+  angelService
+    .getUpdatedAt(angel_id)
+    .then((updated_at) => (response.send(updated_at)))
+    .catch((error) => response.status(500).send(error));
+})
+
+ //get username of user by angel
+ angelrouter.get('angels/:angel_id/username', (request, response) => {
+  const angel_id = Number(request.params.angel_id)
+  angelService.getUsername(angel_id)
+    .then((username) => response.send(username))
+    .catch((error) => response.status(500).send({ error: error.message}))
+})
+
 
 export default angelrouter;

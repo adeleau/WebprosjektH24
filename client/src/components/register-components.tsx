@@ -3,7 +3,6 @@ import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
 
-
 import { Navbar, Leftbar, Footer } from "./other-components";
 import RegisterService from "../services/register-service";
 
@@ -15,7 +14,6 @@ import RegisterService from "../services/register-service";
     const [error, setError] = useState<{ [key: string]: string }>({});
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const history = useHistory(); //dette kommer av nettsiden jeg linker nå, gidder ikke kildeføring: https://gauravjoshi.hashnode.dev/building-a-system-for-user-registration-and-login-using-typescript-part-2
-
 
 //setter opp et valideringskjema
  const ValidateForm = async ():Promise<boolean> => {
@@ -33,8 +31,9 @@ import RegisterService from "../services/register-service";
         }
 
         if(password_hash.length < 6 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?])/.test(password_hash)){
-            errors.password_hash = "Password must have at least 6 characters with uppercase, lowercase, numbers, and special characters.";
-            isValid = false;
+            errors.password_hash = 
+            "Password must have at least 6 characters with uppercase, lowercase, numbers, and special characters.";
+            isValid = false; //fungerer ikke
         }
         if (password_hash !== confirmPassword){
             errors.confirmPassword = "Passwords do not match";
@@ -48,9 +47,6 @@ import RegisterService from "../services/register-service";
         const isFormValid = await ValidateForm();
         if (isFormValid) {
             try {
-
-                
-
                 await RegisterService.registerUser(username, email, password_hash);
                 setSuccessMessage("Registration successful");
                 history.push("/login");
@@ -88,7 +84,7 @@ import RegisterService from "../services/register-service";
                 placeholder="Password"
                 onChange={(e) => setPasswordHash(e.target.value)}
             />
-            {error["password"] && <p style={{ color: "red" }}>{error["password"]}</p>}
+            {error["password_hash"] && <p style={{ color: "red" }}>{error["password_hash"]}</p>}
             
             <input
                 type="password"

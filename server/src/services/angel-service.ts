@@ -10,8 +10,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    created_at: string;
-    updated_at?: string;
+    // created_at: string;
+    // updated_at?: string;
     series_id: number;
     user_name: string; 
 };
@@ -37,8 +37,8 @@ class AngelService {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
                 let tempAngel: Angel = results[0] as Angel;
-                tempAngel.updated_at = format(tempAngel.updated_at, 'dd/MM/yyyy HH:mm:ss') as string;
-                tempAngel.created_at = format(tempAngel.created_at, 'dd/MM/yyyy HH:mm:ss') as string;
+                // tempAngel.updated_at = format(tempAngel.updated_at, 'dd/MM/yyyy HH:mm:ss') as string;
+                // tempAngel.created_at = format(tempAngel.created_at, 'dd/MM/yyyy HH:mm:ss') as string;
                 resolve(tempAngel)
             })
         })
@@ -46,7 +46,7 @@ class AngelService {
 //name: string, description: string, image: string, release_year: number, user_id: number, created_at: Date, series_id: number
     createAngel(angel: Angel) {
         return new Promise<number>((resolve, reject) => {
-            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?, created_at=?, series_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.user_id, angel.created_at, angel.series_id], (error, results: ResultSetHeader) => {
+            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?,'/*+ created_at=?*/+', series_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.user_id, /*angel.created_at,*/ angel.series_id], (error, results: ResultSetHeader) => {
               if (error) return reject(error);
               resolve(results.insertId);
             });
@@ -55,7 +55,7 @@ class AngelService {
 
     updateAngel(angel: Angel) {
         return new Promise<void>((resolve, reject) => {
-          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?, updated_at=?, series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.updated_at, angel.series_id,angel.views, angel.angel_id], (error, results: ResultSetHeader) => {
+          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.series_id,angel.views, angel.angel_id], (error, results: ResultSetHeader) => {
             if (error) return reject(error);
             resolve();
           });
@@ -136,6 +136,36 @@ class AngelService {
             }
             )
         })
+    }
+
+    getCreatedAt(angel_id: number) {
+      return new Promise<string | Error> ((resolve, reject) => {
+        pool.query('SELECT created_at FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
+          if (error) {
+            console.error(`Error fetching created timestamp`, error);
+            return reject(error);
+            }
+            if (results.length === 0 || !results[0].created_at) {
+              return reject(new Error('Angel not found!!!!'))
+            }
+            resolve(results[0].created_at as string);
+        })
+      })
+    }
+
+    getUpdatedAt(angel_id: number) {
+      return new Promise<string | Error> ((resolve, reject) => {
+        pool.query('SELECT updated_at FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
+          if (error) {
+            console.error(`Error fetching updated timestamp`, error);
+            return reject(error);
+            }
+            if (results.length === 0) {
+              return reject(new Error('Angel not found'))
+            }
+            resolve(results[0].updated_at as string);
+        })
+      })
     }
 }
 

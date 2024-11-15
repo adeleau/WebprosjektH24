@@ -2,6 +2,10 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
+import Cookies from 'js-cookie';
+import userService from "../services/user-service";
+import type { User } from "../services/user-service";
+
 
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
@@ -99,47 +103,83 @@ export const MasterList: React.FC = () => {
     );
 };
 
-//bruker vi?
-// export const AngelList: React.FC<{}> = () => {
-//     const [angels, setAngels] = useState<Array<Angel>>([]);
-//     const [error, setError] = useState<string | null>(null);
-  
-//     useEffect(() => {
-//       AngelService.getAll()
-//         .then((data) => {setAngels(data)})
-//         .catch((err) => setError('Error getting angels: ' + err.message));
-//     }, []);
-  
-//     return (
-//       <>
-//         {error && <div className="danger">{error}</div>}
-//         <div title="Sonny Angel Collection">
-//           {angels.map((angel) => (
-//             <ul key={angel.angel_id}>
-//               <li>
-//                 <Link to={`/angels/${angel.angel_id}`}>{angel.name}</Link>
-//               </li>
-//             </ul>
-//           ))}
-//         </div>
-        
-//       </>
-//     );
-// };
-
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
     
-  const [angel, setAngel] = useState<Angel>(); 
+  const [angel, setAngel] = useState<Angel>({
+    angel_id: 0,
+    name: '',
+    description: '',
+    image: '',
+    release_year: 0,
+    views: 0,
+    user_id: 0,
+    series_id: 0,
+  }); 
   const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
-
+  const [user, setUser] = useState<User>();
+  const [likedAngels, setLikedAngels] = useState<string[]>([]);
+  const [wishlistedAngels, setWishlistedAngels] = useState<string[]>([]);
   const [content, setContent] = useState('');
-  const [user_id, setUserId] = useState(0);
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
+  // Load likes and wishlist from cookies on component mount
+  useEffect(() => {
+    const likes = Cookies.get("likedAngels");
+    const wishlist = Cookies.get("wishlistedAngels");
+
+    if (likes) setLikedAngels(JSON.parse(likes));
+    if (wishlist) setWishlistedAngels(JSON.parse(wishlist));
+  }, []);
+
+  // Check if current angel is liked or wishlisted
+  const isLiked = likedAngels.includes(angel_id);
+  const isWishlisted = wishlistedAngels.includes(angel_id);
+
+  // Toggle like status
+  const handleLikeToggle = () => {
+    let updatedLikes;
+    if (isLiked) {
+      updatedLikes = likedAngels.filter(id => id !== angel_id);
+    } else {
+      updatedLikes = [...likedAngels, angel_id];
+    }
+    setLikedAngels(updatedLikes);
+    Cookies.set("likedAngels", JSON.stringify(updatedLikes));
+  };
+
+  // Toggle wishlist status
+  const handleWishlistToggle = () => {
+    let updatedWishlist;
+    if (isWishlisted) {
+      updatedWishlist = wishlistedAngels.filter(id => id !== angel_id);
+    } else {
+      updatedWishlist = [...wishlistedAngels, angel_id];
+    }
+    setWishlistedAngels(updatedWishlist);
+    Cookies.set("wishlistedAngels", JSON.stringify(updatedWishlist));
+  };
+
+  useEffect(() => {
+    if (angel_id) {
+      AngelService.getCreatedAt(Number(angel_id))
+        .then((createdAt) => setCreatedAt(createdAt))
+        .catch((err) => setError('Error fetching created_at: ' + err.message));
+    }
+  }, [angel_id]);
+
+  useEffect(() => {
+    if (angel_id) {
+      AngelService.getUpdatedAt(Number(angel_id))
+        .then((updatedAt) => setUpdatedAt(updatedAt))
+        .catch((err) => setError('Error fetching updated_at: ' + err.message));
+    }
+  }, [angel_id]);
+  
   const currentUser = useParams<{ user_id: string}>();
-
   const [comment, setComment] = useState<AngelComment>({
     angelcomment_id: 0,
     angel_id: 0,
@@ -171,6 +211,7 @@ export const AngelDetails: React.FC<{}> = () => {
         setAngel(tempAngel);
       }
     },  [angel])
+    // er noe feil her, tempAngel.angel_id har ugyldig verdi, spør chat
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -180,37 +221,32 @@ export const AngelDetails: React.FC<{}> = () => {
         }));
     };
 
-    const handlePostComment = (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
-      if (!comment.content || !comment.content.trim()) {
-        setError("Comment cannot be empty.");
-        return;
-      }
+    // const handlePostComment = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //   event.preventDefault();
+    //   if (!comment.content || !comment.content.trim()) {
+    //     setError("Comment cannot be empty.");
+    //     return;
+    //   }
 
-      const angel_id = angel?.angel_id;  // Replace with actual angel ID from the state
-      if (!angel_id) {
-        setError("Angel not found.");
-        return;
-      }
+    //   const angel_id = angel?.angel_id;  // Replace with actual angel ID from the state
+    //   if (!angel_id) {
+    //     setError("Angel not found.");
+    //     return;
+    //   }
 
-     const userId = Number(currentUser);  // Assuming currentUser is correctly available
-      if (!userId) {
-        setError("User not logged in.");
-        return;
-      }
-
-      AngelCommentService
-        .addAngelComment(angel_id, userId, comment.content)
-        .then((angelcomment_id) => {
-          console.log("Comment added successfully with ID:", angelcomment_id);
-          history.push(`/angels/${angel_id}`);
-        })
-        .catch((error) => {
-          console.error("Error adding comment:", error);
-          setError("Failed to post comment.");
-        });
+    
+    //   AngelCommentService
+    //     .addAngelComment(angel_id, userId, comment.content)
+    //     .then((angelcomment_id) => {
+    //       console.log("Comment added successfully with ID:", angelcomment_id);
+    //       history.push(`/angels/${angel_id}`);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error adding comment:", error);
+    //       setError("Failed to post comment.");
+    //     });
       
-    }; 
+    // }; 
 
     return (
     <>
@@ -275,10 +311,27 @@ export const AngelDetails: React.FC<{}> = () => {
           {/* Views, created at, updated at and history row */}
           <div className="info-row">
             <span className="info-item">Views: {angel.views}</span>
-            <span className="info-item">Created at: {angel.created_at}</span>
-            <span className="info-item">Last updated at: {angel.updated_at}</span>
+            <span className="info-item">Created at: {createdAt}</span>
+            <span className="info-item">Last updated at: {updatedAt}</span>
             <button className="history-button" onClick={() => history.push(angel_id+'/history')}>History</button>
           </div>
+
+
+           {/* Like and Wishlist Buttons */}
+           <div className="button-container">
+            <button
+              className={`like-button ${isLiked ? 'active' : ''}`}
+              onClick={handleLikeToggle}
+            >
+              {isLiked ? 'Unlike' : 'Like'}
+            </button>
+            <button
+              className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
+              onClick={handleWishlistToggle}
+            >
+              {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            </button> 
+            </div>
   
           {/* Comment Section */}
           <div className="comment-section">
@@ -294,11 +347,11 @@ export const AngelDetails: React.FC<{}> = () => {
                   value={comment.content}
                   className="form-control"
                   id="comment-input"
-                  name="comment-input"
+                  name="content"
                   onChange={handleInputChange}
                 />
               </div>
-              <button className="post-button" onClick={handlePostComment}>Post</button>
+              {/* <button className="post-button" onClick={handlePostComment}>Post</button> */}
             </div>
           </div>
         </div>
@@ -326,8 +379,6 @@ export const AngelNew: React.FC<{}> = () => {
     release_year: 0,
     views: 0,
     user_id: 0,
-    created_at: new Date(),
-    updated_at: new Date(),
     series_id: 0,
   });
   // DETTE FUNKER ETTER VI HAR LAGT TIL USER-SERVICE
@@ -394,7 +445,6 @@ export const AngelNew: React.FC<{}> = () => {
       release_year: release_year,
       views: 0, 
       user_id: user_id, //endre til selectedUserId etterpå
-      created_at: new Date(),
       series_id: selectedSeriesId,
     };
     console.log('Attempting to create angel with:'+ newAngel, ); //legger inn dette for å finne feilen
@@ -528,8 +578,8 @@ export const AngelEdit: React.FC<{}> = () => {
      release_year: 0,
      views: 0,
      user_id: 0,
-     created_at: new Date(),
-     updated_at: new Date(),
+    //  created_at: new Date(),
+    //  updated_at: new Date(),
      series_id: 0
    });
    const [error, setError] = useState<string | null>(null);
@@ -576,7 +626,7 @@ export const AngelEdit: React.FC<{}> = () => {
    const handleDelete = () => {
       const seriesId = angel.series_id;
      AngelService
-       .deleteAngel(angel.angel_id)
+       .deleteAngel(Number(angel.angel_id))
        .then(() => {
          history.push('/series/' + seriesId); // Redirect to angel list after deletion
        })
