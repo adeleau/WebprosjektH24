@@ -34,7 +34,7 @@ class AngelService {
                 console.error(`Error fetching angel with id ${angel_id}:`, err);
                 throw err;
             });
-    }
+    } 
 
     createAngel(angel: Angel) {
         return axios
