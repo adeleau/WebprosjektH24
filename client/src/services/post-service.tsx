@@ -52,9 +52,10 @@ class PostService {
         })
     }
   
-    updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date ) {
+    updatePost(post_id: number, title: string, content: string, image: string) {
+      const updated_at = new Date();
       return axios
-        .put<Post>('/posts/' + post_id, { title: title, content: content, image: image, updated_at: updated_at })
+        .put<Post>('/posts/' + post_id, { title: title, content: content, image: image, updated_at })
         .then((response) => response.data.post_id);
     }
   

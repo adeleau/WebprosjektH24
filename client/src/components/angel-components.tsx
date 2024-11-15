@@ -395,7 +395,6 @@ export const AngelNew: React.FC<{}> = () => {
       views: 0, 
       user_id: user_id, //endre til selectedUserId etterpå
       created_at: new Date(),
-      updated_at: new Date(),
       series_id: selectedSeriesId,
     };
     console.log('Attempting to create angel with:'+ newAngel, ); //legger inn dette for å finne feilen

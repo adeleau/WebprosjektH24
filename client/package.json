@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "axios": "^1.7.5",
+    "date-fns": "^4.1.0",
     "js-cookie": "^3.0.5",
     "react-router-dom-v5-compat": "^6.26.1",
     "react-simplified": "^4.0.3"

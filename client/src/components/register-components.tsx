@@ -2,7 +2,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
-import bcrypt from 'bcryptjs';
+
 
 import { Navbar, Leftbar, Footer } from "./other-components";
 import RegisterService from "../services/register-service";
@@ -10,7 +10,7 @@ import RegisterService from "../services/register-service";
  export const Register: React.FC = () => {
     const [username, setUsername] = useState<string>("");
     const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [password_hash, setPasswordHash] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [error, setError] = useState<{ [key: string]: string }>({});
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -32,11 +32,11 @@ import RegisterService from "../services/register-service";
             isValid = false;
         }
 
-        if(password.length < 6 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?])/.test(password)){
-            errors.password = "Password must have at least 6 characters with uppercase, lowercase, numbers, and special characters.";
+        if(password_hash.length < 6 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?])/.test(password_hash)){
+            errors.password_hash = "Password must have at least 6 characters with uppercase, lowercase, numbers, and special characters.";
             isValid = false;
         }
-        if (password !== confirmPassword){
+        if (password_hash !== confirmPassword){
             errors.confirmPassword = "Passwords do not match";
             isValid = false;
         }
@@ -48,8 +48,8 @@ import RegisterService from "../services/register-service";
         const isFormValid = await ValidateForm();
         if (isFormValid) {
             try {
-                //skal prøve å hashe passordet før vi henter det
-                const password_hash = await bcrypt.hash(password, 10);
+
+                
 
                 await RegisterService.registerUser(username, email, password_hash);
                 setSuccessMessage("Registration successful");
@@ -84,9 +84,9 @@ import RegisterService from "../services/register-service";
             
             <input
                 type="password"
-                value={password}
+                value={password_hash}
                 placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPasswordHash(e.target.value)}
             />
             {error["password"] && <p style={{ color: "red" }}>{error["password"]}</p>}
             
@@ -104,77 +104,3 @@ import RegisterService from "../services/register-service";
         </div>
     );
 };
-
-
-
-
-
-// export default Register;
-
-
- //sjekker om brukeren allerede eksisterer
-    /*const checkUserExists = async () => {
-    try {
-        const exists = await RegisterService.checkUserExists(username, email);
-        return exists;
-    }catch (error){
-        console.error("Error checking user existens:", error);
-        return false;
-    }
-    }; */
-
- //Håndtering av registrering
-    /*const handleRegister =  (e: React.FormEvent) => {
-        e.preventDefault();
-
-        RegisterService.registerUser(username,email, password)
-            .then((data) => {
-                console.log("Successful registration:", data);
-                history.push("/login");
-            })
-            .catch((error) => {
-                setError("Registration failed, you may try again.");
-                console.error("Registration error:", error.message);
-            });
-    }*/
-
-/*export const Register = () => {
-    return (
-      <>
-        <div className="register">
-            <div className="card">
-                <div className="right">
-                    <h1>Register here:</h1>
-                    <form>
-                        <input type="text" placeholder="Name" />
-                        <input type="text" placeholder="Username" />
-                        <input type="email" placeholder="Email" />
-                        <input type="password" placeholder="Password" />
-                        <button>Register</button>
-                    </form>
-                </div>
-                
-                <div className="left">
-                    <h1>Join the Sonny Angel wiki</h1>
-                    <span>Already have an account?</span>
-                    <Link to="/login">
-                    <button>Log in</button>
-                    </Link>
-                </div>
-                
-            </div>
-        </div>
-        </>
-    ); 
-    };*/
-
-    /*if(await ValidateForm()){
-        try{
-            await RegisterService.registerUser(username, email, password);
-            setSuccessMessage("Registration successful");
-            history.push("/login");
-        }catch(error) {
-            console.error("Registration Error:", error);
-            setError({ form: "Registration failed, please try again"});
-        }
-    } */ 

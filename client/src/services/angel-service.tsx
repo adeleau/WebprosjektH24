@@ -7,10 +7,10 @@ export type Angel = {
     description: string;
     image: string;
     release_year: number;
-    views?: number;
-    user_id?: number;
-    created_at?: Date;
-    updated_at: Date;
+    views: number;
+    user_id: number;
+    created_at: Date;
+    updated_at?: Date;
     series_id: number;
 };
 

@@ -302,7 +302,7 @@ export const PostList: React.FC<{}> = () => {
     const handleSave = () => {
       const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
       PostService
-        .updatePost(post.post_id, post.title, post.content, post.image, updated_at)
+        .updatePost(post.post_id, post.title, post.content, post.image)
         .then(() => {
           history.push('/posts/' + post.post_id);
         })
