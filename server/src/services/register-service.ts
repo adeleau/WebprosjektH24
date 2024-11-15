@@ -1,7 +1,9 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../mysql-pool';
+import bcrypt from 'bcryptjs';
 
-export type User = {
+
+export type Users = {
     user_id: number;
     username: string;
     email: string;
@@ -12,8 +14,8 @@ export type User = {
 class RegisterService {
     async checkUserExists(username: string, email: string): Promise<boolean> {
         try {
-            const [rows] = await pool.query<RowDataPacket[]>(
-                'SELECT * FROM users WHERE username = ? OR email = ?',
+            const [rows] = await pool.execute<RowDataPacket[]>(
+                'SELECT * FROM Users WHERE username = ? OR email = ?',
                 [username, email]
             );
             return rows.length > 0;
@@ -25,8 +27,8 @@ class RegisterService {
 
     async registerUser(username: string, email: string, password_hash: string): Promise<number> {
         try {
-            const [result] = await pool.query<ResultSetHeader>(
-                'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+            const [result] = await pool.execute<ResultSetHeader>(
+                'INSERT INTO Users (username, email, password_hash) VALUES (?, ?, ?)',
                 [username, email, password_hash]
             );
             return result.insertId; // Returnerer ID-en til den nyopprettede brukeren
@@ -35,14 +37,14 @@ class RegisterService {
             throw error;
         }
     }
-    async getUserById(user_id: number): Promise<User | null> {
+    async getUserById(user_id: number): Promise<Users | null> {
         try {
-            const [rows] = await pool.query<RowDataPacket[]>(
-                'SELECT * FROM users WHERE user_id = ?',
+            const [rows] = await pool.execute<RowDataPacket[]>(
+                'SELECT * FROM Users WHERE user_id = ?',
                 [user_id]
             );
             if (rows.length > 0) {
-                return rows[0] as User;
+                return rows[0] as Users;
             }
             return null;
         } catch (error) {
@@ -50,10 +52,10 @@ class RegisterService {
             throw error;
         }
     }
-    async getAllUsers(): Promise<User[]> {
+    async getAllUsers(): Promise<Users[]> {
         try {
-            const [rows] = await pool.query<RowDataPacket[]>('SELECT * FROM users');
-            return rows as User[];
+            const [rows] = await pool.execute<RowDataPacket[]>('SELECT * FROM Users');
+            return rows as Users[];
         } catch (error) {
             console.error('Error fetching all users:', error);
             throw error;

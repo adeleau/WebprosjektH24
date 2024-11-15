@@ -2,6 +2,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
+import bcrypt from 'bcryptjs';
 
 import { Navbar, Leftbar, Footer } from "./other-components";
 import RegisterService from "../services/register-service";
@@ -47,7 +48,10 @@ import RegisterService from "../services/register-service";
         const isFormValid = await ValidateForm();
         if (isFormValid) {
             try {
-                await RegisterService.registerUser(username, email, password);
+                //skal prøve å hashe passordet før vi henter det
+                const password_hash = await bcrypt.hash(password, 10);
+
+                await RegisterService.registerUser(username, email, password_hash);
                 setSuccessMessage("Registration successful");
                 history.push("/login");
             } catch (error) {

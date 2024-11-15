@@ -7,13 +7,12 @@ export type Angel = {
     description: string;
     image: string;
     release_year: number;
-    views: number;
-    user_id: number;
-    created_at: Date;
+    views?: number;
+    user_id?: number;
+    created_at?: Date;
     updated_at: Date;
     series_id: number;
 };
-
 
 // AngelService class to interact with the backend API
 class AngelService {
@@ -40,7 +39,7 @@ class AngelService {
     createAngel(angel: Angel) {
         return axios
             .post<Angel>(`/angels`, angel)
-            .then((response) => response.data.angel_id);
+            .then((res) => res.data.angel_id);
     }
 
     updateAngel(angel: Angel) {
@@ -51,7 +50,7 @@ class AngelService {
     deleteAngel(angel_id: number) {
         return axios
             .delete<Angel>(`/angels/${angel_id}`)
-            .then((response) => response.data.angel_id)
+            .then((res) => res.data.angel_id)
     }
 
     //get angels etter series_id

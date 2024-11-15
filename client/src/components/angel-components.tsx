@@ -138,6 +138,8 @@ export const AngelDetails: React.FC<{}> = () => {
   const [content, setContent] = useState('');
   const [user_id, setUserId] = useState(0);
 
+  const currentUser = useParams<{ user_id: string}>();
+
   const [comment, setComment] = useState<AngelComment>({
     angelcomment_id: 0,
     angel_id: 0,
@@ -160,6 +162,7 @@ export const AngelDetails: React.FC<{}> = () => {
         .catch((err) => setError('Error getting angel: ' + err.message));
     }, [angel_id]);
   
+    //View count 
     useEffect(() => {
       if(angel) {
         let tempAngel: Angel = angel;
@@ -184,20 +187,20 @@ export const AngelDetails: React.FC<{}> = () => {
         return;
       }
 
-      const angelId = angel?.angel_id;  // Replace with actual angel ID from the state
-      if (!angelId) {
+      const angel_id = angel?.angel_id;  // Replace with actual angel ID from the state
+      if (!angel_id) {
         setError("Angel not found.");
         return;
       }
 
-     const userId = currentUser?.id;  // Assuming currentUser is correctly available
+     const userId = Number(currentUser);  // Assuming currentUser is correctly available
       if (!userId) {
         setError("User not logged in.");
         return;
       }
 
       AngelCommentService
-        .addAngelComment(angelId, userId, comment.content)
+        .addAngelComment(angel_id, userId, comment.content)
         .then((angelcomment_id) => {
           console.log("Comment added successfully with ID:", angelcomment_id);
           history.push(`/angels/${angel_id}`);
@@ -395,7 +398,7 @@ export const AngelNew: React.FC<{}> = () => {
       updated_at: new Date(),
       series_id: selectedSeriesId,
     };
-    console.log('Attempting to create angel with:'+ newAngel); //legger inn dette for å finne feilen
+    console.log('Attempting to create angel with:'+ newAngel, ); //legger inn dette for å finne feilen
     AngelService                                                //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
       .createAngel(newAngel)
       .then((angel_id) => {

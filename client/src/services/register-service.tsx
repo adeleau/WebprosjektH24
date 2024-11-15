@@ -1,6 +1,8 @@
 import axios from "axios";
+axios.defaults.baseURL = 'http://localhost:3000';
 
-export type User = {
+
+export type Users = {
     user_id: number;
     username: string;
     email: string;
@@ -12,21 +14,21 @@ class RegisterService {
     // Henter en bruker basert på user_id
     get(user_id: number) {
         return axios
-            .get<User>(`/users/${user_id}`)
+            .get<Users>(`/users/${user_id}`)
             .then((response) => response.data);
     }
 
     // Henter alle brukere
     getAll() {
         return axios
-            .get<User[]>('/users/')
+            .get<Users[]>('/users')
             .then((response) => response.data);
     }
 
     // Registrerer en ny bruker
     registerUser(username: string, email: string, password_hash: string) {
         return axios
-            .post('/users/register', { username, email, password_hash })
+            .post('/register', { username, email, password_hash })
             .then((response) => response.data)
             .catch((error) => {
                 console.error("Error during registration", error);
@@ -36,7 +38,7 @@ class RegisterService {
     checkUserExists(username: string, email:string):Promise<boolean> {
         const timestamp = new Date().getTime();
 
-        return axios.get('/user/check',{
+        return axios.get('/check/users/',{
             params: { username, email, timestamp }
         })
         .then((response) => {

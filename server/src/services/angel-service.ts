@@ -8,9 +8,9 @@ export type Angel = {
     description: string;
     image: string;
     release_year: number;
-    views: number;
-    user_id: number;
-    created_at: string;
+    views?: number;
+    user_id?: number;
+    created_at?: string;
     updated_at: string;
     series_id: number;
     user_name: string; 
@@ -43,10 +43,10 @@ class AngelService {
             })
         })
     }
-
-    createAngel(name: string, description: string, image: string, release_year: number, user_id: number, created_at: Date, series_id: number) {
+//name: string, description: string, image: string, release_year: number, user_id: number, created_at: Date, series_id: number
+    createAngel(angel: Angel) {
         return new Promise<number>((resolve, reject) => {
-            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?, created_at=?, series_id=?', [name, description, image, release_year, user_id, created_at, series_id], (error, results: ResultSetHeader) => {
+            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?, created_at=?, series_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.user_id, angel.created_at, angel.series_id], (error, results: ResultSetHeader) => {
               if (error) return reject(error);
               resolve(results.insertId);
             });

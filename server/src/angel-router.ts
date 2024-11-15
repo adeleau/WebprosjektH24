@@ -60,6 +60,7 @@ router.put('/angels/:angel_id', (request, response) => {
   if (angel) {
     angelService
       .updateAngel(angel)
+      .then(() => response.status(200).send('Angel updated'))
       .catch((error) => response.status(500).send(error));
   } else {
     response.status(400).send('Missing angel');
@@ -307,7 +308,7 @@ router.get('/angels/search/:search', async (request, response) => {
 
 //Registrering
 // get all users
-router.get('/user', (_request, response) =>{
+router.get('/users', (_request, response) =>{
   registerService
     .getAllUsers()
     .then((userList) =>  response.send(userList))
@@ -315,17 +316,19 @@ router.get('/user', (_request, response) =>{
 });
 
 // get a user
-router.get('/user/:user_id', (_request, response) =>{
+router.get('/users/:user_id', (_request, response) =>{
   const user_id = Number(_request.params.user_id);
   registerService
     .getUserById(user_id)
-    .then((user_id) =>  response.send(user_id))
+    .then((users) =>  response.send(users))
     .catch((error) => response.status(500).send(error));
 });
 
 
 router.post('/register', (request,response) =>{
   const {username, email, password_hash} = request.body;
+
+  console.log('Received registration request:', request.body);
 
   if ( username && email && password_hash) {
     registerService
@@ -342,18 +345,14 @@ router.post('/register', (request,response) =>{
 });
 
 //sjekker om brukeren allerede eksisterer
-router.get('/check/user', (request, response) => {
+router.get('/check/users/', (request, response) => {
   const {username, email} = request.query;
 
   if (username && email) {
     registerService
       .checkUserExists(String(username), String(email))
       .then((exists) => {
-        if (exists){
-          response.send('User exists');
-        }else{
-          response.send('User does not exist');
-        }
+          response.send(exists ? 'User exists' : 'User does not exist');
       })
       .catch((error) => {
         console.error('Error checking user existens:', error);
