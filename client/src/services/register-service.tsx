@@ -35,6 +35,7 @@ class RegisterService {
                 throw error.response?.data || error.message;
             });
     }
+    
     checkUserExists(username: string, email:string):Promise<boolean> {
         const timestamp = new Date().getTime();
 

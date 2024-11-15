@@ -27,18 +27,18 @@ registerrouter.get('/users/:user_id', (_request, response) =>{
       .catch((error) => response.status(500).send(error));
 });
   
-  
+
 registerrouter.post('/register', (request,response) =>{
   const {username, email, password_hash} = request.body;
   
   console.log('Received registration request:', request.body);
   
-  if ( username && email && password_hash) {
+  if (username && email && password_hash) {
       registerService
         .register(username, email, password_hash)
         .then((users) => { 
           console.log('User register successfully:', users)
-          response.status(201).send({ username /*-> her stod det user_id*/ : users });
+          response.status(201).send({ username : users });
         })
         .catch((error) => {
           console.error('Error during registration:', error);

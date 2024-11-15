@@ -407,7 +407,7 @@ export const AngelNew: React.FC<{}> = () => {
       })
       .catch((error) => {
         console.error("Error fetching series:", error);
-      });
+      }); 
   }, []);
   const [error, setError] = useState<string | null>(null);
 

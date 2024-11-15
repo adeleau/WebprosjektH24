@@ -33,7 +33,7 @@ import RegisterService from "../services/register-service";
         if(password_hash.length < 6 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?])/.test(password_hash)){
             errors.password_hash = 
             "Password must have at least 6 characters with uppercase, lowercase, numbers, and special characters.";
-            isValid = false; //fungerer ikke
+            isValid = false; 
         }
         if (password_hash !== confirmPassword){
             errors.confirmPassword = "Passwords do not match";
@@ -47,6 +47,8 @@ import RegisterService from "../services/register-service";
         const isFormValid = await ValidateForm();
         if (isFormValid) {
             try {
+                console.log("Attempting user registration with", {username, email, password_hash});
+
                 await RegisterService.registerUser(username, email, password_hash);
                 setSuccessMessage("Registration successful");
                 history.push("/login");

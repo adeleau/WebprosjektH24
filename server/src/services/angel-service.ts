@@ -48,6 +48,13 @@ class AngelService {
         return new Promise<number>((resolve, reject) => {
             pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?,'/*+ created_at=?*/+', series_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.user_id, /*angel.created_at,*/ angel.series_id], (error, results: ResultSetHeader) => {
               if (error) return reject(error);
+
+              //legger til i AngelHistory
+              const angel_id = results.insertId;
+              /*pool.query(
+                'INSERT INTO AngelHistory SET angel_id=?, name=?, description=?, image=?, release_year=?, views=?, user_id=?, series_id=?, created_at=?, updated_at=?, change_timestamp=?',
+                [angel_id, name, description, image, release_year, views, user_id, series_id, created_at, updated_at, change_timestamp]
+              );*/
               resolve(results.insertId);
             });
           });
