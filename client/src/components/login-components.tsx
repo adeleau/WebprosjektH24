@@ -1,29 +1,52 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
-const history = useHistory();
-
 import { Navbar, Leftbar, Footer } from "./other-components";
-import LoginService from "../services/login-service";
+import type { User } from "../services/user-service";
+import Cookies from "js-cookie";
+import userService from "../services/user-service";
+
 
 
 export const Login: React.FC = () => {
-    const[username, setUsername] = useState<string>("");
-    const[password, setPassword] = useState<string>("");
+    const history = useHistory();
+    const[username, setUsername] = useState<string>();
+    const [user, setUser] = useState<User | null>(null);
+    const[password, setPassword] = useState<string>();
     const[error, setError] = useState<string | null>(null);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleLogin = async () => {
 
         try {
-            const response = await LoginService.loginUser(username, password);
-            console.log("Login succes:", response);
-            history.push("/Home");  
+            if(username && password) {
+            const userLoggedin: boolean = await userService.login(username, password);
+            console.log(userLoggedin);
+            if (userLoggedin){
+                window.alert("Login success")
+                setUser(await userService.getByUsername(username));
+            }
+            else {
+                window.alert("Login failed")
+                setError("Invalid Username or password"); 
+            }
+        }
         } catch (error){
             console.error("Login failed:" , error);
-            setError("Invalid Username or password"); 
         }
     };
+
+    useEffect(() => {
+        if (user) {
+            Cookies.set("user", JSON.stringify(user), {domain: "localhost"})
+            console.log(user)
+            history.push("/");
+            return;
+        }
+        else {
+            Cookies.set("user",  "guest", {domain: "localhost"})
+            console.log(Cookies.get("user"))
+        }
+    }, [user])
 
     return (
         <div className="login">
@@ -39,7 +62,7 @@ export const Login: React.FC = () => {
                 <div className = "right">
                     <h1>Log in</h1>
                     <div>
-                        <input type="text" value={username} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/>
+                        <input type="text" value={username} placeholder="Username" onChange={(e) => {setUsername(e.target.value); console.log("Det skrives")}}/>
                         <input type="password" value={password} placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
                     <button type="button" onClick={handleLogin}>Login</button>
                     </div>

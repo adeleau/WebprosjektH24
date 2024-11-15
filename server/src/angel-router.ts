@@ -5,6 +5,7 @@ import angelCommentService, { AngelComment } from "./services/angelcomment-servi
 import postService, { Post, PostComment } from "./services/post-service" //legg til postlikes
 import registerService from './services/register-service';
 import { AxiosPromise } from 'axios';
+import userService from './services/user-service';
 
 const router = express.Router();
 
@@ -190,6 +191,101 @@ router.get('/series/name/:id',(req, res) =>{
     .then((name) => res.send(name))
     .catch((err) => res.status(500).send(err))
 })
+
+
+// USERS 
+
+// Get user by ID
+router.get('/users/:id', async (req, res) => {
+  const user_id = parseInt(req.params.id, 10);
+  try {
+      const user = await userService.getById(user_id);
+      if (user) {
+          res.json(user);
+      } else {
+          res.status(404).send('User not found');
+      }
+  } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+router.get('/users/uname/:username', async (req, res) => {
+  const username = req.params.username;
+  try {
+      const user = await userService.getByUsername(username);
+      if (user) {
+          res.json(user);
+      } else {
+          res.status(404).send('User not found');
+      }
+  } catch (error) {
+      res.status(500).send("Shits fucked");
+  }
+});
+
+// Get all users
+router.get('/users', async (req, res) => {
+  try {
+      const users = await userService.getAllUsers();
+      res.json(users);
+  } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+
+// Update user role (Admin/User)
+router.put('/users/:id/role', async (req, res) => {
+  const userId = parseInt(req.params.id, 10);
+  const { role } = req.body; // Expect { role: "admin" or "user" }
+
+  if (role !== 'admin' && role !== 'user') {
+      return res.status(400).send('Invalid role');
+  }
+
+  try {
+      await userService.updateUser(userId, { role });
+      res.send(`User role updated to ${role}`);
+  } catch (error) {
+      console.error('Error updating user role:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+
+// Update user details
+router.put('/users/:id', async (req, res) => {
+  const user_id = parseInt(req.params.id, 10);
+  const updatedData = req.body;
+
+  try {
+      await userService.updateUser(user_id, updatedData);
+      res.send('User updated successfully');
+  } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+//Check if user is logged in
+router.post("/users/login", async (req, res) => {
+    const userData = req.body;
+    userService.login(userData)
+      .then((userExists) => {if (userExists){
+        res.send(true);
+      }
+      else {
+        res.send(false);
+      }
+      })
+      .catch((err) => res.status(500).send(err))
+})
+
+
+
 
 
 // POSTS
