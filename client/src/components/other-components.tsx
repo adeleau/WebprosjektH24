@@ -5,9 +5,11 @@ import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
 import userService from "../services/user-service";
-
+import type { User } from "../services/user-service";
+import Cookies from "js-cookie";
 
 export const Home: React.FC<{}> = () => {
+  
     return (
         <>
         <Navbar></Navbar>
@@ -143,9 +145,24 @@ export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Angel[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User| Partial<User>>();
   const history = useHistory();
-  const [username, setUsername] = useState<string | null>(null);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log(Cookies.get("user"))
+    if (Cookies.get("user") !== "guest") {
+      const stringifiedUser = Cookies.get("user");
+      if(stringifiedUser !== undefined){
+
+        setUser(JSON.parse(stringifiedUser))
+      }
+      if (stringifiedUser === undefined) {
+        console.log(stringifiedUser); 
+        const partialUser: Partial<User> = {};
+        setUser(partialUser);
+      }
+    }
+  }, [])
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -179,24 +196,6 @@ export const Navbar = () => {
     }
   };
 
-  const userId = 1; // Hardcoded user_id for testing
-
-  useEffect(() => {
-    userService.getById(userId)
-      .then(user => {
-        if (user) {
-          setUsername(user.username);
-          if (typeof user.profile_picture === 'string') {
-            setProfilePicture(user.profile_picture);
-          } else if (user.profile_picture) {
-            setProfilePicture(URL.createObjectURL(user.profile_picture));
-          }
-        } else {
-          console.error('User is null');
-        }
-      })
-      .catch(err => console.error('Error fetching user:', err));
-  }, [userId]);
 
   return (
     <>
@@ -231,14 +230,14 @@ export const Navbar = () => {
         </div>
 
         <div className="navbar_profile">
-          {username ? (
+          {user ? (
             <div className="user">
               <img 
-                src={profilePicture || "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"} 
+                src={user.profile_picture || "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"} 
                 alt="User" 
               />
               <Link to="/userprofile" className="user-link">
-                <span>{username || 'Loading'}</span>
+                <span>{user.username || 'Loading'}</span>
               </Link>
             </div>
           ) : (

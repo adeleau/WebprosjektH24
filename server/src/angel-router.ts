@@ -210,6 +210,20 @@ router.get('/users/:id', async (req, res) => {
   }
 });
 
+router.get('/users/uname/:username', async (req, res) => {
+  const username = req.params.username;
+  try {
+      const user = await userService.getByUsername(username);
+      if (user) {
+          res.json(user);
+      } else {
+          res.status(404).send('User not found');
+      }
+  } catch (error) {
+      res.status(500).send("Shits fucked");
+  }
+});
+
 // Get all users
 router.get('/users', async (req, res) => {
   try {
@@ -254,6 +268,20 @@ router.put('/users/:id', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
+
+//Check if user is logged in
+router.post("/users/login", async (req, res) => {
+    const userData = req.body;
+    userService.login(userData)
+      .then((userExists) => {if (userExists){
+        res.send(true);
+      }
+      else {
+        res.send(false);
+      }
+      })
+      .catch((err) => res.status(500).send(err))
+})
 
 
 

@@ -2,19 +2,19 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import userService, { User } from '../services/user-service';
+import Cookies from 'js-cookie';
 
 
 export const UserProfile: React.FC = () => {
-    const userId = 1;
     const history = useHistory();
-    const [user, setUser] = useState<User | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<User>();
+    const [error, setError] = useState<string>();
 
-    useEffect(() => {
-        const userId = 1; // Assume logged-in user's ID is 1 for testing
-        userService.getById(userId)
-            .then(setUser)
-            .catch(err => setError('Error fetching user profile: ' + err.message));
+    useEffect(() => { 
+        const user = Cookies.get("user");
+        if (user) {
+            setUser(JSON.parse(user) as User)
+        }
     }, []);
 
     if (error) return <p>{error}</p>;
@@ -40,7 +40,6 @@ export const UserProfile: React.FC = () => {
 
             <div className="profile-actions">
                 <button onClick={handleEditClick}>Edit Profile</button>
-                <button onClick={handleLikesClick}>View Likes</button>
             </div>
         </div>
     );
@@ -49,7 +48,7 @@ export const UserProfile: React.FC = () => {
 
 
 export const UserSettings: React.FC = () => {
-    const userId = 1; // Hardcoded user_id for testing
+
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<User>>({});
@@ -57,35 +56,32 @@ export const UserSettings: React.FC = () => {
     const [isAdmin, setIsAdmin] = useState(false); // Check if logged-in user is admin
 
     useEffect(() => {
-        userService.getById(userId)
-            .then(setUser)
-            .catch(err => setError('Error fetching user: ' + err.message));
+        const tempUser = Cookies.get("user");
+        if (tempUser) {
+            setUser(JSON.parse(tempUser));
+            setIsAdmin(JSON.parse(tempUser).role === "admin");
+        }
 
-        // Check if the user is an admin
-        userService.getById(userId).then(user => {
-            if (user && user.role === 'admin') {
-                setIsAdmin(true);
-            }
-        });
-
-        // Fetch all users if the logged-in user is an admin
         if (isAdmin) {
             userService.getAllUsers()
                 .then(setUsers)
                 .catch(err => setError('Error fetching users: ' + err.message));
         }
-    }, [userId, isAdmin]);
+    }, [isAdmin]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        console.log(formData);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        userService.update(userId, formData)
-            .then(() => alert('User updated successfully'))
-            .catch(err => setError('Error updating user: ' + err.message));
+        if(user) {
+            userService.update(user.user_id, formData)
+                .then(() => alert('User updated successfully'))
+                .catch(err => setError('Error updating user: ' + err.message));
+        }
     };
 
     const handleRoleChange = (userId: number, newRole: string) => {

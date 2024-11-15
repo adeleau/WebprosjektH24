@@ -40,9 +40,20 @@ class UserService {
         });
     }
 
+    getByUsername(username: string) {
+        return new Promise<User | null>((resolve, reject) => {
+            pool.query('SELECT * FROM Users WHERE username=?', [username], (error, results: RowDataPacket[]) => {
+                if (error) return reject("Shit's fucked");
+                if (results.length === 0) return resolve(null);
+                resolve(results[0] as User);
+            });
+        });
+    }
+
     // Update user details
     updateUser(user_id: number, user: Partial<User>): Promise<void> {
         return new Promise((resolve, reject) => {
+
             pool.query('UPDATE Users SET ? WHERE user_id = ?', [user, user_id], (error) => {
                 if (error) {
                     return reject(error);
@@ -60,6 +71,20 @@ class UserService {
                 resolve();
             });
         });
+    }
+
+    login(userData: {username: string, password: string}): Promise<boolean> {
+        return new Promise<boolean> ((res, rej) => {
+            pool.query("SELECT * FROM Users WHERE username = ? AND password_hash = ?", [userData.username, userData.password], (err, result: RowDataPacket[]) => {
+                if (err) {
+                    return rej(err);
+                }
+                if (result.length === 1) {
+                    return res(true);
+                }
+                res(false);
+            })
+        })
     }
 }
 

@@ -7,6 +7,7 @@ import * as Angel from './components/angel-components'
 import * as Post from './components/post-components'
 import * as Register from './components/register-components';
 import * as User from './components/user-components';
+import * as Login from './components/login-components'
 
 
 let root = document.getElementById('root');
@@ -15,19 +16,14 @@ if (root)
     <HashRouter>
       <Route exact path="/" component={Comp.Home} />     
       <Route exact path="/register" component={Register.Register} />
+      <Route exact path="/login" component={Login.Login} />
 
       <Route exact path="/about" component={Comp.About} />
       <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
-      <Route exact path="/series/:series_id" component={Series.SeriesList} />
-<<<<<<< HEAD
-      <Route exact path="/series/:series_id/new" component={Post.AngelNew} />
-      <Route exact path="/userprofile/edit" component={User.UserSettings} />
-      <Route exact path="/userprofile" component={User.UserProfile} />
-
-
-=======
-      <Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
->>>>>>> ea9568b9e0e0af8d7541ea818614bab01a72e757
+<Route exact path="/series/:series_id" component={Series.SeriesList} />
+<Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
+<Route exact path="/userprofile/edit" component={User.UserSettings} />
+<Route exact path="/userprofile" component={User.UserProfile} />
 
       {/* <Route exact path="/angels" component={Angel.AngelList} /> */}
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />

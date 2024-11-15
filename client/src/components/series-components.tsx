@@ -10,7 +10,7 @@ import type { Angel } from "../services/angel-service";
 import { Navbar, Leftbar, Footer } from "./other-components";
 
 const history = createHashHistory();
-
+ 
 export const SeriesList: React.FC<{}> = () => {
     const { series_id } = useParams<{ series_id: string }>(); 
     const [angels, setAngels] = useState<Angel[]>([]); 
