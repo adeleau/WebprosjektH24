@@ -452,7 +452,7 @@ export const Login: React.FC<{}> = () => {
         </div>
         </>
     );
-    };
+  };
 
 
 export const Register = () => {

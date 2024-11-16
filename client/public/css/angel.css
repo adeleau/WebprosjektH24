@@ -333,4 +333,39 @@ textarea, input, select {
   margin-top: 5px;
   font-weight: 300;
 }
-/*ANGEL*/
+
+.history-button {
+  margin-top: 28px;
+  background-color: #f2a6b0;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+  .history-button:hover {
+    background-color: #f27484;
+    color: white;
+  }
+
+.button-container button {
+  margin-top: 28px;
+  border: 2px solid transparent;
+  background-color: #f2a6b0;
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+  .button-container button:hover {
+    background-color: #f27484;
+    color: white;
+  }
+
+

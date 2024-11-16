@@ -15,8 +15,8 @@ import type { AngelComment } from "../services/angelcomment-service";
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 
-// import UserService from "../services/user-service";
-// import type { User } from "../services/user-service";
+import UserService from "../services/user-service";
+//import type { User } from "../services/user-service";
 
 import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
@@ -123,14 +123,78 @@ export const AngelDetails: React.FC<{}> = () => {
   });
   const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null); // User object from cookies
-  const [isLiked, setIsLiked] = useState(false);
-  const [comment, setComment] = useState<string>('');
-  const [comments, setComments] = useState<AngelComment[]>([]);
+  const [user, setUser] = useState<User>();
+  const [likedAngels, setLikedAngels] = useState<string[]>([]);
+  const [wishlistedAngels, setWishlistedAngels] = useState<string[]>([]);
+  const [content, setContent] = useState('');
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
-  // Fetch angel details and like status
+  // Load likes and wishlist from cookies on component mount
+  useEffect(() => {
+    const likes = Cookies.get("likedAngels");
+    const wishlist = Cookies.get("wishlistedAngels");
+
+    if (likes) setLikedAngels(JSON.parse(likes));
+    if (wishlist) setWishlistedAngels(JSON.parse(wishlist));
+  }, []);
+
+  // Check if current angel is liked or wishlisted
+  const isLiked = likedAngels.includes(angel_id);
+  const isWishlisted = wishlistedAngels.includes(angel_id);
+
+  // Toggle like status
+  const handleLikeToggle = () => {
+    let updatedLikes;
+    if (isLiked) {
+      updatedLikes = likedAngels.filter(id => id !== angel_id);
+    } else {
+      updatedLikes = [...likedAngels, angel_id];
+    }
+    setLikedAngels(updatedLikes);
+    Cookies.set("likedAngels", JSON.stringify(updatedLikes));
+  };
+
+  // Toggle wishlist status
+  const handleWishlistToggle = () => {
+    let updatedWishlist;
+    if (isWishlisted) {
+      updatedWishlist = wishlistedAngels.filter(id => id !== angel_id);
+    } else {
+      updatedWishlist = [...wishlistedAngels, angel_id];
+    }
+    setWishlistedAngels(updatedWishlist);
+    Cookies.set("wishlistedAngels", JSON.stringify(updatedWishlist));
+  };
+
   useEffect(() => {
     if (angel_id) {
+      AngelService.getCreatedAt(Number(angel_id))
+        .then((createdAt) => setCreatedAt(createdAt))
+        .catch((err) => setError('Error fetching created_at: ' + err.message));
+    }
+  }, [angel_id]);
+
+  useEffect(() => {
+    if (angel_id) {
+      AngelService.getUpdatedAt(Number(angel_id))
+        .then((updatedAt) => setUpdatedAt(updatedAt))
+        .catch((err) => setError('Error fetching updated_at: ' + err.message));
+    }
+  }, [angel_id]);
+  
+  const currentUser = useParams<{ user_id: string}>();
+  const [comment, setComment] = useState<AngelComment>({
+    angelcomment_id: 0,
+    angel_id: 0,
+    user_id: 0,
+    content: '',
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+  
+    useEffect(() => {
+      // Fetch angel details by angel_id
       AngelService.get(Number(angel_id))
         .then((data) => {
           setAngel(data);
@@ -263,7 +327,9 @@ export const AngelDetails: React.FC<{}> = () => {
             <button className="history-button" onClick={() => history.push(`${angel_id}/history`)}>History</button>
           </div>
 
-          <div className="button-container">
+
+           {/* Like and Wishlist Buttons */}
+           <div className="button-container">
             <button
               className={`like-button ${isLiked ? 'active' : ''}`}
               onClick={handleLikeToggle}
@@ -321,20 +387,21 @@ export const AngelNew: React.FC<{}> = () => {
     user_id: 0,
     series_id: 0,
   });
+
   // DETTE FUNKER ETTER VI HAR LAGT TIL USER-SERVICE
-  // const { user_id: routeUserId } = useParams<{ user_id: string }>();
-  // const [userList, setUserList] = useState<Users[]>([]);
-  // const [selectedUserId, setSelectedUserId] = useState<number>(Number(routeUserId));
-  // useEffect(() => {
+  const { user_id: routeUserId } = useParams<{ user_id: string }>();
+  const [userList, setUserList] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number>(Number(routeUserId));
+    useEffect(() => {
   //   // Hent alle serier fra databasen ved å bruke SeriesService
-  //   UserService.getAll()
-  //     .then((data) => {
-  //       setUserList(data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching users:", error);
-  //     });
-  // }, []);
+     UserService.getAllUsers()
+       .then((data) => {
+         setUserList(data);
+       })
+       .catch((error) => {
+         console.error("Error fetching users:", error);
+       });
+   }, []);
 
   const { series_id: routeSeriesId } = useParams<{ series_id: string }>();
   const [seriesList, setSeriesList] = useState<Series[]>([]);
@@ -368,9 +435,7 @@ export const AngelNew: React.FC<{}> = () => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
     if (name === 'user_id') {
-      setUserId(Number(value));
-      // BYTT TIL DENNE ETTER Å HA LAGT TIL USER-SERVICE
-      // setSelectedUserId(Number(value));
+      setSelectedUserId(Number(value));
     } else if (name === 'series_id') {
       setSelectedSeriesId(Number(value));
     }
@@ -384,7 +449,7 @@ export const AngelNew: React.FC<{}> = () => {
       image: image,
       release_year: release_year,
       views: 0, 
-      user_id: user_id, //endre til selectedUserId etterpå
+      user_id: selectedUserId, 
       series_id: selectedSeriesId,
     };
     console.log('Attempting to create angel with:'+ newAngel, ); //legger inn dette for å finne feilen
@@ -422,13 +487,10 @@ export const AngelNew: React.FC<{}> = () => {
           <select
             id="user_id"
             name="user_id"
-            value={user_id/*selectedUserId - bytt til denne etterpå*/}
+            value={selectedUserId}
             onChange={handleSelectChange}
             className="form-control"
           >
-            <option value="">Select a user</option>
-            <option value="2">Jub</option>
-            {/* BYTT TIL DETTE ETTERPÅ
             {userList.map((users) => {
               return (
                 <option
@@ -438,7 +500,7 @@ export const AngelNew: React.FC<{}> = () => {
                   {users.username}
                 </option>
               )
-            })} */}
+            })} 
           </select>
         </div>
 
@@ -455,7 +517,8 @@ export const AngelNew: React.FC<{}> = () => {
               return (
                 <option
                   key={series.series_id}
-                  value={series.series_id}                >
+                  value={series.series_id}
+                >
                   {series.name}
                 </option>
               )

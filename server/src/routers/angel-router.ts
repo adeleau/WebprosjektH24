@@ -68,6 +68,22 @@ angelrouter.put('/angels/:angel_id', (request, response) => {
   }
 });
 
+// Hent historikken til en spesifikk engel
+angelrouter.get('/angels/:angel_id/history', (request, response) => {
+  const angel_id = Number(request.params.angel_id);
+
+  if (isNaN(angel_id)) {
+    response.status(400).send('Invalid angel ID');
+    return;
+  }
+
+  // Bruk angelService for å hente historikk
+  angelService
+    .getAngelHistory(angel_id)
+    .then((history) => response.send(history))
+    .catch((error) => response.status(500).send(error));
+});
+
 // like spesific angel
 // router.post('/angels/:angel_id/likes', (request, response) => {
 //   const angel_id = Number(request.params.angel_id);
