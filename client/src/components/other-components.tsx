@@ -150,7 +150,8 @@ export const Navbar = () => {
 
   const handleLogout = () => {
     setUser(undefined); 
-    Cookies.set("user", "0", { domain: "localhost" }); // Set the user cookie to "0"
+    Cookies.set("user", "0", { domain: "localhost" }); 
+    window.location.reload();
   };
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -491,7 +492,7 @@ export const Footer =() => {
     return (
     <>
       <footer className="footer">
-        <p>&copy; 2024 Sonny Angel Wiki. All rights reserved.</p>
+        <p>&copy; 2024 Sonny Angel Wiki.</p>
       </footer>
     </>
     );

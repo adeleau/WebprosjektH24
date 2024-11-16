@@ -1,11 +1,6 @@
 import express from 'express';
-import seriesService, { Series } from "../services/series-service"
-import angelService, { Angel } from "../services/angel-service" //legg til angellikes
-import angelCommentService, { AngelComment } from "../services/angelcomment-service"
-import postService, { Post, PostComment } from "../services/post-service" //legg til postlikes
-import registerService from '../services/register-service';
-import { AxiosPromise } from 'axios';
 import userService from '../services/user-service';
+import LikesService from '../services/likes-service';
 
 const userrouter = express.Router();
 
@@ -99,6 +94,53 @@ userrouter.post("/users/login", async (req, res) => {
         })
         .catch((err) => res.status(500).send(err))
 })
+
+
+
+
+// Get likes of a user by user ID
+userrouter.get('/:userId/likes', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    try {
+        const likes = await LikesService.getUserLikes(userId);
+        res.json(likes);
+    } catch (error) {
+        console.error('Error fetching user likes:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Add a like for a user
+userrouter.post('/:userId/likes', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    const { angelId } = req.body;  
+    try {
+        await LikesService.addLike(userId, angelId);  
+        res.status(201).send('Like added');
+    } catch (error) {
+        console.error('Error adding like:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Delete a like for a user
+userrouter.delete('/:userId/likes', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    const { seriesId } = req.body;
+    try {
+        await LikesService.removeLike(userId, seriesId);
+        res.status(200).send('Like deleted');
+    } catch (error) {
+        console.error('Error deleting like:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+
+
 
 
 export default userrouter;

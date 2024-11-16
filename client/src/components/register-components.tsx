@@ -1,9 +1,6 @@
-import { Link, useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import React from "react";
-import {useState, useEffect, useRef} from "react";
-import { createHashHistory } from 'history';
-
-import { Navbar, Leftbar, Footer } from "./other-components";
+import {useState } from "react";
 import RegisterService from "../services/register-service";
 
  export const Register: React.FC = () => {

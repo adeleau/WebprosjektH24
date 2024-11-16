@@ -1,18 +1,16 @@
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import React from "react";
-import {useState, useEffect, useRef} from "react";
-import { Navbar, Leftbar, Footer } from "./other-components";
+import {useState, useEffect } from "react";
 import type { User } from "../services/user-service";
 import Cookies from "js-cookie";
 import userService from "../services/user-service";
 
 
-
 export const Login: React.FC = () => {
     const history = useHistory();
-    const [username, setUsername] = useState<string>();
+    const [username, setUsername] = useState<string>("");
     const [user, setUser] = useState<User | null>(null);
-    const [password, setPassword] = useState<string>();
+    const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
 
     const handleLogin = async () => {
@@ -70,14 +68,14 @@ export const Login: React.FC = () => {
                             value={username}
                             placeholder="Username"
                             onChange={(e) => { setUsername(e.target.value); console.log("Det skrives") }}
-                            onKeyDown={handleKeyDown} // Trigger login on Enter
+                            onKeyDown={handleKeyDown} 
                         />
                         <input
                             type="password"
                             value={password}
                             placeholder="Password"
                             onChange={(e) => setPassword(e.target.value)}
-                            onKeyDown={handleKeyDown} // Trigger login on Enter
+                            onKeyDown={handleKeyDown} 
                         />
                         <button type="button" onClick={handleLogin}>Login</button>
                     </div>
@@ -86,42 +84,3 @@ export const Login: React.FC = () => {
         </div>
     );
 }
-
-
-
-
-
-
-
-/*
-export const Login: React.FC<{}> = () => {
-    return (
-        <>
-    <Navbar></Navbar>
-    <Leftbar></Leftbar
-        <div className="login">
-            <div className="card">
-                <div className="left">
-                    <h1>Sign In</h1>
-                    <p>Sign in to your account to continue</p>
-                    <span>Don't have an account?</span>
-                    <Link to="/register">
-                    <button>Create account</button>
-                    </Link>
-                </div>
-                <div className="right">
-                    <h1>Log in</h1>
-                    <form>
-                        <input type="text" placeholder="Username" />
-                        <input type="password" placeholder="Password" />
-                        <button>Log in</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        </>
-    );
-    };*/
-
-   
-    

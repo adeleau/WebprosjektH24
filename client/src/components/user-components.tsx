@@ -2,18 +2,38 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import userService, { User } from '../services/user-service';
+import LikesService from '../services/likes-service';
+import angelService, { Angel } from '../services/angel-service';
 import Cookies from 'js-cookie';
 
 
 export const UserProfile: React.FC = () => {
     const history = useHistory();
     const [user, setUser] = useState<User>();
-    const [error, setError] = useState<string>();
+    const [likedAngels, setLikedAngels] = useState<Angel[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => { 
+    useEffect(() => {
         const user = Cookies.get("user");
         if (user) {
-            setUser(JSON.parse(user) as User)
+            setUser(JSON.parse(user) as User);
+
+            const parsedUser = JSON.parse(user) as User;
+            LikesService.getUserLikes(Number(parsedUser.user_id))
+                .then(async (likes) => {
+                    const angels = await Promise.all(
+                        likes.map(async (like) => {
+                            try {
+                                return await angelService.get(like.angel_id);
+                            } catch (error) {
+                                console.error('Error fetching angel details:', error);
+                                return null;
+                            }
+                        })
+                    );
+                    setLikedAngels(angels.filter((angel) => angel !== null) as Angel[]);
+                })
+                .catch((err) => setError('Error fetching liked angels: ' + err.message));
         }
     }, []);
 
@@ -21,53 +41,63 @@ export const UserProfile: React.FC = () => {
     if (!user) return <p>Loading...</p>;
 
     const handleEditClick = () => {
-        history.push('/userprofile/edit'); 
+        history.push('/userprofile/edit');
     };
 
     const handleLogout = () => {
-        setUser(undefined); 
+        setUser(undefined);
         Cookies.set("user", "0", { domain: "localhost" });
-      };
+    };
 
+    return (
+        <div className="series-page">
+            {/* User Details Section */}
+            <div className="profile-header">
+                <h2>{user.username}</h2>
+                <img
+                    src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"}
+                    alt="User Profile"
+                    className="user-profile-image"
+                />
+            </div>
 
-      return (
-        <div className="profile-container">
+            <div className="profile-divider"></div>
+
+            <div className="profile-info">
+                <p><strong>Bio:</strong> {user.bio || "No bio provided"}</p>
+                <p><strong>Email:</strong> {user.email}</p>
+            </div>
+
             <div className="action-buttons">
-                <button onClick={handleEditClick}>Edit Profile</button>
-                <button onClick={() => history.push("/")}>Go Back to Homepage</button>
+                <button onClick={handleEditClick} className="btn-create-angel">Edit Profile</button>
+                <button onClick={() => { handleLogout(); history.push("/"); }} className="btn-create-angel">Logout</button>
             </div>
-    
-            <div className="user-profile">
-                <div className="profile-header">
-                    <h2>{user.username}</h2>
+
+            {/* Liked Angels Section */}
+            <h1>My Liked Angels</h1>
+            <div className="angel-cards">
+    {likedAngels.length > 0 ? (
+        likedAngels.map((angel) => (
+            <div key={angel.angel_id} className="angel-card">
+                <a href={`/#/angels/${angel.angel_id}`} className="angel-card-link">
                     <img
-                        src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"}
-                        alt="User Profile"
-                        className="user-profile-image"
+                        src={angel.image || "https://placehold.co/150x150"}
+                        alt={angel.name}
+                        className="angel-card-image"
                     />
-                </div>
-    
-                <div className="profile-divider"></div>
-    
-                <div className="profile-info">
-                    <p><strong>Bio:</strong> {user.bio || "No bio provided"}</p>
-                    <p><strong>Email:</strong> {user.email}</p>
-                </div>
-    
-                <div className="profile-sections">
-                    <button className="profile-section-button">My Likes</button>
-                    <button className="profile-section-button">My Wishlist</button>
-                    <button className="profile-section-button">My Contributions</button>
-                </div>
-    
-                <div className="logout-button">
-                    <button onClick={() => { handleLogout(); history.push("/"); }}>Logout</button>
-                </div>
+                    <h3 className="angel-card-name">{angel.name}</h3>
+                </a>
             </div>
+        ))
+    ) : (
+        <p>You haven't liked any angels yet.</p>
+    )}
+</div>
+
         </div>
     );
-    
-};    
+};
+
 
 
 export const UserSettings: React.FC = () => {
