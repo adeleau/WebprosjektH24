@@ -13,7 +13,16 @@ export type Angel = {
     // created_at: string;
     // updated_at?: string;
     series_id: number;
-    user_name: string; 
+    user_name: string;
+
+};
+
+export type AngelHistory = {
+  angel_id?: number;
+  description: string;
+  user_id: string;
+  // updated_at?: string;
+
 };
 
 //AngelLike
@@ -51,35 +60,75 @@ class AngelService {
 
               //legger til i AngelHistory
               const angel_id = results.insertId;
-              /*pool.query(
-                'INSERT INTO AngelHistory SET angel_id=?, name=?, description=?, image=?, release_year=?, views=?, user_id=?, series_id=?, created_at=?, updated_at=?, change_timestamp=?',
-                [angel_id, name, description, image, release_year, views, user_id, series_id, created_at, updated_at, change_timestamp]
-              );*/
-              resolve(results.insertId);
-            });
-          });
-    }
+              pool.query(
+                'INSERT INTO AngelHistory SET angel_id=?, description=?, user_id=?, '/*+updated_at=?*/+'',
+                [angel_id, angel.description, angel.user_id,  /*angel.updated_at*/],
+                (error) => {
+                  if(error)return reject(error);
+                  resolve(results.insertId);
+                }
+              );
+            }
+          );
+      });
+  }
 
     updateAngel(angel: Angel) {
         return new Promise<void>((resolve, reject) => {
-          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.series_id,angel.views, angel.angel_id], (error, results: ResultSetHeader) => {
+          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.angel_id], (error, results: ResultSetHeader) => {
             if (error) return reject(error);
-            resolve();
-          });
-        });
+
+            // setter inn gamle rad inn i AngelHistory
+            pool.query('INSERT INTO AngelHistory (angel_id,description, '+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+''+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+', NOW() FROM Angels WHERE angel_id=? ',
+            [angel.angel_id],
+            (error) =>{
+              if (error) return reject(error);
+              resolve();
+              }
+            ); 
+          }
+        );
+      });
     }
 
     deleteAngel(angel_id: number) {
         return new Promise<void>((resolve, reject) => {
-          pool.query('DELETE FROM Angels WHERE angel_id = ?', [angel_id], (error, results: ResultSetHeader) => {
-            if (error) return reject(error);
-            if (results.affectedRows == 0) return reject(new Error('No row deleted'));
-            resolve();
-          });
-        });
+
+          //kopiere slettet rad til AngelHistory
+          pool.query(
+            'INSERT INTO AngelHistory (angel_id, description, user_id, '/*+ created_at=?*/+','+ /*updated_at=?*/+')'+
+            'SELECT angel_id, description, user_id, '/*+ created_at=?*/+','+ /*updated_at=?*/+'), NOW()' +
+            'FROM Angels WHERE angel_id = ?',
+            [angel_id],
+            (error) => {
+              if (error) return reject(error);
+              //slette angels fra tabell
+              pool.query('DELETE FROM Angels WHERE angel_id = ?', [angel_id], (error, results: ResultSetHeader) => {
+                if (error) return reject(error);
+                if (results.affectedRows == 0) return reject(new Error('No row deleted'));
+                resolve();
+              }
+            )
+          }
+        );
+      });
     }
 
-    //søkeflet
+    //legger til engel historikk
+    getAngelHistory(angel_id: number) {
+      return new Promise<AngelHistory[]>((resolve, reject) => {
+        pool.query(
+          'SELECT * FROM AngelHistory WHERE angel_id = ? ORDER BY updated_at DESC',
+          [angel_id],
+          (error, results) => {
+            if (error) return reject(error);
+            resolve(results as AngelHistory[]); // Returner historikken som en liste
+          }
+        );
+      });
+    }
+
+    //søkefelt
     search(query: string): Promise<Angel[]> {
         return new Promise<Angel[]>((resolve, reject) => {
           pool.query(
@@ -153,7 +202,7 @@ class AngelService {
             return reject(error);
             }
             if (results.length === 0 || !results[0].created_at) {
-              return reject(new Error('Angel not found!!!!'))
+              return reject(new Error('Angel not found'))
             }
             resolve(results[0].created_at as string);
         })
