@@ -18,7 +18,6 @@ export type AngelHistory = {
     description: string;
     user_id: string;
     // updated_at?: string;
-  
   };
 
 // AngelService class to interact with the backend API

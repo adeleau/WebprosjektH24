@@ -1,7 +1,7 @@
 {
-  "name": "todo-server",
+  "name": "angel-server",
   "version": "1.0.0",
-  "description": "A simple Todo REST server",
+  "description": "A Sonny Angel wiki server",
   "scripts": {
     "start": "nodemon src/server.ts --exec \"npx babel-node -x .ts --require ./config\"",
     "test": "jest --setupFiles ./test/config.ts"

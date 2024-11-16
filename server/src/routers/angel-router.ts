@@ -27,22 +27,45 @@ angelrouter.get('/angels/:angel_id', (request, response) => {
     .catch((error) => response.status(500).send(error));
 });
 
-// post new angel
+// Post a new angel and log history
 angelrouter.post('/angels', (request, response) => {
   const data = request.body;
-  if (data && data.name && data.name.length != 0)
+  if (data && data.name && data.name.length != 0) {
     angelService
       .createAngel(data)
-      .then((angel_id) => response.send({ angel_id: angel_id }))
+      .then((angel_id) => {
+        // Log history for new angel creation
+        angelService
+          .logHistory(angel_id, `Angel ${data.name} created.`, data.user_id)
+          .then(() => {
+            response.send({ angel_id: angel_id })
+          })
+          .catch((error) => response.status(500).send(error))
+      })
       .catch((error) => response.status(500).send(error));
-  else response.status(400).send('Missing angel name');
+    } else {
+      response.status(400).send('Missing angel name');
+    }
 });
 
 // delete spesific angel
 angelrouter.delete('/angels/:angel_id', (request, response) => {
+  const angel_id = Number(request.params.angel_id);
   angelService
-    .deleteAngel(Number(request.params.angel_id))
-    .then((_result) => response.send())
+    .get(angel_id)
+    .then((angel) => {
+      // Logg historikk for sletting
+      angelService
+        .logHistory(angel_id, `Angel ${angel.name} deleted`, angel.user_id)
+        .then(() => {
+          // Slett engelen
+          angelService
+            .deleteAngel(angel_id)
+            .then((/*_result*/) => response.send())
+            .catch((error) => response.status(500).send(error));
+        })
+        .catch((error) => response.status(500).send(error));
+    })
     .catch((error) => response.status(500).send(error));
 });
 
@@ -68,16 +91,12 @@ angelrouter.put('/angels/:angel_id', (request, response) => {
   }
 });
 
-// Hent historikken til en spesifikk engel
+// Get the history of a specific angel
 angelrouter.get('/angels/:angel_id/history', (request, response) => {
   const angel_id = Number(request.params.angel_id);
-
   if (isNaN(angel_id)) {
-    response.status(400).send('Invalid angel ID');
-    return;
+    return response.status(400).send('Invalid angel ID');;
   }
-
-  // Bruk angelService for å hente historikk
   angelService
     .getAngelHistory(angel_id)
     .then((history) => response.send(history))
