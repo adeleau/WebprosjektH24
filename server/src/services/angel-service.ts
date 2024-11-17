@@ -52,81 +52,80 @@ class AngelService {
             })
         })
     }
-//name: string, description: string, image: string, release_year: number, user_id: number, created_at: Date, series_id: number
-    createAngel(angel: Angel) {
-        return new Promise<number>((resolve, reject) => {
-            pool.query('INSERT INTO Angels SET name=?, description=?, image=?, release_year=?, user_id=?,'/*+ created_at=?*/+', series_id=?', [angel.name, angel.description, angel.image, angel.release_year, angel.user_id, /*angel.created_at,*/ angel.series_id], (error, results: ResultSetHeader) => {
-              if (error) return reject(error);
 
-              //legger til i AngelHistory
-              const angel_id = results.insertId;
-              pool.query(
-                'INSERT INTO AngelHistory (angel_id, description, user_id' +/*, +updated_at=?*/+') VALUES (?, ?, ?'+/*, ?*/+')',
-                [angel_id, angel.description, angel.user_id,  /*angel.updated_at*/],
-                (error) => {
-                  if(error)return reject(error);
-                  resolve(results.insertId);
-                }
-              );
-            }
-          );
-      });
-  }
-
-    updateAngel(angel: Angel) {
-        return new Promise<void>((resolve, reject) => {
-          // Log current values to history
-          pool.query(
-            'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, ?)', //HVA MANGLER?? + den error, resulst set header?
-            [angel.angel_id],
-            (error) => {
-              if (error) return reject(error);
-              // Then update angel
-              pool.query(
-                'UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', //HVA MANGELR
-                [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.series_id, angel.views, angel.angel_id], //HVA MANGLER
-                (error) => {
-                  if (error) return reject(error);
-                  resolve();
-                }
-              )
-            }
-          ) 
-
-
-        //   pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.angel_id], (error, results: ResultSetHeader) => {
-        //     if (error) return reject(error);
-
-        //     // setter inn gamle rad inn i AngelHistory
-        //     pool.query('INSERT INTO AngelHistory (angel_id,description, '+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+''+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+', NOW() FROM Angels WHERE angel_id=? ',
-        //     [angel.angel_id],
-        //     (error) =>{
-        //       if (error) return reject(error);
-        //       resolve();
-        //       }
-        //     ); 
-        //   }
-        // );
+    createAngel(angel: Omit<Angel, 'angel_id' | 'created_at' | 'updated_at'>) {
+      return new Promise<Angel>((resolve, reject) => {
+        const { name, description, image, release_year, views, user_id, series_id } = angel;
+  
+        pool.query(
+          'INSERT INTO Angels (name, description, image, release_year, views, user_id, series_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [name, description, image, release_year, views, user_id, series_id],
+          (error, results: ResultSetHeader) => {
+            if (error) return reject(error);
+  
+            // Retrieve the created record with `created_at` and `updated_at`
+            pool.query(
+              'SELECT * FROM Angels WHERE angel_id = ?',
+              [results.insertId],
+              (selectError, rows: RowDataPacket[]) => {
+                if (selectError) return reject(selectError);
+                resolve(rows[0] as Angel);
+              }
+            );
+          }
+        );
       });
     }
+  
 
-    deleteAngel(angel_id: number) {
-        return new Promise<void>((resolve, reject) => {
-          // Log current values to history
-          pool.query(
-            'INSERT INTO AngelHistory (angel_id, description, user_id'+ /*, updated_at=?*/+')'+
-            'SELECT angel_id, description, user_id'/*+, updated_at=?*/+'), NOW()' +
-            'FROM Angels WHERE angel_id = ?',
-            [angel_id],
-            (error) => {
-              if (error) return reject(error);
-              // The delete angel from table
-              pool.query('DELETE FROM Angels WHERE angel_id = ?', [angel_id], (error, results: ResultSetHeader) => {
-                if (error) return reject(error);
-                if (results.affectedRows == 0) return reject(new Error('No row deleted'));
+    updateAngel(angel: Angel) {
+      return new Promise<void>((resolve, reject) => {
+        // Log the current state to AngelHistory
+        pool.query(
+          'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
+          [angel.angel_id, angel.description, angel.user_id],
+          (error) => {
+            if (error) return reject(error);
+    
+            // Update the angel
+            pool.query(
+              'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+              [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+              (updateError) => {
+                if (updateError) return reject(updateError);
                 resolve();
               }
-            )
+            );
+          }
+        );
+      });
+    }    
+
+  
+    deleteAngel(angel_id: number): Promise<void> {
+      return new Promise((resolve, reject) => {
+        console.log('Attempting to delete angel with ID:', angel_id);
+  
+        // Validate angel_id is a number
+        if (!Number.isInteger(angel_id) || angel_id <= 0) {
+          return reject(new Error('Invalid angel ID provided.'));
+        }
+  
+        // SQL Query to delete the angel
+        pool.query(
+          'DELETE FROM Angels WHERE angel_id = ?',
+          [angel_id],
+          (error, results) => {
+            if (error) {
+              console.error('Database error during delete:', error);
+              return reject(new Error(`Database error: ${error.message}`));
+            }
+            if ((results as any).affectedRows === 0) {
+              console.warn('No angel found with the specified ID:', angel_id);
+              return reject(new Error('No angel found with the specified ID.'));
+            }
+            console.log('Angel successfully deleted:', angel_id);
+            resolve();
           }
         );
       });

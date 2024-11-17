@@ -148,11 +148,7 @@ export const Navbar = () => {
     }
   }, [])
 
-  const handleLogout = () => {
-    setUser(undefined); 
-    Cookies.set("user", "0", { domain: "localhost" }); 
-    window.location.reload();
-  };
+ 
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -222,15 +218,15 @@ export const Navbar = () => {
         <div className="navbar_profile">
           {user ? (
             <div className="user">
-              <img 
-                src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"} 
-                alt="User" 
-              />
-              <Link to="/userprofile" className="user-link">
-                <span>{user.username || 'Loading'}</span>
-              </Link>
-              <button onClick={handleLogout}>Logout</button>
-            </div>
+            <img 
+              src={user.profile_picture || "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"} 
+              alt="User" 
+              className="profile-image"
+            />
+            <Link to="/userprofile" className="user-link">
+              <span>{user.username || 'Loading'}</span>
+            </Link>
+          </div>
           ) : (
             <Link to="/login" className="login-link">
               Log in

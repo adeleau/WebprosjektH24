@@ -66,12 +66,18 @@ export const UserProfile: React.FC = () => {
         history.push('/userprofile/edit');
     };
 
+
     const handleLogout = () => {
         setUser(undefined);
         Cookies.set("user", "0", { domain: "localhost" });
     };
 
     return (
+
+<div style={{ position: "relative" }}>
+    <button className="home-button" onClick={() => history.push('/')}>
+        Go to home
+    </button>    
         <div className="series-page">
             {/* User Details Section */}
             <div className="profile-header">
@@ -86,14 +92,17 @@ export const UserProfile: React.FC = () => {
             <div className="profile-divider"></div>
 
             <div className="profile-info">
-                <p><strong>Bio:</strong> {user.bio || "No bio provided"}</p>
-                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>My info:</strong></p>
+                <p> {user.bio || "No bio provided"}</p>
+                <p> {user.email}</p>
             </div>
 
             <div className="action-buttons">
                 <button onClick={handleEditClick} className="btn-create-angel">Edit Profile</button>
                 <button onClick={() => { handleLogout(); history.push("/"); }} className="btn-create-angel">Logout</button>
             </div>
+
+           
 
             {/* Tabs for My Collection and My Wishlist */}
             <div className="profile-tabs">
@@ -154,6 +163,7 @@ export const UserProfile: React.FC = () => {
                     )}
                 </div>
             )}
+        </div>
         </div>
     );
 };

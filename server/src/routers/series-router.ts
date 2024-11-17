@@ -18,14 +18,7 @@ seriesrouter.get("/series", (_request, response) => {
     .catch((error) => {response.status(500).send(error)})
 });
  
- // get spesific series
- //seriesrouter.get('/series/:name', (request, response) => {
- //  const name = String(request.params.name);
- //  seriesService
- //    .get(name)
- //    .then((series) => (series ? response.send(series) : response.status(404).send('Series not found')))
- //    .catch((error) => response.status(500).send(error));
- // });
+
  
 //get name of series by id
 seriesrouter.get('/series/name/:id',(req, res) =>{
@@ -33,5 +26,18 @@ seriesrouter.get('/series/name/:id',(req, res) =>{
      .then((name) => res.send(name))
      .catch((err) => res.status(500).send(err))
 })
+
+// Create a new series (new route)
+seriesrouter.post('/series', (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).send("Series name is required");
+  }
+
+  seriesService
+    .createSeries({ name })
+    .then((newSeries) => res.status(201).send(newSeries))
+    .catch((error) => res.status(500).send(error));
+});
 
 export default seriesrouter;
