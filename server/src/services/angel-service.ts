@@ -61,7 +61,7 @@ class AngelService {
               //legger til i AngelHistory
               const angel_id = results.insertId;
               pool.query(
-                'INSERT INTO AngelHistory SET angel_id=?, description=?, user_id=?, '/*+updated_at=?*/+'',
+                'INSERT INTO AngelHistory (angel_id, description, user_id' +/*, +updated_at=?*/+') VALUES (?, ?, ?'+/*, ?*/+')',
                 [angel_id, angel.description, angel.user_id,  /*angel.updated_at*/],
                 (error) => {
                   if(error)return reject(error);
@@ -75,34 +75,52 @@ class AngelService {
 
     updateAngel(angel: Angel) {
         return new Promise<void>((resolve, reject) => {
-          pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.angel_id], (error, results: ResultSetHeader) => {
-            if (error) return reject(error);
-
-            // setter inn gamle rad inn i AngelHistory
-            pool.query('INSERT INTO AngelHistory (angel_id,description, '+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+''+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+', NOW() FROM Angels WHERE angel_id=? ',
+          // Log current values to history
+          pool.query(
+            'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, ?)', //HVA MANGLER?? + den error, resulst set header?
             [angel.angel_id],
-            (error) =>{
+            (error) => {
               if (error) return reject(error);
-              resolve();
-              }
-            ); 
-          }
-        );
+              // Then update angel
+              pool.query(
+                'UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', //HVA MANGELR
+                [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.series_id, angel.views, angel.angel_id], //HVA MANGLER
+                (error) => {
+                  if (error) return reject(error);
+                  resolve();
+                }
+              )
+            }
+          ) 
+
+
+        //   pool.query('UPDATE Angels SET name=?, description=?, image=?, release_year=?,'+ /*updated_at=?*/+', series_id=?, views=? WHERE angel_id=?', [angel.name, angel.description, angel.image, angel.release_year, /*angel.updated_at,*/ angel.angel_id], (error, results: ResultSetHeader) => {
+        //     if (error) return reject(error);
+
+        //     // setter inn gamle rad inn i AngelHistory
+        //     pool.query('INSERT INTO AngelHistory (angel_id,description, '+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+''+ /*updated_at=?*/+') SELECT angel_id, description, '/*+ created_at=?*/+','+ /*updated_at=?*/+', NOW() FROM Angels WHERE angel_id=? ',
+        //     [angel.angel_id],
+        //     (error) =>{
+        //       if (error) return reject(error);
+        //       resolve();
+        //       }
+        //     ); 
+        //   }
+        // );
       });
     }
 
     deleteAngel(angel_id: number) {
         return new Promise<void>((resolve, reject) => {
-
-          //kopiere slettet rad til AngelHistory
+          // Log current values to history
           pool.query(
-            'INSERT INTO AngelHistory (angel_id, description, user_id, '/*+ created_at=?*/+','+ /*updated_at=?*/+')'+
-            'SELECT angel_id, description, user_id, '/*+ created_at=?*/+','+ /*updated_at=?*/+'), NOW()' +
+            'INSERT INTO AngelHistory (angel_id, description, user_id'+ /*, updated_at=?*/+')'+
+            'SELECT angel_id, description, user_id'/*+, updated_at=?*/+'), NOW()' +
             'FROM Angels WHERE angel_id = ?',
             [angel_id],
             (error) => {
               if (error) return reject(error);
-              //slette angels fra tabell
+              // The delete angel from table
               pool.query('DELETE FROM Angels WHERE angel_id = ?', [angel_id], (error, results: ResultSetHeader) => {
                 if (error) return reject(error);
                 if (results.affectedRows == 0) return reject(new Error('No row deleted'));
@@ -126,6 +144,20 @@ class AngelService {
           }
         );
       });
+    }
+
+    // Log history
+    logHistory(angel_id: number, description: string, user_id: number): Promise<void> {
+      return new Promise<void>((resolve, reject) => {
+        pool.query(
+          'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, ?)', //hva med resten? skal ikke alt kunne oppdateres, vet ikke om denne funker da
+          [angel_id, description, user_id],
+          (error) => {
+            if (error) return reject(error);
+            resolve();
+          }
+        )
+      })
     }
 
     //søkefelt

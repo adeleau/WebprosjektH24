@@ -238,7 +238,7 @@ export const AngelDetails: React.FC<{}> = () => {
   // Fetch comments
   const fetchComments = async () => {
     try {
-      const fetchedComments = await AngelService.getComments(Number(angel_id));
+      const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
       setComments(fetchedComments);
     } catch (err) {
       setError('Error fetching comments: ' + err.message);
@@ -249,7 +249,7 @@ export const AngelDetails: React.FC<{}> = () => {
   const handlePostComment = async () => {
     if (comment.trim() && user) {
       try {
-        await AngelService.addComment(Number(angel_id), user.user_id, comment);
+        await AngelCommentService.addAngelComment(Number(angel_id), user.user_id, comment);
         setComment('');
         fetchComments(); // Refresh comments after posting
       } catch (err) {
