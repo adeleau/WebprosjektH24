@@ -492,7 +492,7 @@ export const Footer =() => {
     return (
     <>
       <footer className="footer">
-        <p>&copy; 2024 Sonny Angel Wiki.</p>
+        <p>2024 Sonny Angel Wiki</p>
       </footer>
     </>
     );
