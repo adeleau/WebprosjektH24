@@ -225,6 +225,10 @@ export const AngelDetails: React.FC<{}> = () => {
     fetchComments();
   }, [angel_id]);
 
+  // const handleEditAngel = () => {
+
+  // }
+
   return (
     <>
       <Navbar />
@@ -276,7 +280,7 @@ export const AngelDetails: React.FC<{}> = () => {
               {isLiked ? 'Unlike' : 'Like'}
             </button>
           </div>
-
+          
           <div className="comment-section">
             <h2>Comments</h2>
             <div className="comments">
@@ -303,8 +307,6 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );
 };
-
-
 
 
 export const AngelNew: React.FC<{}> = () => {

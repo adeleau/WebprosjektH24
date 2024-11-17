@@ -26,7 +26,7 @@ class RegisterService {
         return new Promise<Users | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Users WHERE user_id=?', [user_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
-                resolve(results[0] as Users)
+                resolve(results[0] as Users);
             })
         })
     }

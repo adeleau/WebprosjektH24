@@ -22,7 +22,6 @@ export type AngelHistory = {
   description: string;
   user_id: string;
   // updated_at?: string;
-
 };
 
 //AngelLike

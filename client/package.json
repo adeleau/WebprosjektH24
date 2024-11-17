@@ -20,11 +20,13 @@
     "last 1 safari version"
   ],
   "dependencies": {
-    "axios": "^1.7.5",
+    "axios": "^1.7.7",
     "date-fns": "^4.1.0",
+    "jest": "^29.7.0",
     "js-cookie": "^3.0.5",
     "react-router-dom-v5-compat": "^6.26.1",
-    "react-simplified": "^4.0.3"
+    "react-simplified": "^4.0.3",
+    "supertest": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
