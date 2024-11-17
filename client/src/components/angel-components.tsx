@@ -6,6 +6,8 @@ import Cookies from 'js-cookie';
 import userService from "../services/user-service";
 import type { User } from "../services/user-service";
 import LikesService from "../services/likes-service";
+import WishlistService from "../services/wishlist-service";
+
 
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
@@ -125,10 +127,12 @@ export const AngelDetails: React.FC<{}> = () => {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null); // User object from cookies
   const [isLiked, setIsLiked] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false); // New state for wishlist
+
   const [comment, setComment] = useState<string>('');
   const [comments, setComments] = useState<AngelComment[]>([]);
 
-  // Fetch angel details and like status
+  // Fetch angel details and like/wishlist status
   useEffect(() => {
     if (angel_id) {
       AngelService.get(Number(angel_id))
@@ -148,15 +152,24 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   }, [angel_id]);
 
-  // Check if the angel is liked by the logged-in user
+  // Check if the angel is liked and wishlisted by the logged-in user
   useEffect(() => {
     if (user && angel) {
+      // Check if angel is liked
       LikesService.getUserLikes(user.user_id)
         .then((likes) => {
           const likedAngels = likes.map((like) => like.angel_id);
           setIsLiked(angel.angel_id !== undefined && likedAngels.includes(angel.angel_id));
         })
         .catch((err) => setError('Error checking like status: ' + err.message));
+
+      // Check if angel is wishlisted
+      WishlistService.getUserWishlist(user.user_id)
+        .then((wishlist) => {
+          const wishlistedAngels = wishlist.map((angel) => angel.angel_id);
+          setIsWishlisted(angel.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id));
+        })
+        .catch((err) => setError('Error checking wishlist status: ' + err.message));
     }
   }, [user, angel]);
 
@@ -188,6 +201,37 @@ export const AngelDetails: React.FC<{}> = () => {
       }
     } else {
       setError('You must be logged in to like this angel');
+    }
+  };
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = async () => {
+    if (user) {
+      if (isWishlisted) {
+        // Remove from wishlist
+        if (user.user_id !== undefined && angel.angel_id !== undefined) {
+          WishlistService.removeWishlist(user.user_id, angel.angel_id)
+            .then(() => {
+              setIsWishlisted(false);
+            })
+            .catch((err) => setError('Failed to remove from wishlist: ' + err.message));
+        } else {
+          setError('User ID or Angel ID is undefined');
+        }
+      } else {
+        // Add to wishlist
+        if (user.user_id !== undefined && angel.angel_id !== undefined) {
+          WishlistService.addWishlist(user.user_id, angel.angel_id)
+            .then(() => {
+              setIsWishlisted(true);
+            })
+            .catch((err) => setError('Failed to add to wishlist: ' + err.message));
+        } else {
+          setError('User ID or Angel ID is undefined');
+        }
+      }
+    } else {
+      setError('You must be logged in to add to wishlist');
     }
   };
 
@@ -268,7 +312,14 @@ export const AngelDetails: React.FC<{}> = () => {
               className={`like-button ${isLiked ? 'active' : ''}`}
               onClick={handleLikeToggle}
             >
-              {isLiked ? 'Unlike' : 'Like'}
+              {isLiked ? 'Remove from collection' : 'Add to collection'}
+            </button>
+
+            <button
+              className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
+              onClick={handleWishlistToggle}
+            >
+              {isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             </button>
           </div>
 
@@ -298,6 +349,7 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );
 };
+
 
 
 

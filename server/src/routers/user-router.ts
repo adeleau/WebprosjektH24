@@ -1,6 +1,8 @@
 import express from 'express';
 import userService from '../services/user-service';
 import LikesService from '../services/likes-service';
+import WishlistService from '../services/wishlist-service';
+
 
 const userrouter = express.Router();
 
@@ -137,7 +139,43 @@ userrouter.delete('/:userId/likes', async (req, res) => {
 });
 
 
+// Get wishlist of a user by user ID
+userrouter.get('/:userId/wishlist', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    try {
+        const wishlist = await WishlistService.getUserWishlist(userId);
+        res.json(wishlist);
+    } catch (error) {
+        console.error('Error fetching user wishlist:', error);
+        res.status(500).send('Server error');
+    }
+});
 
+// Add an item to a user's wishlist
+userrouter.post('/:userId/wishlist', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    const { angelId } = req.body;  
+    try {
+        await WishlistService.addWishlistItem(userId, angelId);  
+        res.status(201).send('Item added to wishlist');
+    } catch (error) {
+        console.error('Error adding item to wishlist:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Delete an item from a user's wishlist
+userrouter.delete('/:userId/wishlist', async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    const { seriesId } = req.body;
+    try {
+        await WishlistService.removeWishlistItem(userId, seriesId);
+        res.status(200).send('Item removed from wishlist');
+    } catch (error) {
+        console.error('Error removing item from wishlist:', error);
+        res.status(500).send('Server error');
+    }
+});
 
 
 

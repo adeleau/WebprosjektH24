@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import userService, { User } from '../services/user-service';
 import LikesService from '../services/likes-service';
+import WishlistService from '../services/wishlist-service';
 import angelService, { Angel } from '../services/angel-service';
 import Cookies from 'js-cookie';
 
@@ -11,6 +12,8 @@ export const UserProfile: React.FC = () => {
     const history = useHistory();
     const [user, setUser] = useState<User>();
     const [likedAngels, setLikedAngels] = useState<Angel[]>([]);
+    const [wishlistAngels, setWishlistAngels] = useState<Angel[]>([]);
+    const [activeTab, setActiveTab] = useState<'collection' | 'wishlist'>('collection');
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -19,6 +22,8 @@ export const UserProfile: React.FC = () => {
             setUser(JSON.parse(user) as User);
 
             const parsedUser = JSON.parse(user) as User;
+
+            // Fetch liked angels for My Collection
             LikesService.getUserLikes(Number(parsedUser.user_id))
                 .then(async (likes) => {
                     const angels = await Promise.all(
@@ -34,6 +39,23 @@ export const UserProfile: React.FC = () => {
                     setLikedAngels(angels.filter((angel) => angel !== null) as Angel[]);
                 })
                 .catch((err) => setError('Error fetching liked angels: ' + err.message));
+
+            // Fetch wishlist angels for My Wishlist
+            WishlistService.getUserWishlist(Number(parsedUser.user_id))
+                .then(async (wishlist) => {
+                    const angels = await Promise.all(
+                        wishlist.map(async (angel) => {
+                            try {
+                                return await angelService.get(angel.angel_id);
+                            } catch (error) {
+                                console.error('Error fetching wishlist angel details:', error);
+                                return null;
+                            }
+                        })
+                    );
+                    setWishlistAngels(angels.filter((angel) => angel !== null) as Angel[]);
+                })
+                .catch((err) => setError('Error fetching wishlist: ' + err.message));
         }
     }, []);
 
@@ -73,27 +95,65 @@ export const UserProfile: React.FC = () => {
                 <button onClick={() => { handleLogout(); history.push("/"); }} className="btn-create-angel">Logout</button>
             </div>
 
-            {/* Liked Angels Section */}
-            <h1>My Liked Angels</h1>
-            <div className="angel-cards">
-    {likedAngels.length > 0 ? (
-        likedAngels.map((angel) => (
-            <div key={angel.angel_id} className="angel-card">
-                <a href={`/#/angels/${angel.angel_id}`} className="angel-card-link">
-                    <img
-                        src={angel.image || "https://placehold.co/150x150"}
-                        alt={angel.name}
-                        className="angel-card-image"
-                    />
-                    <h3 className="angel-card-name">{angel.name}</h3>
-                </a>
+            {/* Tabs for My Collection and My Wishlist */}
+            <div className="profile-tabs">
+                <button
+                    className={`tab-button ${activeTab === 'collection' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('collection')}
+                >
+                    My Collection
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'wishlist' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('wishlist')}
+                >
+                    My Wishlist
+                </button>
             </div>
-        ))
-    ) : (
-        <p>You haven't liked any angels yet.</p>
-    )}
-</div>
 
+            {/* My Collection Section */}
+            {activeTab === 'collection' && (
+                <div className="angel-cards">
+                    {likedAngels.length > 0 ? (
+                        likedAngels.map((angel) => (
+                            <div key={angel.angel_id} className="angel-card">
+                                <a href={`/#/angels/${angel.angel_id}`} className="angel-card-link">
+                                    <img
+                                        src={angel.image || "https://placehold.co/150x150"}
+                                        alt={angel.name}
+                                        className="angel-card-image"
+                                    />
+                                    <h3 className="angel-card-name">{angel.name}</h3>
+                                </a>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Your collection is empty.</p>
+                    )}
+                </div>
+            )}
+
+            {/* My Wishlist Section */}
+            {activeTab === 'wishlist' && (
+                <div className="angel-cards">
+                    {wishlistAngels.length > 0 ? (
+                        wishlistAngels.map((angel) => (
+                            <div key={angel.angel_id} className="angel-card">
+                                <a href={`/#/angels/${angel.angel_id}`} className="angel-card-link">
+                                    <img
+                                        src={angel.image || "https://placehold.co/150x150"}
+                                        alt={angel.name}
+                                        className="angel-card-image"
+                                    />
+                                    <h3 className="angel-card-name">{angel.name}</h3>
+                                </a>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Your wishlist is empty.</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
