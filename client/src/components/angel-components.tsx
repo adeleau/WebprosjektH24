@@ -542,8 +542,6 @@ export const AngelNew: React.FC<{}> = () => {
 };
 
 
-
-
 export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -558,17 +556,38 @@ export const AngelEdit: React.FC<{}> = () => {
     user_id: 0,
     series_id: 0,
   });
+  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState<boolean>(false);
+
+  // Check access control on mount
+  useEffect(() => {
+    const loggedInUser = Cookies.get("user");
+    if (loggedInUser) {
+      const parsedUser = JSON.parse(loggedInUser) as User;
+      setUser(parsedUser);
+
+      if (parsedUser.role !== "admin") {
+        setAccessDenied(true); // Deny access if the user is not an admin
+      }
+    } else {
+      setAccessDenied(true); // Deny access if the user is not logged in
+    }
+  }, []);
 
   // Fetch angel details when the component mounts
   useEffect(() => {
-    AngelService.get(Number(angel_id))
-      .then((fetchedAngel) => setAngel(fetchedAngel))
-      .catch((err) => setError("Error fetching angel details: " + err.message));
-  }, [angel_id]);
+    if (angel_id && !accessDenied) {
+      AngelService.get(Number(angel_id))
+        .then((fetchedAngel) => setAngel(fetchedAngel))
+        .catch((err) => setError("Error fetching angel details: " + err.message));
+    }
+  }, [angel_id, accessDenied]);
 
   // Handle input changes
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
     setAngel((prevAngel) => ({
       ...prevAngel,
@@ -593,6 +612,20 @@ export const AngelEdit: React.FC<{}> = () => {
       })
       .catch((err) => setError("Error deleting angel: " + err.message));
   };
+
+  if (accessDenied) {
+    return (
+      <>
+        <Navbar />
+        <Leftbar />
+        <div className="access-denied">
+          <h2>Access Denied</h2>
+          <p>You do not have permission to access this page.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -664,5 +697,3 @@ export const AngelEdit: React.FC<{}> = () => {
     </>
   );
 };
-
-
