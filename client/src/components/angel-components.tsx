@@ -106,9 +106,6 @@ export const MasterList: React.FC = () => {
 };
 
 
-
-
-
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -125,13 +122,13 @@ export const AngelDetails: React.FC<{}> = () => {
   });
   const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null); // User object from cookies
+  const [user, setUser] = useState<User | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
-
   const [comment, setComment] = useState<string>('');
   const [comments, setComments] = useState<AngelComment[]>([]);
 
+  // Fetch angel details and user information
   useEffect(() => {
     if (angel_id) {
       AngelService.get(Number(angel_id))
@@ -139,9 +136,9 @@ export const AngelDetails: React.FC<{}> = () => {
           setAngel(data);
           SeriesService.getName(data.series_id)
             .then((name) => setSeries(name))
-            .catch((err) => setError('Error getting series name: ' + err.message));
+            .catch((err) => setError(`Error getting series name: ${err.message}`));
         })
-        .catch((err) => setError('Error getting angel: ' + err.message));
+        .catch((err) => setError(`Error getting angel: ${err.message}`));
     }
 
     const loggedInUser = Cookies.get('user');
@@ -150,9 +147,98 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   }, [angel_id]);
 
-  const handleEdit = () => {
-    history.push(`/angels/${angel.angel_id}/edit`);
+  // Check if the angel is liked or wishlisted
+  useEffect(() => {
+    if (user && angel) {
+      LikesService.getUserLikes(user.user_id)
+        .then((likes) => {
+          const likedAngels = likes.map((like) => like.angel_id);
+          setIsLiked(likedAngels.includes(angel.angel_id));
+        })
+        .catch((err) => setError(`Error checking like status: ${err.message}`));
+
+      WishlistService.getUserWishlist(user.user_id)
+        .then((wishlist) => {
+          const wishlistedAngels = wishlist.map((item) => item.angel_id);
+          setIsWishlisted(wishlistedAngels.includes(angel.angel_id));
+        })
+        .catch((err) => setError(`Error checking wishlist status: ${err.message}`));
+    }
+  }, [user, angel]);
+
+  // Handle like toggle
+  const handleLikeToggle = async () => {
+    if (!user) {
+      setError('You must be logged in to like this angel');
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await LikesService.removeLike(user.user_id, angel.angel_id);
+        setIsLiked(false);
+      } else {
+        await LikesService.addLike(user.user_id, angel.angel_id);
+        setIsLiked(true);
+      }
+    } catch (err) {
+      setError(`Failed to update like status: ${err.message}`);
+    }
   };
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      setError('You must be logged in to add this angel to your wishlist');
+      return;
+    }
+
+    try {
+      if (isWishlisted) {
+        await WishlistService.removeWishlist(user.user_id, angel.angel_id);
+        setIsWishlisted(false);
+      } else {
+        await WishlistService.addWishlist(user.user_id, angel.angel_id);
+        setIsWishlisted(true);
+      }
+    } catch (err) {
+      setError(`Failed to update wishlist status: ${err.message}`);
+    }
+  };
+
+  // Fetch and manage comments
+  const fetchComments = async () => {
+    try {
+      const fetchedComments = await AngelService.getComments(Number(angel_id));
+      setComments(fetchedComments);
+    } catch (err) {
+      setError(`Error fetching comments: ${err.message}`);
+    }
+  };
+
+  const handlePostComment = async () => {
+    if (!comment.trim()) {
+      setError('Comment cannot be empty');
+      return;
+    }
+
+    if (!user) {
+      setError('You must be logged in to post a comment');
+      return;
+    }
+
+    try {
+      await AngelService.addComment(Number(angel_id), user.user_id, comment);
+      setComment('');
+      fetchComments(); // Refresh comments
+    } catch (err) {
+      setError(`Failed to post comment: ${err.message}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, [angel_id]);
 
   return (
     <>
@@ -206,28 +292,17 @@ export const AngelDetails: React.FC<{}> = () => {
           <div className="button-container">
             <button
               className={`like-button ${isLiked ? 'active' : ''}`}
-              onClick={() => {
-                setIsLiked(!isLiked);
-              }}
+              onClick={handleLikeToggle}
             >
               {isLiked ? 'Remove from collection' : 'Add to collection'}
             </button>
 
             <button
               className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
-              onClick={() => {
-                setIsWishlisted(!isWishlisted);
-              }}
+              onClick={handleWishlistToggle}
             >
               {isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             </button>
-
-            {/* Edit Button */}
-            {user && user.role === "admin" && (
-              <button className="edit-button" onClick={handleEdit}>
-                Edit Angel
-              </button>
-            )}
           </div>
 
           <div className="comment-section">
@@ -248,7 +323,7 @@ export const AngelDetails: React.FC<{}> = () => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
-              <button onClick={() => {}}>Post</button>
+              <button onClick={handlePostComment}>Post</button>
             </div>
           </div>
         </div>

@@ -133,7 +133,6 @@ export const Navbar = () => {
   const history = useHistory();
 
   useEffect(() => {
-    console.log(Cookies.get("user"))
     if (Cookies.get("user") !== "guest") {
       const stringifiedUser = Cookies.get("user");
       if(stringifiedUser !== undefined){
