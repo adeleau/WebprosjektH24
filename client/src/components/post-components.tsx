@@ -75,8 +75,6 @@ export const PostList: React.FC<{}> = () => {
   );
 };
 
-
-
 export const PostNew: React.FC<{}> = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -162,8 +160,6 @@ export const PostNew: React.FC<{}> = () => {
     </>
   );
 };
-
-
 
 export const PostEdit: React.FC<{}> = () => {
   const { post_id } = useParams<{ post_id: string }>();
@@ -288,7 +284,6 @@ export const PostEdit: React.FC<{}> = () => {
     </>
   );
 };
-
 
 
 export const PostDetails: React.FC<{}> = () => {

@@ -177,6 +177,7 @@ export const UserSettings: React.FC = () => {
     const [formData, setFormData] = useState<Partial<User>>({});
     const [users, setUsers] = useState<User[]>([]); // To store all users
     const [isAdmin, setIsAdmin] = useState(false); // Check if logged-in user is admin
+    const history = useHistory();
 
     useEffect(() => {
         const tempUser = Cookies.get("user");
@@ -259,7 +260,7 @@ export const UserSettings: React.FC = () => {
                         onChange={handleChange}
                     />
                 </label>
-                <button type="submit">Save Changes</button>
+                <button type="submit" onClick={() => history.push('/userprofile')}>Save Changes</button>
             </form>
 
             {isAdmin && (

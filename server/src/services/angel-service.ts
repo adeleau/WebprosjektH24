@@ -18,6 +18,7 @@ export type Angel = {
 };
 
 export type AngelHistory = {
+  angelhistory_id: number;
   angel_id?: number;
   description: string;
   user_id: string;

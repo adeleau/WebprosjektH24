@@ -16,7 +16,7 @@ class AngelCommentService {
         .then((response) => response.data);
     }
     
-    addAngelComment(angelId: number, content: string, angelcomment: AngelComment) {
+    addAngelComment(angelId: number, user_id: number, content: string, angelcomment: AngelComment) {
         return axios
           .post<AngelComment>('/angels/' + angelcomment.angel_id + '/comments', angelcomment)
           .then((response) => response.data.angelcomment_id);

@@ -8,7 +8,6 @@ export type Like = {
 
 class LikesService {
 
-
     // Get likes for a specific user
     getUserLikes(user_id: number): Promise<Like[]> {
         return new Promise((resolve, reject) => {

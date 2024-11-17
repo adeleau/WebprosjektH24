@@ -2,28 +2,25 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
+import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from 'js-cookie';
-import userService from "../services/user-service";
-import type { User } from "../services/user-service";
-import LikesService from "../services/likes-service";
-import WishlistService from "../services/wishlist-service";
-
 
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment } from "../services/angelcomment-service";
-
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
+import userService from "../services/user-service";
+import type { User } from "../services/user-service";
+import LikesService from "../services/likes-service";
+import WishlistService from "../services/wishlist-service";
 
-// import UserService from "../services/user-service";
-// import type { User } from "../services/user-service";
-
-import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
 
+// Renders the Sonny Angel masterlist
 export const MasterList: React.FC = () => {
+  // kilde : dette er ikke sånn vi har lært, så trenger kilde (brukte mounted i øvinger)
     const [angels, setAngels] = useState<Angel[]>([]);
     const [error, setError] = useState<string | null>(null);
     const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -35,6 +32,7 @@ export const MasterList: React.FC = () => {
     }, []);
   
     // Group angels by their starting letter
+    // kilde
     const groupedAngels = angels.reduce((acc: { [key: string]: Angel[] }, angel) => {
       const firstLetter = angel.name.charAt(0).toUpperCase();
       if (!acc[firstLetter]) acc[firstLetter] = [];
@@ -42,6 +40,8 @@ export const MasterList: React.FC = () => {
       return acc;
     }, {});
   
+    // Scroll to letter clicked
+    // kilde
     const handleScrollToSection = (letter: string) => {
       const section = sectionRefs.current[letter];
       if (section) {
@@ -60,7 +60,7 @@ export const MasterList: React.FC = () => {
     
           {error && <div className="error-message">{error}</div>}
     
-          {/* Alphabet Links */}
+          {/* Alphabet links */}
           <div className="alphabet-links">
             {Object.keys(groupedAngels)
               .sort()
@@ -75,7 +75,7 @@ export const MasterList: React.FC = () => {
               ))}
           </div>
     
-          {/* List of Angels by Alphabet */}
+          {/* List of angels alphabetized */}
           <div className="angel-list">
             {Object.keys(groupedAngels)
               .sort()
@@ -100,12 +100,12 @@ export const MasterList: React.FC = () => {
               ))}
           </div>
         </div>
-        <Footer></Footer>
+        <Footer />
       </>
     );
 };
 
-
+// Renders an angel with its details
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -120,6 +120,7 @@ export const AngelDetails: React.FC<{}> = () => {
     user_id: 0,
     series_id: 0,
   });
+
   const [series, setSeries] = useState<string>();
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -166,6 +167,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   }, [user, angel]);
 
+  // kilde til toggles?
   // Handle like toggle
   const handleLikeToggle = async () => {
     if (!user) {
@@ -225,13 +227,14 @@ export const AngelDetails: React.FC<{}> = () => {
   // Fetch and manage comments
   const fetchComments = async () => {
     try {
-      const fetchedComments = await AngelService.getComments(Number(angel_id));
+      const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
       setComments(fetchedComments);
     } catch (err) {
       setError(`Error fetching comments: ${err.message}`);
     }
   };
 
+  // Handle posting a comment
   const handlePostComment = async () => {
     if (!comment.trim()) {
       setError('Comment cannot be empty');
@@ -244,9 +247,10 @@ export const AngelDetails: React.FC<{}> = () => {
     }
 
     try {
-      await AngelService.addComment(Number(angel_id), user.user_id, comment);
+      // skal ikke denne henge sammen med addAngelComment? hvor er content osv, hvorfor er AngelComment med i servicen
+      await AngelCommentService.addAngelComment(Number(angel_id), user.user_id, comment);
       setComment('');
-      fetchComments(); // Refresh comments
+      fetchComments();
     } catch (err) {
       setError(`Failed to post comment: ${err.message}`);
     }

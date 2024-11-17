@@ -49,11 +49,11 @@ jest.mock('../src/services/angel-service', () => {
     
         getCreatedAt(angel_id: number) {
             
-          }
+        }
       
-          getUpdatedAt(angel_id: number) {
+        getUpdatedAt(angel_id: number) {
             
-          }
+        }
     }
 
     return new AngelService();
@@ -64,7 +64,9 @@ describe('Angel component tests', () => {
         const wrapper = shallow(<MasterList />);
         setTimeout(() => {
             expect(
-                wrapper.containsAllMatchingElements
+                wrapper.containsAllMatchingElements([
+                    
+                ])
             ).toEqual(true);
             done();
         })
