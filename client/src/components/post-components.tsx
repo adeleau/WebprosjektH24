@@ -2,6 +2,8 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
+import Cookies from "js-cookie";
+import type { User } from "../services/user-service";
 
 import PostService from "../services/post-service";
 import type {Post} from "../services/post-service"
@@ -9,205 +11,113 @@ import { Navbar, Leftbar, Footer } from "./other-components";
 import postService from "../services/post-service";
 
 export const PostList: React.FC<{}> = () => {
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const history = useHistory();
-  
-    useEffect(() => {
-      PostService
-        .getAll()
-        .then((data) => setPosts(data))
-        .catch((err) => setError('Error getting posts: ' + err.message));
-    }, []);
-  
-    return (
-      <>
-      <Navbar/>
-      <Leftbar/>
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
+
+  useEffect(() => {
+    const loggedInUser = Cookies.get("user");
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+
+    PostService.getAll()
+      .then((data) => setPosts(data))
+      .catch((err) => setError("Error getting posts: " + err.message));
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
       <div className="post-list">
         {error && <div className="error-message">{error}</div>}
-        
+
         <h2>RECENT POSTS</h2>
 
         <div className="post-list-content">
           {posts.map((post) => (
             <div key={post.post_id} className="post-preview-card">
-            <Link to={`/posts/${post.post_id}`} className="post-link"> 
-              <img src="//www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&amp;width=80" 
-              alt="Sonny Angel Hipper" 
-              className="post-preview-hipper"/>
-              <h3 className = "post-title"> {post.title} </h3>
-              <p className="post-preview-content">{post.content.slice(0, 100)}</p>
-              <p className="read-more-link">Read more</p>
-            </Link> {/*to={`/posts/${post.post_id}`} className="read-more-link">Read more</Link>*/}
+              {/* Only show the username if it exists */}
+              {post.username && (
+                <Link to={`/user/${post.user_id}`} className="post-creator">
+                  {post.username}
+                </Link>
+              )}
+              <Link to={`/posts/${post.post_id}`} className="post-link">
+                <img
+                  src="//www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&amp;width=80"
+                  alt="Sonny Angel Hipper"
+                  className="post-preview-hipper"
+                />
+                <h3 className="post-title">{post.title}</h3>
+                <p className="post-preview-content">
+                  {post.content.slice(0, 100)}
+                </p>
+              </Link>
             </div>
           ))}
         </div>
-  
-        <button 
-          className="btn-new" 
-          onClick={() => history.push('/posts/new')}
-        >
-          New post
-        </button>
-      </div>
-      <Footer/>
-      </>
-      
-    );
-  };
-  
-  export const PostDetails: React.FC<{}> = () => {
-    const { post_id } = useParams<{ post_id: string }>(); // Retrieve post ID from URL params
-    const [post, setPost] = useState<Post>({ 
-      post_id: 0, 
-      user_id: 0, 
-      title: '', 
-      content: '', 
-      image: '', 
-      created_at: new Date(), 
-      updated_at: new Date() });
-    const [likeCount, setLikeCount] = useState(0);
-    const [isLiked, setIsLiked] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const history = useHistory();
-  
-    useEffect(() => {
-    PostService
-        .get(Number(post_id))
-        .then((data) => {
-          setPost(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError('Error getting post: ' + err.message);
-          setLoading(false);
-        });
-      //fetchLikeCount();
-    }, [post_id]);
-  
-  {/* const fetchLikeCount = () => {
-      postService
-        .getPostLikes(Number(post_id))
-        .then((count) => setLikeCount(count))
-        .catch((err) => setError('Error getting like count: ' + err.message));
-    };
-  
-    const toggleLike = () => {
-      const newLikeCount = isLiked ? likeCount - 1 : likeCount + 1;
-      setLikeCount(newLikeCount);
-      setIsLiked(!isLiked);
-      
-      postService.likePost(Number(post_id)).catch((error) => {
-        setError('Error updating like count: ' + error.message);
-      });
-    }; 
-  
-    if (loading) {
-      return <p>Loading...</p>;
-    */}
-  
-    return (
-      <>
-      <Navbar/>
-      <Leftbar/>
-      <div className="post-details">
-        {error && <div className="error-message">{error}</div>}
-        <button className="back-button" onClick={() => history.push('/posts')}>Back</button>
 
-        <h2 className="post-title">{post.title}</h2>
-
-        <div className="post-content">
-          <p className="post-text"><strong>Content:</strong> {post.content}</p>
-          {post.image && (
-            <div className="post-img-container">
-              <img src={post.image} alt={post.title} style={{ maxWidth: '200px', maxHeight: '200px' }} />
-            </div>
-          )}
-        </div>
-  
-        {/*<div className="post-likes">
-          <button className="like-button" onClick={toggleLike}>
-            {isLiked ? "Dislike" : "Like"}
+        {/* Only show the "New Post" button if the user is logged in */}
+        {user ? (
+          <button
+            className="btn-new"
+            onClick={() => history.push("/posts/new")}
+          >
+            New post as {user.username}
           </button>
-          <span>{likeCount} like(s)</span>
-        </div> */}
-  
-        <button className="edit-button" onClick={() => history.push(`/posts/${post_id}/edit`)}>
-          Edit
-        </button>
+        ) : null}
       </div>
-      
-      {/* <div className="comment-section">
-        <h2>Comments</h2>
-        <div className="comments">
-
-        </div>
-        <div className="comment-input">
-            <div className="form-group">
-            <input
-                id="comment-input"
-                name="comment-input"
-                type="text"
-                value={content}
-                onChange={handleInputChange}
-                className="form-control"
-            />
-            </div>
-        </div>
-      </div> */}
       <Footer />
-      </>
-    );
+    </>
+  );
+};
+
+
+
+export const PostNew: React.FC<{}> = () => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
+
+  useEffect(() => {
+    const loggedInUser = Cookies.get("user");
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+  }, []);
+
+  const handleCreatePost = () => {
+    if (!user) {
+      setError("You must be logged in to create a post.");
+      return;
+    }
+
+    PostService.createPost(
+      user.user_id,
+      user.username,
+      title,
+      content,
+      image,
+    )
+      .then((post_id) => history.push(`/posts/${post_id}`))
+      .catch((err) => setError("Error creating post: " + err.message));
   };
-  
-  export const PostNew: React.FC<{}> = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [image, setImage] = useState('');
-    const [user_id, setUserId] = useState(0);
-    const [error, setError] = useState<string | null>(null);
-    const history = useHistory();
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = event.target;
-      if (name === 'title') {
-        setTitle(value);
-      } else if (name === 'content') {
-        setContent(value);
-      } else if (name === 'image') {
-        setImage(value);
-      }
-    };
-  
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setUserId(Number(event.target.value));
-    };
-  
-    const handleCreatePost = () => {
-      const created_at = new Date().toISOString().slice(0,19).replace('T',' '); // vet ikke om denne kanskje lagrer dato for når bruker trykker på create post istedet for post
-      console.log('Attempting to create post with:', { title, user_id, content, image, created_at }); //legger inn dette for å finne feilen
-      PostService                                                //skal legge til et annet format for tid, siden dette kan være en av årsakene til at den ikke vil create og update
-        .createPost(title, user_id, content, image, created_at)
-        .then((post_id) => {
-          history.push(`/posts/${post_id}`); // Redirect to the new post page
-        })
-        .catch((error) => setError('Error creating post: ' + error.message));
-    };
-  
-    return (
-      <>
-        <Navbar></Navbar>
-        <Leftbar></Leftbar>
-       {/* <header className="header">
-      <h1>Sonny Angel</h1>
-      <p className="subtitle">He may bring you happiness</p>
-    </header> */}
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
       <div className="card">
         {error && <div className="error-message">{error}</div>}
-  
-        <h2>New Post</h2>
-        
+
+        <h2>New Post as {user?.username}</h2>
+
         <div className="form-group">
           <label htmlFor="title">Title:</label>
           <input
@@ -215,118 +125,120 @@ export const PostList: React.FC<{}> = () => {
             name="title"
             type="text"
             value={title}
-            onChange={handleInputChange}
+            onChange={(e) => setTitle(e.target.value)}
             className="form-control"
           />
         </div>
-  
-        <div className="form-group">
-          <label htmlFor="user_id">By:</label>
-          <select
-            id="user_id"
-            name="user_id"
-            value={user_id}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
-            <option value="">Select a user</option>
-            <option value="2">Jub</option>
-          </select>
-        </div>
-  
+
         <div className="form-group">
           <label htmlFor="content">Content:</label>
           <textarea
             id="content"
             name="content"
             value={content}
-            onChange={handleInputChange}
+            onChange={(e) => setContent(e.target.value)}
             rows={10}
             className="form-control"
           />
         </div>
-  
+
         <div className="form-group">
-          <label htmlFor="img">Image URL:</label>
+          <label htmlFor="image">Image URL:</label>
           <textarea
-            id="image" //endrer begge fra img til image for å prøve å endre bilde på edit
+            id="image"
             name="image"
             value={image}
-            onChange={handleInputChange}
+            onChange={(e) => setImage(e.target.value)}
             rows={10}
             className="form-control"
           />
         </div>
-  
-        <button 
-          className="btn btn-create" 
-          onClick={handleCreatePost}
-        >
+
+        <button className="btn btn-create" onClick={handleCreatePost}>
           Create Post
         </button>
       </div>
-      <Footer></Footer>
-      </>
-    );
+      <Footer />
+    </>
+  );
+};
+
+
+
+export const PostEdit: React.FC<{}> = () => {
+  const { post_id } = useParams<{ post_id: string }>();
+  const [post, setPost] = useState<Post>({
+    post_id: 0,
+    user_id: 0,
+    username: "",
+    title: "",
+    content: "",
+    image: "",
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
+
+  useEffect(() => {
+    // Fetch the logged-in user
+    const loggedInUser = Cookies.get("user");
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+
+    // Fetch the post details
+    PostService.get(Number(post_id))
+      .then((fetchedPost) => setPost(fetchedPost))
+      .catch((err) => setError("Error getting post: " + err.message));
+  }, [post_id]);
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setPost((prevPost) => ({
+      ...prevPost,
+      [name]: value,
+    }));
   };
-  
-  export const PostEdit: React.FC<{}> = () => {
-     const [post, setPost] = useState<Post>({
-      post_id: 0,
-      user_id: 0,
-      title: '',
-      content: '',
-      image: '',
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
-    const [error, setError] = useState<string | null>(null);
-    const { post_id } = useParams<{ post_id: string }>();
-    const history = useHistory();
-  
-    useEffect(() => {
-      PostService
-        .get(Number(post_id))
-        .then((fetchedPost) => setPost(fetchedPost))
-        .catch((err) => setError('Error getting post: ' + err.message));
-    }, [post_id]);
-  
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = event.target;
-      setPost((prevPost) => ({
-        ...prevPost,
-        [name]: value
-      }));
-    };
-  
-    const handleSave = () => {
-      const updated_at = new Date().toISOString().slice(0,19).replace('T',' '); // samme som jeg gjorde med create post, gjør samme med tid her også
-      PostService
-        .updatePost(post.post_id, post.title, post.content, post.image)
-        .then(() => {
-          history.push('/posts/' + post.post_id);
-        })
-        .catch((error) => setError('Error updating post: ' + error.message));
-    };
-  
-    const handleDelete = () => {
-      PostService
-        .deletePost(post.post_id)
-        .then(() => {
-          history.push('/posts'); // Redirect to post list after deletion
-        })
-        .catch((error) => setError('Error deleting post: ' + error.message));
-    };
-  
+
+  const handleSave = () => {
+    PostService.updatePost(post.post_id, post.title, post.content, post.image)
+      .then(() => history.push(`/posts/${post.post_id}`))
+      .catch((err) => setError("Error updating post: " + err.message));
+  };
+
+  const handleDelete = () => {
+    PostService.deletePost(post.post_id)
+      .then(() => history.push("/posts"))
+      .catch((err) => setError("Error deleting post: " + err.message));
+  };
+
+  if (!user || (user.user_id !== post.user_id && user.role !== "admin")) {
     return (
       <>
-      <Navbar></Navbar>
-      <Leftbar></Leftbar>
+        <Navbar />
+        <Leftbar />
+        <div className="access-denied">
+          <h2>Access Denied</h2>
+          <p>You do not have permission to edit this post.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
       <div className="card">
         {error && <div className="error-message">{error}</div>}
-  
+
         <h2>Edit Post</h2>
-  
+
         <div className="form-group">
           <label htmlFor="title">Title:</label>
           <input
@@ -338,7 +250,7 @@ export const PostList: React.FC<{}> = () => {
             className="form-control"
           />
         </div>
-  
+
         <div className="form-group">
           <label htmlFor="content">Content:</label>
           <textarea
@@ -350,7 +262,7 @@ export const PostList: React.FC<{}> = () => {
             className="form-control"
           />
         </div>
-  
+
         <div className="form-group">
           <label htmlFor="image">Image URL:</label>
           <textarea
@@ -358,11 +270,11 @@ export const PostList: React.FC<{}> = () => {
             name="image"
             value={post.image}
             onChange={handleInputChange}
-            rows={10}
+            rows={5}
             className="form-control"
           />
         </div>
-  
+
         <div className="form-actions">
           <button className="btn btn-success" onClick={handleSave}>
             Save
@@ -372,7 +284,124 @@ export const PostList: React.FC<{}> = () => {
           </button>
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
+    </>
+  );
+};
+
+
+
+export const PostDetails: React.FC<{}> = () => {
+  const { post_id } = useParams<{ post_id: string }>();
+  const [post, setPost] = useState<Post | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
+
+  useEffect(() => {
+    const loggedInUser = Cookies.get("user");
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+
+    PostService.get(Number(post_id))
+      .then((fetchedPost) => setPost(fetchedPost))
+      .catch((err) => setError("Error getting post: " + err.message));
+  }, [post_id]);
+
+  if (error) {
+    return (
+      <>
+        <Navbar />
+        <Leftbar />
+        <div className="error-message">
+          <h2>Error</h2>
+          <p>{error}</p>
+        </div>
+        <Footer />
       </>
     );
   }
+
+  if (!post) {
+    return (
+      <>
+        <Navbar />
+        <Leftbar />
+        <div className="no-post-message">
+          <h2>No Post Found</h2>
+          <p>The post does not exist or is unavailable.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+      <div className="post-details">
+        <button
+          className="back-button"
+          onClick={() => history.push("/posts")}
+        >
+          Back to Posts
+        </button>
+
+        <h2 className="post-title">{post.title}</h2>
+
+        <div className="post-meta">
+          {post.username ? (
+            <span>
+              By{" "}
+              <Link to={`/user/${post.user_id}`} className="post-author">
+                {post.username}
+              </Link>
+            </span>
+          ) : (
+            <span>By Anonymous</span>
+          )}
+          <span> | Created at: {new Date(post.created_at).toLocaleString()}</span>
+        </div>
+
+        <div className="post-content">
+          <p>{post.content}</p>
+          {post.image && (
+            <div className="post-image">
+              <img
+                src={post.image}
+                alt={post.title}
+                style={{ maxWidth: "100%", height: "auto" }}
+              />
+            </div>
+          )}
+        </div>
+
+        {user && (user.user_id === post.user_id || user.role === "admin") ? (
+          <div className="post-actions">
+            <button
+              className="edit-button"
+              onClick={() => history.push(`/posts/${post_id}/edit`)}
+            >
+              Edit Post
+            </button>
+            <button
+              className="delete-button"
+              onClick={() => {
+                PostService.deletePost(post.post_id)
+                  .then(() => history.push("/posts"))
+                  .catch((err) =>
+                    setError("Error deleting post: " + err.message)
+                  );
+              }}
+            >
+              Delete Post
+            </button>
+          </div>
+        ) : null}
+      </div>
+      <Footer />
+    </>
+  );
+};

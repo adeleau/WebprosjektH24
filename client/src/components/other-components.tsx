@@ -391,11 +391,6 @@ export const Leftbar: React.FC<{}> = () => {
                 Community
               </Link>
             </li>
-            <li className="nav-text">
-              <Link to="/trading" onClick={toggleSidebar}>
-                Trading
-              </Link>
-            </li>
           </ul>
         </nav>
 

@@ -31,50 +31,69 @@ export type PostCardProps = {
 
 class PostService {
     getAll() {
-        return new Promise<Post[] | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Posts', [], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                resolve(results as Post[])
-            })
-        })
-    }
+        return new Promise<Post[]>((resolve, reject) => {
+          pool.query(
+            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id',
+            [],
+            (error, results: RowDataPacket[]) => {
+              if (error) return reject(error);
+              resolve(results as Post[]);
+            }
+          );
+        });
+      }
+      get(post_id: number) {
+        return new Promise<Post>((resolve, reject) => {
+          pool.query(
+            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id WHERE post_id = ?',
+            [post_id],
+            (error, results: RowDataPacket[]) => {
+              if (error) return reject(error);
+              resolve(results[0] as Post);
+            }
+          );
+        });
+      }
 
-    get(post_id: number) {
-        return new Promise<Post | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Posts WHERE post_id=?', [post_id], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                resolve(results[0] as Post)
-            })
-        })
-    }
-
-    createPost(user_id: number, title: string, content: string, image: string, created_at: Date) {
+      createPost(user_id: number, username: string, title: string, content: string, image: string) {
         return new Promise<number>((resolve, reject) => {
-            pool.query('INSERT INTO Posts SET user_id=?, title=?, content=?, image=?, created_at=?', [user_id, title, content, image, created_at], (error, results: ResultSetHeader) => {
-                if (error) return reject(error);
-                resolve(results.insertId);
-            });
+          pool.query(
+            'INSERT INTO Posts (user_id, title, content, image) VALUES (?, ?, ?, ?)',
+            [user_id, title, content, image],
+            (error, results: ResultSetHeader) => {
+              if (error) {
+                console.error('Database error:', error.message);
+                return reject(error);
+              }
+              resolve(results.insertId);
+            }
+          );
         });
-    }
+      }
+      
 
-    updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date) {
+      updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date) {
         return new Promise<void>((resolve, reject) => {
-            pool.query('UPDATE Posts SET title=?, content=?, image=?, updated_at=? WHERE post_id=?', [title, content, image, updated_at, post_id], (error, results: ResultSetHeader) => {
-                if (error) return reject(error);
-                resolve();
-            });
+          pool.query(
+            'UPDATE Posts SET title = ?, content = ?, image = ?, updated_at = ? WHERE post_id = ?',
+            [title, content, image, updated_at, post_id],
+            (error) => {
+              if (error) return reject(error);
+              resolve();
+            }
+          );
         });
-    }
-
-    deletePost(post_id: number) {
+      }
+    
+      deletePost(post_id: number) {
         return new Promise<void>((resolve, reject) => {
-            pool.query('DELETE FROM Posts WHERE post_id = ?', [post_id], (error, results: ResultSetHeader) => {
-                if (error) return reject(error);
-                if (results.affectedRows == 0) return reject(new Error('No row deleted'));
-                resolve();
-            });
+          pool.query('DELETE FROM Posts WHERE post_id = ?', [post_id], (error, results: ResultSetHeader) => {
+            if (error) return reject(error);
+            if (results.affectedRows === 0) return reject(new Error('No row deleted'));
+            resolve();
+          });
         });
-    }
+      }
 
 //   likePost(post_id: number): Promise<void> {
 //     return new Promise<void>((resolve, reject) => {

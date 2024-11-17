@@ -153,14 +153,14 @@ export const AngelDetails: React.FC<{}> = () => {
       LikesService.getUserLikes(user.user_id)
         .then((likes) => {
           const likedAngels = likes.map((like) => like.angel_id);
-          setIsLiked(likedAngels.includes(angel.angel_id));
+          setIsLiked(angel.angel_id !== undefined && likedAngels.includes(angel.angel_id));
         })
         .catch((err) => setError(`Error checking like status: ${err.message}`));
 
       WishlistService.getUserWishlist(user.user_id)
         .then((wishlist) => {
           const wishlistedAngels = wishlist.map((item) => item.angel_id);
-          setIsWishlisted(wishlistedAngels.includes(angel.angel_id));
+          setIsWishlisted(angel.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id));
         })
         .catch((err) => setError(`Error checking wishlist status: ${err.message}`));
     }
@@ -175,14 +175,22 @@ export const AngelDetails: React.FC<{}> = () => {
 
     try {
       if (isLiked) {
-        await LikesService.removeLike(user.user_id, angel.angel_id);
+        if (angel.angel_id !== undefined) {
+          await LikesService.removeLike(user.user_id, angel.angel_id);
+        }
         setIsLiked(false);
       } else {
-        await LikesService.addLike(user.user_id, angel.angel_id);
-        setIsLiked(true);
+        if (angel.angel_id !== undefined) {
+          await LikesService.addLike(user.user_id, angel.angel_id);
+          setIsLiked(true);
+        }
       }
     } catch (err) {
-      setError(`Failed to update like status: ${err.message}`);
+      if (err instanceof Error) {
+        setError(`Failed to update like status: ${err.message}`);
+      } else {
+        setError('Failed to update like status');
+      }
     }
   };
 
@@ -195,14 +203,22 @@ export const AngelDetails: React.FC<{}> = () => {
 
     try {
       if (isWishlisted) {
-        await WishlistService.removeWishlist(user.user_id, angel.angel_id);
+        if (angel.angel_id !== undefined) {
+          await WishlistService.removeWishlist(user.user_id, angel.angel_id);
+        }
         setIsWishlisted(false);
       } else {
-        await WishlistService.addWishlist(user.user_id, angel.angel_id);
+        if (angel.angel_id !== undefined) {
+          await WishlistService.addWishlist(user.user_id, angel.angel_id);
+        }
         setIsWishlisted(true);
       }
     } catch (err) {
-      setError(`Failed to update wishlist status: ${err.message}`);
+      if (err instanceof Error) {
+        setError(`Failed to update wishlist status: ${err.message}`);
+      } else {
+        setError('Failed to update wishlist status');
+      }
     }
   };
 
@@ -239,10 +255,6 @@ export const AngelDetails: React.FC<{}> = () => {
   useEffect(() => {
     fetchComments();
   }, [angel_id]);
-
-  // const handleEditAngel = () => {
-
-  // }
 
   return (
     <>
@@ -291,24 +303,39 @@ export const AngelDetails: React.FC<{}> = () => {
             <button className="history-button" onClick={() => history.push(`${angel_id}/history`)}>
               History
             </button>
+            {/* Edit button for admin users */}
+            {user?.role === "admin" && (
+              <button
+                className="edit-button"
+                onClick={() => history.push(`/angel/${angel_id}/edit`)}
+              >
+                Edit Angel
+              </button>
+            )}
           </div>
 
           <div className="button-container">
-            <button
-              className={`like-button ${isLiked ? 'active' : ''}`}
-              onClick={handleLikeToggle}
-            >
-              {isLiked ? 'Remove from collection' : 'Add to collection'}
-            </button>
+            {user ? (
+              <>
+                <button
+                  className={`like-button ${isLiked ? 'active' : ''}`}
+                  onClick={handleLikeToggle}
+                >
+                  {isLiked ? 'Remove from collection' : 'Add to collection'}
+                </button>
 
-            <button
-              className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
-              onClick={handleWishlistToggle}
-            >
-              {isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            </button>
+                <button
+                  className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
+                  onClick={handleWishlistToggle}
+                >
+                  {isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                </button>
+              </>
+            ) : (
+              <p className="login-prompt">Log in to like or add to your wishlist.</p>
+            )}
           </div>
-          
+
           <div className="comment-section">
             <h2>Comments</h2>
             <div className="comments">
@@ -337,6 +364,7 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );
 };
+
 
 
 export const AngelNew: React.FC<{}> = () => {
