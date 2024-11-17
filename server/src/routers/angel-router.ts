@@ -1,11 +1,6 @@
 import express from 'express';
-import seriesService, { Series } from "../services/series-service"
 import angelService, { Angel } from "../services/angel-service" //legg til angellikes
-import angelCommentService, { AngelComment } from "../services/angelcomment-service"
-import postService, { Post, PostComment } from "../services/post-service" //legg til postlikes
-import registerService from '../services/register-service';
-import { AxiosPromise } from 'axios';
-import userService from '../services/user-service';
+import angelCommentService from "../services/angelcomment-service"
 
 const angelrouter = express.Router();
 
@@ -27,47 +22,52 @@ angelrouter.get('/angels/:angel_id', (request, response) => {
     .catch((error) => response.status(500).send(error));
 });
 
-// Post a new angel and log history
-angelrouter.post('/angels', (request, response) => {
-  const data = request.body;
-  if (data && data.name && data.name.length != 0) {
-    angelService
-      .createAngel(data)
-      .then((angel_id) => {
-        // Log history for new angel creation
-        angelService
-          .logHistory(angel_id, `Angel ${data.name} created.`, data.user_id)
-          .then(() => {
-            response.send({ angel_id: angel_id })
-          })
-          .catch((error) => response.status(500).send(error))
-      })
-      .catch((error) => response.status(500).send(error));
-    } else {
-      response.status(400).send('Missing angel name');
-    }
+
+
+// Create a new angel
+angelrouter.post('/angels', (req, res) => {
+  const { name, description, image, release_year, user_id, series_id } = req.body;
+
+  if (!name || !description || !user_id || !series_id) {
+    return res.status(400).send("Missing required fields: name, description, user_id, series_id");
+  }
+
+  angelService
+    .createAngel({ name, description, image, release_year, views: 0, user_id, series_id, user_name: req.body.user_name })
+    .then((newAngel) => res.status(201).send(newAngel))
+    .catch((error) => res.status(500).send(error));
 });
 
-// delete spesific angel
-angelrouter.delete('/angels/:angel_id', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
-  angelService
-    .get(angel_id)
-    .then((angel) => {
-      // Logg historikk for sletting
-      angelService
-        .logHistory(angel_id, `Angel ${angel.name} deleted`, angel.user_id)
-        .then(() => {
-          // Slett engelen
-          angelService
-            .deleteAngel(angel_id)
-            .then((/*_result*/) => response.send())
-            .catch((error) => response.status(500).send(error));
-        })
-        .catch((error) => response.status(500).send(error));
-    })
-    .catch((error) => response.status(500).send(error));
+// DELETE /angels/:angel_id
+angelrouter.delete('/angels/:angel_id', async (req, res) => {
+  const angel_id = parseInt(req.params.angel_id, 10);
+
+  console.log('DELETE request received for angel ID:', angel_id);
+
+  // Validate the angel_id
+  if (isNaN(angel_id) || angel_id <= 0) {
+    console.warn('Invalid angel ID received:', req.params.angel_id);
+    return res.status(400).send({ error: 'Invalid angel ID.' });
+  }
+
+  try {
+    // Call the service to delete the angel
+    await angelService.deleteAngel(angel_id);
+    res.status(200).send({ message: 'Angel deleted successfully.' });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error in DELETE /angels/:angel_id:', error.message);
+    } else {
+      console.error('Error in DELETE /angels/:angel_id:', error);
+    }
+    if (error instanceof Error) {
+      res.status(500).send({ error: error.message });
+    } else {
+      res.status(500).send({ error: String(error) });
+    }
+  }
 });
+
 
 //get angels etter series_id
 angelrouter.get('/series/:series_id', (req, res) => {
@@ -77,19 +77,24 @@ angelrouter.get('/series/:series_id', (req, res) => {
       .catch((err) => res.status(500).send({ error: err.message }));
 });
 
-// edit spesific angel
+//edit sepcific angel
 angelrouter.put('/angels/:angel_id', (request, response) => {
-  const angel_id = Number(request.params.angel_id)
+  const angel_id = Number(request.params.angel_id);
   const angel: Angel = request.body;
-  if (angel) {
-    angelService
-      .updateAngel(angel)
-      .then(() => response.status(200).send('Angel updated'))
-      .catch((error) => response.status(500).send(error));
-  } else {
-    response.status(400).send('Missing angel');
+
+  if (!angel_id || !angel) {
+    return response.status(400).send('Missing angel ID or angel data');
   }
+
+  angelService
+    .updateAngel(angel)
+    .then(() => response.status(200).send('Angel updated successfully'))
+    .catch((error) => response.status(500).send(error));
 });
+
+
+
+
 
 // Get the history of a specific angel
 angelrouter.get('/angels/:angel_id/history', (request, response) => {
@@ -102,29 +107,6 @@ angelrouter.get('/angels/:angel_id/history', (request, response) => {
     .then((history) => response.send(history))
     .catch((error) => response.status(500).send(error));
 });
-
-// like spesific angel
-// router.post('/angels/:angel_id/likes', (request, response) => {
-//   const angel_id = Number(request.params.angel_id);
-//   if (angel_id) {
-//     angelService
-//       .likePost(angel_id)
-//       .then(() => response.status(201).send('Post liked successfully'))
-//       .catch((error) => response.status(500).send(error));
-//   } else {
-//     response.status(400).send('Invalid angel ID');
-//   }
-// });
-
-// get the likes of a angel
-// router.get('/angels/:angel_id/likes', (request, response) => {
-//   const angel_id = Number(request.params.angel_id);
-
-//   angelService
-//     .getPosLikes(angel_id)
-//     .then((posLikeCount) => response.json({ angel_id: angel_id, like_count: posLikeCount }))
-//     .catch((error) => response.status(500).send(error));
-// });
 
 // COMMENTS
 angelrouter.post('/angels/:angel_id/comments', (request, response) => {

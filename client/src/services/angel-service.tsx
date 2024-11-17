@@ -43,26 +43,29 @@ class AngelService {
             });
     } 
 
-    createAngel(angel: Angel) {
+    createAngel(angel: Omit<Angel, 'angel_id' | 'created_at' | 'updated_at'>): Promise<Angel> {
         return axios
-            .post<{ angel_id: number }>(`/angels`, angel)
-            .then((res) => {
-                const angel_id = res.data.angel_id;
-    
-                // Logg første versjon i AngelHistory
-                return axios
-                    .post(`/angel/history`, {
-                        angel_id: angel_id,
-                        name: angel.name,
-                        description: angel.description,
-                        user_id: angel.user_id,
-                    })
-                    .then(() => angel_id); // Returner angel_id etter logging
-            });
-    }
+          .post<Angel>('/angels', angel)
+          .then((response) => response.data)
+          .catch((error) => {
+            console.error('Error creating angel:', error);
+            throw error;
+          });
+      }
+
+      updateAngel(angel: Angel) {
+        return axios
+          .put(`/angels/${angel.angel_id}`, angel)
+          .then((response) => response.data)
+          .catch((err) => {
+            console.error(`Error updating angel with ID ${angel.angel_id}:`, err);
+            throw err;
+          });
+      }
+      
     
 
-    updateAngel(angel: Angel) {
+  /*  updateAngel(angel: Angel) {
         // Logg gammel versjon før oppdatering
         return axios
             .post(`/angel/history`, {
@@ -75,29 +78,23 @@ class AngelService {
                 // Oppdater engelen etter logging
                 return axios.put<null>(`/angels/${angel.angel_id}`, angel);
             });
-    }
+    } */
 
-    deleteAngel(angel_id: number) {
-        // Først hent engelens nåværende data for logging
-        return axios
-            .get<Angel>(`/angels/${angel_id}`)
-            .then((res) => {
-                const angel = res.data;
-    
-                // Logg den eksisterende tilstanden i AngelHistory
-                return axios
-                    .post(`/angel/history`, {
-                        angel_id: angel.angel_id,
-                        name: angel.name,
-                        description: angel.description,
-                        user_id: angel.user_id,
-                    })
-                    .then(() => {
-                        // Slett engelen etter logging
-                        return axios.delete<null>(`/angels/${angel_id}`);
-                    });
-            });
-    }
+
+// Delete an angel by angel_id
+deleteAngel(angel_id: number): Promise<void> {
+    console.log('Sending DELETE request for angel ID:', angel_id);
+
+    return axios
+      .delete(`/angels/${angel_id}`)
+      .then(() => {
+        console.log(`Angel with ID ${angel_id} deleted successfully.`);
+      })
+      .catch((err) => {
+        console.error(`Error deleting angel with ID ${angel_id}:`, err.response?.data || err.message);
+        throw err;
+      });
+};
     //get angels etter series_id
     getBySeries(series_id: number) {
         return axios

@@ -13,16 +13,7 @@ class SeriesService {
             .then((response) => {return response.data})
             .catch((error) => {console.log(error); return [];})
     }
-    // bruker ikke?
-    /*get(name: string) 
-        return axios
-            .get<Series>('/series/' + name)
-            .then((response) => response.data)
-            .catch((error) => {
-                console.error('Error fetching series with name' + name + ':', error);
-                throw error;
-            });
-    */
+   
 
     getName(id: number): Promise<string> {
         return axios
@@ -35,6 +26,17 @@ class SeriesService {
     }
 
     
+
+  // Add a new series (new method)
+  createSeries(series: { name: string }): Promise<Series> {
+    return axios
+      .post<Series>('/series', series)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error creating series:', error);
+        throw error;
+      });
+  }
 }
 
 

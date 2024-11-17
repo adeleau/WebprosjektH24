@@ -24,6 +24,20 @@ class SeriesService {
             )
         })
     }
+
+  // Add a new series (new method)
+  createSeries(series: { name: string }) {
+    return new Promise<Series>((resolve, reject) => {
+      pool.query(
+        'INSERT INTO Series (name) VALUES (?)',
+        [series.name],
+        (error, results: ResultSetHeader) => {
+          if (error) return reject(error);
+          resolve({ series_id: results.insertId, name: series.name });
+        }
+      );
+    });
+  }
 }
 
 export default new SeriesService;
