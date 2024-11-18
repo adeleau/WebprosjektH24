@@ -4,24 +4,20 @@ import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
 import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from 'js-cookie';
-
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment as BaseAngelComment } from "../services/angelcomment-service";
-
 interface AngelComment extends BaseAngelComment {
   isEditing: boolean;
 }
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
-import userService from "../services/user-service";
 import type { User } from "../services/user-service";
 import LikesService from "../services/likes-service";
 import WishlistService from "../services/wishlist-service";
 
 const history = createHashHistory();
-
 
 export const MasterList: React.FC = () => {
   const [angels, setAngels] = useState<Angel[]>([]);
@@ -36,20 +32,17 @@ export const MasterList: React.FC = () => {
   
     try {
       if (userCookie) {
-        // Check if the cookie is a valid JSON object or a plain string like "guest"
         if (userCookie.startsWith("{") && userCookie.endsWith("}")) {
           const parsedUser = JSON.parse(userCookie);
           setUser(parsedUser);
         } else if (userCookie === "guest") {
-          // Handle the "guest" case
           setUser({ username: "Guest", user_id: 0, role: "guest", email: "", password_hash: "" });
         } else {
-          // Handle unexpected plain strings or other invalid values
           console.warn("Unexpected cookie value:", userCookie);
-          setUser(null); // Treat as not logged in
+          setUser(null);
         }
       } else {
-        setUser(null); // Treat as not logged in if no cookie is found
+        setUser(null); 
       }
     } catch (error) {
       console.error("Error parsing user cookie:", error);
@@ -92,7 +85,6 @@ export const MasterList: React.FC = () => {
 
         {error && <div className="error-message">{error}</div>}
 
-        {/* Alphabet Links */}
         <div className="alphabet-links">
           {Object.keys(groupedAngels)
             .sort()
@@ -107,7 +99,6 @@ export const MasterList: React.FC = () => {
             ))}
         </div>
 
-         {/* Admin "New Sonny Angel" Button */}
          {user && user.role === "admin" ? (
           <button
             className="btn-create-angel"
@@ -117,7 +108,6 @@ export const MasterList: React.FC = () => {
           </button>
         ) : null}
 
-        {/* List of Angels by Alphabet */}
         <div className="angel-list">
           {Object.keys(groupedAngels)
             .sort()
@@ -167,12 +157,10 @@ export const AngelDetails: React.FC<{}> = () => {
         .then((data) => {
           setAngel(data);
 
-          // Fetch series name
           SeriesService.getName(data.series_id)
             .then((seriesName) => setSeries(seriesName))
             .catch((err) => setError(`Error fetching series name: ${err.message}`));
 
-          // Increment views
           AngelService.incrementViews(Number(angel_id))
             .then((updatedAngel) => setAngel(updatedAngel))
             .catch((err) => setError(`Error incrementing views: ${err.message}`));
@@ -210,8 +198,6 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   }, [user, angel]);
 
-  // kilde til toggles?
-  // Handle like toggle
   const handleLikeToggle = async () => {
     if (!user) {
       setError("You must be logged in to like this angel");
@@ -235,7 +221,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  // Handle wishlist toggle
+  //  wishlist toggle
   const handleWishlistToggle = async () => {
     if (!user) {
       setError("You must be logged in to add this angel to your wishlist");
@@ -259,7 +245,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  // Fetch and manage comments
+  //  comments
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
@@ -270,7 +256,7 @@ export const AngelDetails: React.FC<{}> = () => {
   };
   
 
-  // Handle posting a comment
+  //  posting a comment
   const handlePostComment = async () => {
     if (!comment.trim()) {
       setError("Comment cannot be empty");
@@ -285,7 +271,7 @@ export const AngelDetails: React.FC<{}> = () => {
     try {
       await AngelCommentService.addAngelComment(Number(angel_id), user.user_id, comment);
       setComment("");
-      fetchComments(); // Refresh comments
+      fetchComments(); 
     } catch (err) {
       setError(`Failed to post comment: ${err}`);
     }
@@ -518,7 +504,7 @@ export const AngelNew: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Fetch logged-in user from cookies
+    // get loggedin user from cookies
     const userCookie = Cookies.get("user");
 
     try {
@@ -531,7 +517,7 @@ export const AngelNew: React.FC<{}> = () => {
           }
         } else if (userCookie === "guest") {
           setUser({ username: "Guest", user_id: 0, role: "guest" });
-          history.push("/"); // Guests are redirected
+          history.push("/"); // guests are restircted
         } else {
           setUser(null);
           history.push("/login");
@@ -546,7 +532,7 @@ export const AngelNew: React.FC<{}> = () => {
       history.push("/login");
     }
 
-    // Fetch series list
+    // series list
     SeriesService.getAll()
       .then((data) => setSeriesList(data))
       .catch((error) => setError("Error fetching series: " + error.message));
@@ -563,8 +549,8 @@ export const AngelNew: React.FC<{}> = () => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     if (value === "add-new-series") {
-      setShowAddSeries(true); // Show input for adding a new series
-      setSelectedSeriesId(null); // Reset selected series
+      setShowAddSeries(true); // input for adding a new series
+      setSelectedSeriesId(null); 
     } else {
       setShowAddSeries(false);
       setSelectedSeriesId(Number(value));
@@ -579,10 +565,10 @@ export const AngelNew: React.FC<{}> = () => {
 
     SeriesService.createSeries({ name: newSeriesName })
       .then((newSeries) => {
-        setSeriesList([...seriesList, newSeries]); // Update series list
+        setSeriesList([...seriesList, newSeries]); 
         setSelectedSeriesId(newSeries.series_id); // Automatically select the new series
-        setNewSeriesName(""); // Clear input
-        setShowAddSeries(false); // Hide input
+        setNewSeriesName(""); 
+        setShowAddSeries(false); // hide input
       })
       .catch((error) => setError("Error creating series: " + error.message));
   };
@@ -611,7 +597,7 @@ export const AngelNew: React.FC<{}> = () => {
 
     AngelService.createAngel(newAngel)
       .then((angel) => {
-        // Redirect to the new angel's page
+        // redirect to new angel's page
         history.push(`/angels/${angel.angel_id}`);
       })
       .catch((error) => setError("Error creating angel: " + error.message));

@@ -108,7 +108,7 @@ export const SeriesList: React.FC<{}> = () => {
           {user && user.role === "admin" ? (
             <div className="admin-actions">
               <button
-                className="btn-create-angel"
+                className="btn-create-angel" 
                 onClick={() => history.push(`/series/${series_id}/new`)}
               >
                 New Sonny Angel
