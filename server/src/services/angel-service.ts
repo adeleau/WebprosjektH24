@@ -14,17 +14,14 @@ export type Angel = {
     // updated_at?: string;
     series_id: number;
     user_name: string;
-
 };
 
 export type AngelHistory = {
   angel_id?: number;
   description: string;
   user_id: string;
-  // updated_at?: string;
+  updated_at?: Date;
 };
-
-//AngelLike
 
 export type AngelCardProps = {
     angel: Angel;
@@ -76,7 +73,6 @@ class AngelService {
       });
     }
   
-
     updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
         // Log the current state to AngelHistory
@@ -245,8 +241,8 @@ class AngelService {
     search(query: string): Promise<Angel[]> {
         return new Promise<Angel[]>((resolve, reject) => {
           pool.query(
-            'SELECT * FROM Angels WHERE name LIKE ? OR description LIKE ?',
-            [`%${query}%`, `%${query}%`], 
+            'SELECT A.*, S.name as series_name FROM Angels A JOIN Series S ON A.series_id = S.series_id WHERE A.name LIKE ? OR A.description LIKE ? OR S.name LIKE ?',
+            [`%${query}%`, `%${query}%`, `%${query}%`], 
             (error, results: RowDataPacket[]) => {
               if (error) {
                 console.error('Error fetching search results:', error);
@@ -257,7 +253,6 @@ class AngelService {
           );
         });
       }
-    //Søkfelt
 
     // get angels by series_id
     getBySeries(series_id: number): Promise<Angel[]> {

@@ -87,21 +87,29 @@
     }
 }
 
-.btn-create-angel {
+.btn-create-angel, .btn-delete-series {
     display: inline-block;
     margin: 20px auto;
     padding: 10px 20px;
-    background-color: white;
+    background-color: #f2a6b0;
     border: 2px solid #f2a6b0;
     border-radius: 30px;
-    color: #f2a6b0;
+    color: white;
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-left: 10px;
 }
 
 .btn-create-angel:hover {
-        background-color: #f2a6b0;
-        color: white;
+    background-color: #e68693;
+    border: 2px solid #e68693;
+    color: white;
+}
+
+.btn-delete-series:hover {
+    background-color: #e68693;
+    border: 2px solid #e68693;
+    color: white;
 }

@@ -123,7 +123,9 @@ angelrouter.get("/angels/search/:query", (req, res) => {
 
   angelService
     .search(query)
-    .then((results) => res.status(200).json(results))
+    .then((results) => {
+      res.status(200).json(results)
+    })
     .catch((err) => {
       console.error(`Error searching for angels with query "${query}":`, err);
       res.status(500).send("Failed to search angels");

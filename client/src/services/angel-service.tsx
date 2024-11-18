@@ -11,6 +11,7 @@ export type Angel = {
     user_id: number;
     //created_at: Date;
     //updated_at?: Date;
+    // user_name: string;
     series_id: number;
 };
 export type AngelHistory = {
@@ -125,7 +126,7 @@ deleteAngel(angel_id: number): Promise<void> {
                 console.error(`Error searching for angels with query "${query}":`, err);
                 throw err;
             });
-    } //søkefelt
+          }
 
     getUsername(angel_id: number) {
         return axios

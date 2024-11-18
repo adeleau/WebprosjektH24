@@ -394,7 +394,7 @@ export const AngelDetails: React.FC<{}> = () => {
       value={comment}
       onChange={(e) => setComment(e.target.value)}
     />
-    <button onClick={handlePostComment}>Post</button>
+    <button className="post-button" onClick={handlePostComment}>Post</button>
   </div>
 ) : (
   <p className="login-prompt">Log in to post a comment.</p>

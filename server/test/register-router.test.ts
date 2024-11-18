@@ -7,9 +7,9 @@ import { response } from 'express';
 axios.defaults.baseURL = 'http://localhost:3001';
 
 const testUser = [
-    {user_id:2, username:'Adele', email:'Adele@SonniSan.com', password_hash:'123'},
-    {user_id:3, username:'Julia', email:'Julia@sonnykun.com', password_hash:'123'},
-    {user_id:4, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123?'},
+    {user_id:2, username:'Adele', email:'Adele@san.com', password_hash:'Angel123!'},
+    {user_id:3, username:'Julia', email:'Julia@kun.com', password_hash:'Angel123!'},
+    {user_id:4, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123!'},
 ];
 
 let webServer: any;

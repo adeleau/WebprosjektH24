@@ -4,6 +4,7 @@ export type AngelComment = {
     angelcomment_id: number;
     angel_id: number;
     user_id: number;
+    username: string;
     content: string;
     created_at: Date;
     updated_at: Date;

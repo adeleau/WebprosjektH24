@@ -575,4 +575,29 @@ ul.dropdown-menu.active .nav-text{
     border: 2px solid white;
 }
 
+.popular-page h2 {
+    color: #f2a6b0; 
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.2rem;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    padding: 15px 30px;  
+    border-radius: 25px;  
+    background: rgb(247, 234, 236); 
+    position: relative;
+    z-index: 1;
+    letter-spacing: 1px;  
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  
+    max-width: 80%; 
+    margin-left: auto;  
+    margin-right: auto;
+}
 
+.popular-page {
+    max-width: 100%;
+    margin: 0;
+    padding: 150px;
+    background: linear-gradient(to bottom, #f2a6b0, #ffffff);
+    padding-top: 50px;
+  }

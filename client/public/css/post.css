@@ -125,9 +125,10 @@
   font-family: 'Poppins', sans-serif;
 }
   
-.back-button, .edit-button {
+.back-button, .edit-button, .delete-button {
   display: inline-block;
   margin-top: 20px;
+  margin-right: 2px;
   padding: 10px 15px;
   background-color: #f2a6b0;
   border: none;
@@ -170,8 +171,14 @@
   
   .post-image {
     max-width: 100%;
+    display: flex;
+    justify-content: center;
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  img {
+    max-height: 300px;
   }
   

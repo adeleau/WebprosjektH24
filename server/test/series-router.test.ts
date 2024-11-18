@@ -1,16 +1,16 @@
 import axios from 'axios';
 import pool from '../src/mysql-pool';
 import app from '../src/app';
-import seriesService, {Series} from '../src/services/series-service';
-import { response } from 'express';
-
-axios.defaults.baseURL = 'http://localhost:3002';
+import seriesService, { Series } from '../src/services/series-service';
+//import { response } from 'express';
 
 const testSeries: Series[] = [
     { series_id: 1, name: 'Marine Series'},
     { series_id: 2, name: 'Animal Series'},
     { series_id: 3, name: 'Christmas series'},
-  ];
+];
+
+axios.defaults.baseURL = 'http://localhost:3002';
 
 let webServer: any;
 beforeAll((done) => {
@@ -20,10 +20,10 @@ beforeAll((done) => {
 
 beforeEach((done) => {
     // Delete all series, and reset id auto-increment start value
-    pool.query('DELETE FROM Series', (error) => {
+    pool.query('TRUNCATE TABLE Series', (error) => {
       if (error) return done(error);
   
-      const query = 'INSERT INTO Series (series_id, name) VALUES (?,?)';
+      const query = 'INSERT INTO Series (series_id, name) VALUES ?';
       const values = testSeries.map((series) => [series.series_id, series.name]);
 
       pool.query(query, [values], (error) => {
