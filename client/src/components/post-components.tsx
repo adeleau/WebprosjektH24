@@ -63,17 +63,17 @@ export const PostList: React.FC<{}> = () => {
                   alt="Sonny Angel Hipper"
                   className="post-preview-hipper"
                 />
-                <h3 className="post-title">{post.title}</h3>
-                <p className="post-preview-content">
-                  {post.content.slice(0, 100)}
-                </p>
-                <p className="read-more-link">Read more</p>
-              </Link>
-              {post.username && (
+                 {post.username && (
                 <Link to={`/user/${post.user_id}`} className="post-creator">
                   {post.username}
                 </Link>
               )}
+                <h3 className="post-title">{post.title}</h3>
+                <p className="post-preview-content">
+                  {post.content.slice(0, 100)}
+                </p>
+              </Link>
+             
             </div>
           ))}
         </div>
