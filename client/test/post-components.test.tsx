@@ -4,3 +4,9 @@ import { Link } from 'react-router-dom';
 import postService from '../src/services/post-service';
 import type { Post, PostComment/*, PostLike*/ } from '../src/services/post-service';
 import { shallow } from 'enzyme';
+
+
+/*describe('Leftbar component tests', () => {
+    test('Leftbar draws correctly', () => {
+        expect(true).toEqual(true)
+    })})*/
