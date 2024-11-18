@@ -58,22 +58,21 @@ postrouter.delete('/posts/:post_id', (req, res) => {
  // Update specific post
  postrouter.put('/posts/:post_id', (req, res) => {
   const post_id = Number(req.params.post_id);
-  const { title, content, image, updated_at } = req.body;
+  const { title, content, image } = req.body;
 
-  console.log('Update Request Data:', req.body); // Log the incoming data
+  console.log('Incoming Data:', { post_id, title, content, image });
 
-  if (!title) {
-    return res.status(400).send('Missing post title');
-  }
 
   postService
-    .updatePost(post_id, title, content, image, updated_at)
-    .then(() => res.status(200).send())
-    .catch((error) => {
-      console.error('Error updating post:', error.message);
+    .updatePost(post_id, title, content, image) // Remove updated_at
+    .then(() => res.status(200).send('Post updated successfully'))
+    .catch((err) => {
+      console.error('Service Error:', err.message);
       res.status(500).send('Error updating post');
     });
 });
+
+
 
   
   // LIKES

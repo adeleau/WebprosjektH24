@@ -23,109 +23,142 @@ import type { Series } from "../services/series-service";
 import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
 
-export const MasterList: React.FC = () => {
-    const [angels, setAngels] = useState<Angel[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  
-    useEffect(() => {
-      AngelService.getAll()
-        .then((data) => setAngels(data))
-        .catch((err) => setError(`Error fetching angels: ${err.message}`));
-    }, []);
-  
-    // Group angels by their starting letter
-    const groupedAngels = angels.reduce((acc: { [key: string]: Angel[] }, angel) => {
-      const firstLetter = angel.name.charAt(0).toUpperCase();
-      if (!acc[firstLetter]) acc[firstLetter] = [];
-      acc[firstLetter].push(angel);
-      return acc;
-    }, {});
-  
-    const handleScrollToSection = (letter: string) => {
-      const section = sectionRefs.current[letter];
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-      }
-    };
-  
-    return (
-      <>
-        <Navbar />
-        <Leftbar />
-    
-        <div className="angel-master-list">
-          <h2>Angel Master List</h2>
-          <hr className="masterlist-divider" />
-    
-          {error && <div className="error-message">{error}</div>}
-    
-          {/* Alphabet Links */}
-          <div className="alphabet-links">
-            {Object.keys(groupedAngels)
-              .sort()
-              .map((letter) => (
-                <button 
-                  key={letter}
-                  onClick={() => handleScrollToSection(letter)}
-                  className="alphabet-link"
-                >
-                  {letter}
-                </button>
-              ))}
-          </div>
-    
-          {/* List of Angels by Alphabet */}
-          <div className="angel-list">
-            {Object.keys(groupedAngels)
-              .sort()
-              .map((letter) => (
-                <div
-                  key={letter}
-                  id={letter}
-                  className="angel-group"
-                  ref={(el) => (sectionRefs.current[letter] = el)}
-                >
-                  <h2>{letter}</h2>
-                  <ul>
-                    {groupedAngels[letter].map((angel) => (
-                      <li key={angel.angel_id}>
-                        <Link to={`/angels/${angel.angel_id}`} className="angel-link">
-                          {angel.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-          </div>
-        </div>
-        <Footer></Footer>
-      </>
-    );
-};
 
+export const MasterList: React.FC = () => {
+  const [angels, setAngels] = useState<Angel[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null); // State for logged-in user
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const history = useHistory();
+
+  useEffect(() => {
+    // Fetch logged-in user from cookies
+    const userCookie = Cookies.get("user");
+  
+    try {
+      if (userCookie) {
+        // Check if the cookie is a valid JSON object or a plain string like "guest"
+        if (userCookie.startsWith("{") && userCookie.endsWith("}")) {
+          const parsedUser = JSON.parse(userCookie);
+          setUser(parsedUser);
+        } else if (userCookie === "guest") {
+          // Handle the "guest" case
+          setUser({ username: "Guest", user_id: 0, role: "guest", email: "", password_hash: "" });
+        } else {
+          // Handle unexpected plain strings or other invalid values
+          console.warn("Unexpected cookie value:", userCookie);
+          setUser(null); // Treat as not logged in
+        }
+      } else {
+        setUser(null); // Treat as not logged in if no cookie is found
+      }
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      setUser(null); // Treat as not logged in if parsing fails
+    }
+
+    // Fetch all angels
+    AngelService.getAll()
+      .then((data) => setAngels(data))
+      .catch((err) => {
+        console.error("Error fetching angels:", err.message);
+        setError(`Error fetching angels: ${err.message}`);
+      });
+  }, []);
+
+  // Group angels by their starting letter
+  const groupedAngels = angels.reduce((acc: { [key: string]: Angel[] }, angel) => {
+    const firstLetter = angel.name.charAt(0).toUpperCase();
+    if (!acc[firstLetter]) acc[firstLetter] = [];
+    acc[firstLetter].push(angel);
+    return acc;
+  }, {});
+
+  const handleScrollToSection = (letter: string) => {
+    const section = sectionRefs.current[letter];
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+
+      <div className="angel-master-list">
+        <h2>Angel Master List</h2>
+        <hr className="masterlist-divider" />
+
+
+        {error && <div className="error-message">{error}</div>}
+
+        {/* Alphabet Links */}
+        <div className="alphabet-links">
+          {Object.keys(groupedAngels)
+            .sort()
+            .map((letter) => (
+              <button
+                key={letter}
+                onClick={() => handleScrollToSection(letter)}
+                className="alphabet-link"
+              >
+                {letter}
+              </button>
+            ))}
+        </div>
+
+         {/* Admin "New Sonny Angel" Button */}
+         {user && user.role === "admin" ? (
+          <button
+            className="btn-create-angel"
+            onClick={() => history.push(`/series/1/new`)}
+          >
+            New Sonny Angel
+          </button>
+        ) : null}
+
+        {/* List of Angels by Alphabet */}
+        <div className="angel-list">
+          {Object.keys(groupedAngels)
+            .sort()
+            .map((letter) => (
+              <div
+                key={letter}
+                id={letter}
+                className="angel-group"
+                ref={(el) => (sectionRefs.current[letter] = el)}
+              >
+                <h2>{letter}</h2>
+                <ul>
+                  {groupedAngels[letter].map((angel) => (
+                    <li key={angel.angel_id}>
+                      <Link to={`/angels/${angel.angel_id}`} className="angel-link">
+                        {angel.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
 
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
 
-  const [angel, setAngel] = useState<Angel>({
-    angel_id: 0,
-    name: '',
-    description: '',
-    image: '',
-    release_year: 0,
-    views: 0,
-    user_id: 0,
-    series_id: 0,
-  });
-  const [series, setSeries] = useState<string>();
+  const [angel, setAngel] = useState<Angel | null>(null);
+  const [series, setSeries] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [comment, setComment] = useState<string>('');
+  const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<AngelComment[]>([]);
 
   // Fetch angel details and user information
@@ -134,16 +167,28 @@ export const AngelDetails: React.FC<{}> = () => {
       AngelService.get(Number(angel_id))
         .then((data) => {
           setAngel(data);
+
+          // Fetch series name
           SeriesService.getName(data.series_id)
-            .then((name) => setSeries(name))
-            .catch((err) => setError(`Error getting series name: ${err.message}`));
+            .then((seriesName) => setSeries(seriesName))
+            .catch((err) => setError(`Error fetching series name: ${err.message}`));
+
+          // Increment views
+          AngelService.incrementViews(Number(angel_id))
+            .then((updatedAngel) => setAngel(updatedAngel))
+            .catch((err) => setError(`Error incrementing views: ${err.message}`));
         })
-        .catch((err) => setError(`Error getting angel: ${err.message}`));
+        .catch((err) => setError(`Error fetching angel: ${err.message}`));
     }
 
-    const loggedInUser = Cookies.get('user');
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const userCookie = Cookies.get("user");
+    try {
+      if (userCookie) {
+        setUser(JSON.parse(userCookie));
+      }
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      setUser(null);
     }
   }, [angel_id]);
 
@@ -160,7 +205,7 @@ export const AngelDetails: React.FC<{}> = () => {
       WishlistService.getUserWishlist(user.user_id)
         .then((wishlist) => {
           const wishlistedAngels = wishlist.map((item) => item.angel_id);
-          setIsWishlisted(angel.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id));
+          setIsWishlisted(angel?.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id));
         })
         .catch((err) => setError(`Error checking wishlist status: ${err.message}`));
     }
@@ -169,86 +214,78 @@ export const AngelDetails: React.FC<{}> = () => {
   // Handle like toggle
   const handleLikeToggle = async () => {
     if (!user) {
-      setError('You must be logged in to like this angel');
+      setError("You must be logged in to like this angel");
       return;
     }
 
     try {
       if (isLiked) {
-        if (angel.angel_id !== undefined) {
+        if (angel?.angel_id !== undefined) {
           await LikesService.removeLike(user.user_id, angel.angel_id);
         }
         setIsLiked(false);
       } else {
-        if (angel.angel_id !== undefined) {
+        if (angel?.angel_id !== undefined) {
           await LikesService.addLike(user.user_id, angel.angel_id);
-          setIsLiked(true);
         }
+        setIsLiked(true);
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setError(`Failed to update like status: ${err.message}`);
-      } else {
-        setError('Failed to update like status');
-      }
+      setError(`Failed to update like status: ${err}`);
     }
   };
 
   // Handle wishlist toggle
   const handleWishlistToggle = async () => {
     if (!user) {
-      setError('You must be logged in to add this angel to your wishlist');
+      setError("You must be logged in to add this angel to your wishlist");
       return;
     }
 
     try {
       if (isWishlisted) {
-        if (angel.angel_id !== undefined) {
+        if (angel?.angel_id !== undefined) {
           await WishlistService.removeWishlist(user.user_id, angel.angel_id);
         }
         setIsWishlisted(false);
       } else {
-        if (angel.angel_id !== undefined) {
+        if (angel?.angel_id !== undefined) {
           await WishlistService.addWishlist(user.user_id, angel.angel_id);
         }
         setIsWishlisted(true);
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setError(`Failed to update wishlist status: ${err.message}`);
-      } else {
-        setError('Failed to update wishlist status');
-      }
+      setError(`Failed to update wishlist status: ${err}`);
     }
   };
 
   // Fetch and manage comments
   const fetchComments = async () => {
     try {
-      const fetchedComments = await AngelService.getComments(Number(angel_id));
+      const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
       setComments(fetchedComments);
     } catch (err) {
-      setError(`Error fetching comments: ${err.message}`);
+      setError(`Error fetching comments: ${err}`);
     }
   };
 
   const handlePostComment = async () => {
     if (!comment.trim()) {
-      setError('Comment cannot be empty');
+      setError("Comment cannot be empty");
       return;
     }
 
     if (!user) {
-      setError('You must be logged in to post a comment');
+      setError("You must be logged in to post a comment");
       return;
     }
 
     try {
-      await AngelService.addComment(Number(angel_id), user.user_id, comment);
-      setComment('');
+      await AngelCommentService.addAngelComment(Number(angel_id), user.user_id, comment);
+      setComment("");
       fetchComments(); // Refresh comments
     } catch (err) {
-      setError(`Failed to post comment: ${err.message}`);
+      setError(`Failed to post comment: ${err}`);
     }
   };
 
@@ -261,7 +298,7 @@ export const AngelDetails: React.FC<{}> = () => {
       <Navbar />
       <Leftbar />
 
-      <button className="back-button" onClick={() => history.push('/masterlist')}>
+      <button className="back-button" onClick={() => history.push("/masterlist")}>
         View all angels
       </button>
 
@@ -275,9 +312,13 @@ export const AngelDetails: React.FC<{}> = () => {
             <div className="details-text">
               <div className="detail-row series-row">
                 <strong>Series: </strong>
-                <Link to={`/series/${angel.series_id}`} className="series-link">
-                  {series}
-                </Link>
+                {series ? (
+                  <Link to={`/series/${angel.series_id}`} className="series-link">
+                    {series}
+                  </Link>
+                ) : (
+                  "Unknown"
+                )}
               </div>
               <div className="detail-row">
                 <strong>Description: </strong>
@@ -285,7 +326,11 @@ export const AngelDetails: React.FC<{}> = () => {
               </div>
               <div className="detail-row">
                 <strong>Release year: </strong>
-                <span>{angel.release_year}</span>
+                <span>{angel.release_year || ""}</span>
+              </div>
+              <div className="detail-row">
+                <strong>Views: </strong>
+                <span>{angel.views}</span>
               </div>
             </div>
 
@@ -297,17 +342,13 @@ export const AngelDetails: React.FC<{}> = () => {
           </div>
 
           <div className="info-row">
-            <span className="info-item">Views: {angel.views}</span>
-            <span className="info-item">Created at: {angel.created_at}</span>
-            <span className="info-item">Last updated at: {angel.updated_at}</span>
             <button className="history-button" onClick={() => history.push(`${angel_id}/history`)}>
               History
             </button>
-            {/* Edit button for admin users */}
             {user?.role === "admin" && (
               <button
                 className="edit-button"
-                onClick={() => history.push(`/angel/${angel_id}/edit`)}
+                onClick={() => history.push(`/angels/${angel_id}/edit`)}
               >
                 Edit Angel
               </button>
@@ -318,22 +359,20 @@ export const AngelDetails: React.FC<{}> = () => {
             {user ? (
               <>
                 <button
-                  className={`like-button ${isLiked ? 'active' : ''}`}
+                  className={`like-button ${isLiked ? "active" : ""}`}
                   onClick={handleLikeToggle}
                 >
-                  {isLiked ? 'Remove from collection' : 'Add to collection'}
+                  {isLiked ? "Remove from collection" : "Add to collection"}
                 </button>
 
                 <button
-                  className={`wishlist-button ${isWishlisted ? 'active' : ''}`}
+                  className={`wishlist-button ${isWishlisted ? "active" : ""}`}
                   onClick={handleWishlistToggle}
                 >
-                  {isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                  {isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 </button>
               </>
-            ) : (
-              <p className="login-prompt">Log in to like or add to your wishlist.</p>
-            )}
+            ) : null}
           </div>
 
           <div className="comment-section">
@@ -342,20 +381,29 @@ export const AngelDetails: React.FC<{}> = () => {
               {comments.map((comment) => (
                 <div key={comment.angelcomment_id} className="comment">
                   <p>
-                    <strong>{comment.user_id}</strong>: {comment.content}
+                    <strong>
+                      <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
+                    </strong>
+                    : {comment.content}
                   </p>
                 </div>
               ))}
             </div>
-            <div className="comment-input">
-              <input
-                type="text"
-                placeholder="Post a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <button onClick={handlePostComment}>Post</button>
-            </div>
+            {user ? (
+  <div className="comment-input">
+    <input
+      type="text"
+      placeholder="Post a comment..."
+      value={comment}
+      onChange={(e) => setComment(e.target.value)}
+    />
+    <button onClick={handlePostComment}>Post</button>
+  </div>
+) : (
+  <p className="login-prompt">Log in to post a comment.</p>
+)}
+
+            
           </div>
         </div>
       ) : null}
@@ -364,7 +412,6 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );
 };
-
 
 
 export const AngelNew: React.FC<{}> = () => {
@@ -388,14 +435,29 @@ export const AngelNew: React.FC<{}> = () => {
   useEffect(() => {
     // Fetch logged-in user from cookies
     const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie);
-      setUser(parsedUser);
 
-      if (parsedUser.role !== "admin") {
-        history.push("/");
+    try {
+      if (userCookie) {
+        if (userCookie.startsWith("{") && userCookie.endsWith("}")) {
+          const parsedUser = JSON.parse(userCookie);
+          setUser(parsedUser);
+          if (parsedUser.role !== "admin") {
+            history.push("/");
+          }
+        } else if (userCookie === "guest") {
+          setUser({ username: "Guest", user_id: 0, role: "guest" });
+          history.push("/"); // Guests are redirected
+        } else {
+          setUser(null);
+          history.push("/login");
+        }
+      } else {
+        setUser(null);
+        history.push("/login");
       }
-    } else {
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      setUser(null);
       history.push("/login");
     }
 
@@ -572,7 +634,6 @@ export const AngelNew: React.FC<{}> = () => {
   );
 };
 
-
 export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -587,26 +648,42 @@ export const AngelEdit: React.FC<{}> = () => {
     user_id: 0,
     series_id: 0,
   });
+  const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [accessDenied, setAccessDenied] = useState<boolean>(false);
 
-  // Check access control on mount
   useEffect(() => {
-    const loggedInUser = Cookies.get("user");
-    if (loggedInUser) {
-      const parsedUser = JSON.parse(loggedInUser) as User;
-      setUser(parsedUser);
+    const userCookie = Cookies.get("user");
 
-      if (parsedUser.role !== "admin") {
-        setAccessDenied(true); // Deny access if the user is not an admin
+    try {
+      if (userCookie) {
+        if (userCookie.startsWith("{") && userCookie.endsWith("}")) {
+          const parsedUser = JSON.parse(userCookie) as User;
+          setUser(parsedUser);
+
+          if (parsedUser.role !== "admin") {
+            setAccessDenied(true);
+          }
+        } else {
+          setUser(null);
+          setAccessDenied(true);
+        }
+      } else {
+        setUser(null);
+        setAccessDenied(true);
       }
-    } else {
-      setAccessDenied(true); // Deny access if the user is not logged in
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      setUser(null);
+      setAccessDenied(true);
     }
+
+    SeriesService.getAll()
+      .then((data) => setSeriesList(data))
+      .catch((err) => setError("Error fetching series: " + err.message));
   }, []);
 
-  // Fetch angel details when the component mounts
   useEffect(() => {
     if (angel_id && !accessDenied) {
       AngelService.get(Number(angel_id))
@@ -615,7 +692,6 @@ export const AngelEdit: React.FC<{}> = () => {
     }
   }, [angel_id, accessDenied]);
 
-  // Handle input changes
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -626,20 +702,26 @@ export const AngelEdit: React.FC<{}> = () => {
     }));
   };
 
-  // Save updated angel details
+  const handleSeriesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const seriesId = Number(event.target.value);
+    setAngel((prevAngel) => ({
+      ...prevAngel,
+      series_id: seriesId,
+    }));
+  };
+
   const handleSave = () => {
     AngelService.updateAngel(angel)
       .then(() => {
-        history.push(`/angels/${angel.angel_id}`); // Redirect to the angel's details page
+        history.push(`/angels/${angel.angel_id}`);
       })
       .catch((err) => setError("Error saving angel: " + err.message));
   };
 
-  // Delete the angel
   const handleDelete = () => {
     AngelService.deleteAngel(angel.angel_id!)
       .then(() => {
-        history.push(`/series/${angel.series_id}`); // Redirect to the associated series page after deletion
+        history.push(`/`);
       })
       .catch((err) => setError("Error deleting angel: " + err.message));
   };
@@ -713,6 +795,23 @@ export const AngelEdit: React.FC<{}> = () => {
             onChange={handleInputChange}
             className="form-control"
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="series_id">Series:</label>
+          <select
+            id="series_id"
+            name="series_id"
+            value={angel.series_id}
+            onChange={handleSeriesChange}
+            className="form-control"
+          >
+            {seriesList.map((series) => (
+              <option key={series.series_id} value={series.series_id}>
+                {series.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-actions">

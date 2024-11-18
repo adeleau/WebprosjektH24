@@ -73,8 +73,14 @@ userrouter.put('/users/:id/role', async (req, res) => {
 userrouter.put('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     const updatedData = req.body;
-  
+
     try {
+        // Map `password` to `password_hash` if provided
+        if (updatedData.password) {
+            updatedData.password_hash = updatedData.password; // Map to `password_hash`
+            delete updatedData.password; // Remove plaintext `password` from payload
+        }
+
         await userService.updateUser(user_id, updatedData);
         res.send('User updated successfully');
     } catch (error) {
@@ -82,6 +88,7 @@ userrouter.put('/users/:id', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
   
 //Check if user is logged in
 userrouter.post("/users/login", async (req, res) => {

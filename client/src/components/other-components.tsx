@@ -487,3 +487,45 @@ export const Footer =() => {
     </>
     );
   } 
+
+
+
+
+export const PopularPage: React.FC<{}> = () => {
+  const [popularAngels, setPopularAngels] = useState<Angel[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    AngelService.getPopular()
+      .then((data) => setPopularAngels(data))
+      .catch((err) =>
+        setError("Error fetching popular angels: " + err.message)
+      );
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+      <div className="popular-page">
+        {error && <div className="error-message">{error}</div>}
+        <h2>Popular Angels</h2>
+        <div className="angel-cards">
+          {popularAngels.map((angel) => (
+            <div key={angel.angel_id} className="angel-card">
+              <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                <img
+                  src={angel.image}
+                  alt={angel.name}
+                  className="angel-card-image"
+                />
+                <h3>{angel.name}</h3>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};

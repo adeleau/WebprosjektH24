@@ -8,6 +8,7 @@ import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from "js-cookie";
 import { User } from "../services/user-service";
 
+
 const history = createHashHistory();
 
 export const SeriesList: React.FC<{}> = () => {
@@ -35,11 +36,41 @@ export const SeriesList: React.FC<{}> = () => {
 
     // Fetch user from cookies
     const userCookie = Cookies.get("user");
-    if (userCookie) {
-      const parsedUser = JSON.parse(userCookie) as User;
-      setUser(parsedUser);
+    try {
+      if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
+        const parsedUser = JSON.parse(userCookie) as User;
+        setUser(parsedUser);
+      } else {
+        setUser(null); // No valid user data in cookies
+      }
+    } catch (error) {
+      console.error("Error parsing user cookie:", error);
+      setUser(null); // Treat as not logged in if parsing fails
     }
   }, [series_id]);
+
+  const handleDeleteSeries = () => {
+    if (!series_id) return;
+
+    if (!user || user.role !== "admin") {
+      alert("You are not authorized to delete this series.");
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete "${seriesName}"?`)) {
+      return;
+    }
+
+    SeriesService.deleteSeries(Number(series_id))
+      .then(() => {
+        alert(`Series "${seriesName}" has been deleted.`);
+        history.push("/"); // Redirect to the home page after deletion
+      })
+      .catch((err) => {
+        console.error("Error deleting series:", err.message);
+        setError("Error deleting series: " + err.message);
+      });
+  };
 
   return (
     <div>
@@ -73,17 +104,23 @@ export const SeriesList: React.FC<{}> = () => {
             )}
           </div>
 
-          {/* Conditionally render button for admin users */}
+          {/* Conditionally render buttons for admin users */}
           {user && user.role === "admin" ? (
-            <button
-              className="btn-create-angel"
-              onClick={() => history.push(`/series/${series_id}/new`)}
-            >
-              New Sonny Angel
-            </button>
-          ) : (
-            <></> // Render nothing when user is not admin
-          )}
+            <div className="admin-actions">
+              <button
+                className="btn-create-angel"
+                onClick={() => history.push(`/series/${series_id}/new`)}
+              >
+                New Sonny Angel
+              </button>
+              <button
+                className="btn-delete-series"
+                onClick={handleDeleteSeries}
+              >
+                Delete Series
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : (
         <p>Loading series information...</p>

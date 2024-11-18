@@ -40,4 +40,19 @@ seriesrouter.post('/series', (req, res) => {
     .catch((error) => res.status(500).send(error));
 });
 
+// Delete a series without deleting associated angels
+seriesrouter.delete('/series/:id', (req, res) => {
+  const seriesId = Number(req.params.id);
+
+  if (!seriesId) {
+    return res.status(400).send('Series ID is required');
+  }
+
+  seriesService
+    .deleteSeries(seriesId)
+    .then(() => res.status(200).send(`Series with ID ${seriesId} deleted successfully`))
+    .catch((error) => res.status(500).send(error));
+});
+
+
 export default seriesrouter;

@@ -50,13 +50,21 @@ class PostService {
     }
     
     updatePost(post_id: number, title: string, content: string, image: string) {
-      const updated_at = new Date();
-      console.log('Update Post Data:', { post_id, title, content, image, updated_at });
+      console.log('Sending Post Update:', { post_id, title, content, image });
     
       return axios
-        .put<Post>('/posts/' + post_id, { title, content, image, updated_at })
-        .then((response) => response.data.post_id);
+        .put(`/posts/${post_id}`, { title, content, image }) 
+        .then((response) => {
+          console.log('Post Update Success:', response.data);
+          return response.data;
+        })
+        .catch((error) => {
+          console.error('Post Update Failed:', error.response?.data || error.message);
+          throw error;
+        });
     }
+    
+    
     
   
   deletePost(post_id: number) {

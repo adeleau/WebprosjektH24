@@ -37,6 +37,17 @@ class SeriesService {
         throw error;
       });
   }
+
+  deleteSeries(series_id: number): Promise<void> {
+    return axios
+      .delete(`/series/${series_id}`)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error("Error deleting series:", error.response?.data || error.message);
+        throw error;
+      });
+  }
+  
 }
 
 

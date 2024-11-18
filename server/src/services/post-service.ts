@@ -71,19 +71,25 @@ class PostService {
         });
       }
       
-
-      updatePost(post_id: number, title: string, content: string, image: string, updated_at: Date) {
-        return new Promise<void>((resolve, reject) => {
+      updatePost(post_id: number, title: string, content: string, image: string) {
+        return new Promise((resolve, reject) => {
+          console.log('Executing Query:', { post_id, title, content, image });
+      
           pool.query(
-            'UPDATE Posts SET title = ?, content = ?, image = ?, updated_at = ? WHERE post_id = ?',
-            [title, content, image, updated_at, post_id],
+            'UPDATE Posts SET title = ?, content = ?, image = ? WHERE post_id = ?',
+            [title, content, image, post_id], 
             (error) => {
-              if (error) return reject(error);
-              resolve();
+              if (error) {
+                console.error('Database Query Error:', error.message);
+                return reject(error);
+              }
+              resolve(undefined);
             }
           );
         });
       }
+      
+      
     
       deletePost(post_id: number) {
         return new Promise<void>((resolve, reject) => {

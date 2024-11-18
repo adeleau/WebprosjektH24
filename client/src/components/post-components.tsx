@@ -17,9 +17,17 @@ export const PostList: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const loggedInUser = Cookies.get("user");
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const userCookie = Cookies.get("user");
+
+    try {
+      if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
+        setUser(JSON.parse(userCookie));
+      } else {
+        setUser(null); // No valid user data in cookies
+      }
+    } catch (err) {
+      console.error("Error parsing user cookie:", err);
+      setUser(null);
     }
 
     PostService.getAll()
@@ -35,32 +43,6 @@ export const PostList: React.FC<{}> = () => {
         {error && <div className="error-message">{error}</div>}
 
         <h2>RECENT POSTS</h2>
-
-        <div className="post-list-content">
-          {posts.map((post) => (
-            <div key={post.post_id} className="post-preview-card">
-              {/* Only show the username if it exists */}
-              {post.username && (
-                <Link to={`/user/${post.user_id}`} className="post-creator">
-                  {post.username}
-                </Link>
-              )}
-              <Link to={`/posts/${post.post_id}`} className="post-link">
-                <img
-                  src="//www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&amp;width=80"
-                  alt="Sonny Angel Hipper"
-                  className="post-preview-hipper"
-                />
-                <h3 className="post-title">{post.title}</h3>
-                <p className="post-preview-content">
-                  {post.content.slice(0, 100)}
-                </p>
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* Only show the "New Post" button if the user is logged in */}
         {user ? (
           <button
             className="btn-new"
@@ -69,11 +51,30 @@ export const PostList: React.FC<{}> = () => {
             New post as {user.username}
           </button>
         ) : null}
+
+        <div className="post-list-content">
+          {posts.map((post) => (
+            <div key={post.post_id} className="post-preview-card">
+              {post.username && (
+                <Link to={`/user/${post.user_id}`} className="post-creator">
+                  {post.username}
+                </Link>
+              )}
+              <Link to={`/posts/${post.post_id}`} className="post-link">
+                <h3 className="post-title">{post.title}</h3>
+                <p className="post-preview-content">
+                  {post.content.slice(0, 100)}
+                </p>
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
       <Footer />
     </>
   );
 };
+
 
 
 
@@ -86,9 +87,17 @@ export const PostNew: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const loggedInUser = Cookies.get("user");
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const userCookie = Cookies.get("user");
+
+    try {
+      if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
+        setUser(JSON.parse(userCookie));
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Error parsing user cookie:", err);
+      setUser(null);
     }
   }, []);
 
@@ -98,13 +107,7 @@ export const PostNew: React.FC<{}> = () => {
       return;
     }
 
-    PostService.createPost(
-      user.user_id,
-      user.username,
-      title,
-      content,
-      image,
-    )
+    PostService.createPost(user.user_id, user.username, title, content, image)
       .then((post_id) => history.push(`/posts/${post_id}`))
       .catch((err) => setError("Error creating post: " + err.message));
   };
@@ -174,21 +177,26 @@ export const PostEdit: React.FC<{}> = () => {
     title: "",
     content: "",
     image: "",
-    created_at: new Date(),
-    updated_at: new Date(),
-  });
+    created_at: new Date().toISOString(),
+  } as unknown as Post);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    // Fetch the logged-in user
-    const loggedInUser = Cookies.get("user");
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const userCookie = Cookies.get("user");
+
+    try {
+      if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
+        setUser(JSON.parse(userCookie));
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Error parsing user cookie:", err);
+      setUser(null);
     }
 
-    // Fetch the post details
     PostService.get(Number(post_id))
       .then((fetchedPost) => setPost(fetchedPost))
       .catch((err) => setError("Error getting post: " + err.message));
@@ -291,6 +299,7 @@ export const PostEdit: React.FC<{}> = () => {
 
 
 
+
 export const PostDetails: React.FC<{}> = () => {
   const { post_id } = useParams<{ post_id: string }>();
   const [post, setPost] = useState<Post | null>(null);
@@ -299,9 +308,17 @@ export const PostDetails: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const loggedInUser = Cookies.get("user");
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
+    const userCookie = Cookies.get("user");
+
+    try {
+      if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
+        setUser(JSON.parse(userCookie));
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Error parsing user cookie:", err);
+      setUser(null);
     }
 
     PostService.get(Number(post_id))

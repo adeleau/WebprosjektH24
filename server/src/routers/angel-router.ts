@@ -1,32 +1,39 @@
-import express from 'express';
-import angelService, { Angel } from "../services/angel-service" //legg til angellikes
-import angelCommentService from "../services/angelcomment-service"
+import express from "express";
+import angelService, { Angel } from "../services/angel-service";
+import angelCommentService from "../services/angelcomment-service";
 
 const angelrouter = express.Router();
 
-// ANGELS
-// get all angels
-angelrouter.get('/angels', (_request, response) => {
+// **Fetch All Angels**
+angelrouter.get("/angels", (_req, res) => {
   angelService
     .getAll()
-    .then((angelList) => response.send(angelList))
-    .catch((error) => response.status(500).send(error));
+    .then((angels) => res.status(200).json(angels))
+    .catch((err) => {
+      console.error("Error fetching angels:", err);
+      res.status(500).send("Failed to fetch angels");
+    });
 });
 
-// get spesific angel
-angelrouter.get('/angels/:angel_id', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
+// **Fetch Specific Angel by ID**
+angelrouter.get("/angels/:angel_id", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+  if (isNaN(angel_id)) {
+    return res.status(400).send("Invalid angel ID");
+  }
+
   angelService
     .get(angel_id)
-    .then((angel) => (response.send(angel)))
-    .catch((error) => response.status(500).send(error));
+    .then((angel) => res.status(200).json(angel))
+    .catch((err) => {
+      console.error(`Error fetching angel with ID ${angel_id}:`, err);
+      res.status(500).send("Failed to fetch angel");
+    });
 });
 
-
-
-// Create a new angel
-angelrouter.post('/angels', (req, res) => {
-  const { name, description, image, release_year, user_id, series_id } = req.body;
+// **Create New Angel**
+angelrouter.post("/angels", (req, res) => {
+  const { name, description, image, release_year, views, user_id, series_id } = req.body;
 
   if (!name || !description || !user_id || !series_id) {
     return res.status(400).send("Missing required fields: name, description, user_id, series_id");
@@ -34,195 +41,178 @@ angelrouter.post('/angels', (req, res) => {
 
   angelService
     .createAngel({ name, description, image, release_year, views: 0, user_id, series_id, user_name: req.body.user_name })
-    .then((newAngel) => res.status(201).send(newAngel))
-    .catch((error) => res.status(500).send(error));
+    .then((newAngel) => res.status(201).json(newAngel))
+    .catch((err) => {
+      console.error("Error creating angel:", err);
+      res.status(500).send("Failed to create angel");
+    });
 });
 
-// DELETE /angels/:angel_id
-angelrouter.delete('/angels/:angel_id', async (req, res) => {
-  const angel_id = parseInt(req.params.angel_id, 10);
+// **Update Existing Angel**
+angelrouter.put("/angels/:angel_id", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+  const angel: Angel = req.body;
 
-  console.log('DELETE request received for angel ID:', angel_id);
-
-  // Validate the angel_id
-  if (isNaN(angel_id) || angel_id <= 0) {
-    console.warn('Invalid angel ID received:', req.params.angel_id);
-    return res.status(400).send({ error: 'Invalid angel ID.' });
-  }
-
-  try {
-    // Call the service to delete the angel
-    await angelService.deleteAngel(angel_id);
-    res.status(200).send({ message: 'Angel deleted successfully.' });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error in DELETE /angels/:angel_id:', error.message);
-    } else {
-      console.error('Error in DELETE /angels/:angel_id:', error);
-    }
-    if (error instanceof Error) {
-      res.status(500).send({ error: error.message });
-    } else {
-      res.status(500).send({ error: String(error) });
-    }
-  }
-});
-
-
-//get angels etter series_id
-angelrouter.get('/series/:series_id', (req, res) => {
-  const series_id = req.params.series_id;
-  angelService.getBySeries(Number(series_id))
-      .then((angels) => res.send(angels))
-      .catch((err) => res.status(500).send({ error: err.message }));
-});
-
-//edit sepcific angel
-angelrouter.put('/angels/:angel_id', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
-  const angel: Angel = request.body;
-
-  if (!angel_id || !angel) {
-    return response.status(400).send('Missing angel ID or angel data');
+  if (isNaN(angel_id) || !angel) {
+    return res.status(400).send("Invalid angel ID or missing angel data");
   }
 
   angelService
-    .updateAngel(angel)
-    .then(() => response.status(200).send('Angel updated successfully'))
-    .catch((error) => response.status(500).send(error));
+    .updateAngel({ ...angel, angel_id })
+    .then(() => res.status(200).send("Angel updated successfully"))
+    .catch((err) => {
+      console.error(`Error updating angel with ID ${angel_id}:`, err);
+      res.status(500).send("Failed to update angel");
+    });
 });
 
+// **Delete Angel**
+angelrouter.delete("/angels/:angel_id", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
 
-
-
-
-// Get the history of a specific angel
-angelrouter.get('/angels/:angel_id/history', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
   if (isNaN(angel_id)) {
-    return response.status(400).send('Invalid angel ID');;
+    return res.status(400).send("Invalid angel ID");
   }
+
   angelService
-    .getAngelHistory(angel_id)
-    .then((history) => response.send(history))
-    .catch((error) => response.status(500).send(error));
+    .deleteAngel(angel_id)
+    .then(() => res.status(200).send("Angel deleted successfully"))
+    .catch((err) => {
+      console.error(`Error deleting angel with ID ${angel_id}:`, err);
+      res.status(500).send("Failed to delete angel");
+    });
 });
 
-// COMMENTS
-angelrouter.post('/angels/:angel_id/comments', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
-  const { user_id, content, created_at } = request.body;
-  if (angel_id && user_id && content) {
-    angelCommentService
-      .addAngelComment(angel_id, user_id, content)
-      .then((angelcomment_id) => response.status(201).send({ angelcomment_id }))
-      .catch((error) => response.status(500).send(error));
-  } else {
-    response.status(400).send('Missing angel ID, user ID or comment content');
-  }
-});
+// **Increment Views**
+angelrouter.put("/angels/:angel_id/increment-views", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
 
-//get all comments on angel
-angelrouter.get('/angels/:angel_id/comments', (request, response) => {
-  const angel_id = Number(request.params.angel_id);
   if (isNaN(angel_id)) {
-    return response.status(400).send('Invalid angel ID');
+    return res.status(400).send("Invalid angel ID");
+  }
+
+  angelService
+    .incrementViews(angel_id)
+    .then((updatedAngel) => res.status(200).json(updatedAngel))
+    .catch((err) => {
+      console.error(`Error incrementing views for angel with ID ${angel_id}:`, err);
+      res.status(500).send("Failed to increment views");
+    });
+});
+
+// **Fetch Angels by Series**
+angelrouter.get("/series/:series_id", (req, res) => {
+  const series_id = Number(req.params.series_id);
+
+  if (isNaN(series_id)) {
+    return res.status(400).send("Invalid series ID");
+  }
+
+  angelService
+    .getBySeries(series_id)
+    .then((angels) => res.status(200).json(angels))
+    .catch((err) => {
+      console.error(`Error fetching angels for series ID ${series_id}:`, err);
+      res.status(500).send("Failed to fetch angels by series");
+    });
+});
+
+// **Search Angels**
+angelrouter.get("/angels/search/:query", (req, res) => {
+  const query = req.params.query;
+
+  angelService
+    .search(query)
+    .then((results) => res.status(200).json(results))
+    .catch((err) => {
+      console.error(`Error searching for angels with query "${query}":`, err);
+      res.status(500).send("Failed to search angels");
+    });
+});
+
+// **Fetch Comments for an Angel**
+angelrouter.get("/angels/:angel_id/comments", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+
+  if (isNaN(angel_id)) {
+    return res.status(400).send("Invalid angel ID");
   }
 
   angelCommentService
     .getAngelComments(angel_id)
-    .then((comments) => response.json(comments))
-    .catch((error) => response.status(500).json({ error: error.message }));
+    .then((comments) => res.status(200).json(comments))
+    .catch((err) => {
+      console.error(`Error fetching comments for angel ID ${angel_id}:`, err);
+      res.status(500).send("Failed to fetch comments");
+    });
 });
 
-//edit comment
-/*router.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
-   const angelcomment_id = Number(request.params.angelcomment_id);
-   const angelcomment: AngelComment = request.body;
-  if (angelcomment) {
-     angelCommentService
-      .updateAngelComment(angelcomment)
-       .then(() => response.send())
-      .catch((error) => response.status(500).send(error));
-   } else {
-     response.status(400).send('Missing angelcomment');
-   }
-})*/
-angelrouter.put('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
-  const angelcomment_id = Number(request.params.angelcomment_id);
-  const { content } = request.body; // Only extract content from the request body
+// **Add Comment to an Angel**
+angelrouter.post("/angels/:angel_id/comments", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+  const { user_id, content } = req.body;
+
+  if (!user_id || !content) {
+    return res.status(400).send("Missing user ID or comment content");
+  }
+
+  angelCommentService
+    .addAngelComment(angel_id, user_id, content)
+    .then((commentId) => res.status(201).json({ angelcomment_id: commentId }))
+    .catch((err) => {
+      console.error(`Error adding comment for angel ID ${angel_id}:`, err);
+      res.status(500).send("Failed to add comment");
+    });
+});
+
+// **Edit Comment**
+angelrouter.put("/angels/comments/:angelcomment_id", (req, res) => {
+  const angelcomment_id = Number(req.params.angelcomment_id);
+  const { content } = req.body;
 
   if (!content) {
-    return response.status(400).send('Missing comment content');
+    return res.status(400).send("Missing comment content");
   }
 
   angelCommentService
     .updateAngelComment(angelcomment_id, content)
-    .then(() => response.status(200).send('Comment updated successfully'))
-    .catch((error) => response.status(500).json({ error: error.message }));
+    .then(() => res.status(200).send("Comment updated successfully"))
+    .catch((err) => {
+      console.error(`Error updating comment ID ${angelcomment_id}:`, err);
+      res.status(500).send("Failed to update comment");
+    });
 });
 
-// delete comment
-angelrouter.delete('/angels/:angel_id/comments/:angelcomment_id', (request, response) => {
-  const angelcomment_id = Number(request.params.angelcomment_id);
+// **Delete Comment**
+angelrouter.delete("/angels/comments/:angelcomment_id", (req, res) => {
+  const angelcomment_id = Number(req.params.angelcomment_id);
+  const user_id = Number(req.body.user_id);
+  const role = req.body.role;
 
-  if (isNaN(angelcomment_id)) {
-    return response.status(400).send('Invalid comment ID');
+  if (isNaN(angelcomment_id) || isNaN(user_id) || !role) {
+    return res.status(400).send("Invalid comment ID, user ID, or role");
   }
 
   angelCommentService
-    .deleteAngelComment(angelcomment_id)
-    .then(() => response.status(200).send('Comment deleted successfully'))
-    .catch((error) => response.status(500).json({ error: error.message }));
-});
-
-// SEARCHBAR
-angelrouter.get('/angels/search/:search', async (request, response) => {
-  const searchTerm = request.params.search;
-
-  try {
-      const results = await angelService.search(searchTerm); 
-      response.send(results); 
-  } catch (error) {
-      console.error('Error fetching search results:', error);
-      response.status(500).send("Error fetching search results"); 
-  }
-});
-
-// CREATED/UPDATED AT
-angelrouter.get('/angels/:angel_id/created_at', (request, response) => {
-  console.log('Request received for angel_id:', request.params.angel_id);
-  const angel_id = Number(request.params.angel_id)
-  if (isNaN(angel_id)) {
-    return response.status(400).send({ error: 'Invalid angel_id'})
-  }
-  angelService
-    .getCreatedAt(angel_id)
-    .then((created_at) => {
-      console.log('Created at: ' + created_at);
-      (response.send({created_at}))
-    })
-    .catch((error) => {
-      console.error("her er feilen");
-      response.status(500).send(error)
+    .deleteAngelComment(angelcomment_id, user_id, role)
+    .then(() => res.status(200).send("Comment deleted successfully"))
+    .catch((err) => {
+      console.error(`Error deleting comment ID ${angelcomment_id}:`, err);
+      res.status(500).send("Failed to delete comment");
     });
-})
+});
 
-angelrouter.get('/angels/:angel_id/updated_at', (request, response) => {
-  const angel_id = Number(request.params.angel_id)
-  angelService
-    .getUpdatedAt(angel_id)
-    .then((updated_at) => (response.send(updated_at)))
-    .catch((error) => response.status(500).send(error));
-})
 
- //get username of user by angel
- angelrouter.get('angels/:angel_id/username', (request, response) => {
-  const angel_id = Number(request.params.angel_id)
-  angelService.getUsername(angel_id)
-    .then((username) => response.send(username))
-    .catch((error) => response.status(500).send({ error: error.message}))
-})
+// Get the 10 most viewed angels (Popular Angels)
+angelrouter.get("/popular", async (req, res) => {
+  try {
+    const popularAngels = await angelService.getPopular();
+    res.status(200).json(popularAngels);
+  } catch (error) {
+    console.error("Error fetching popular angels:", error);
+    res.status(500).send("Failed to fetch popular angels.");
+  }
+});
 
 
 export default angelrouter;

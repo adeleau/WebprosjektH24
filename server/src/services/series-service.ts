@@ -38,6 +38,23 @@ class SeriesService {
       );
     });
   }
+
+
+  deleteSeries(seriesId: number) {
+    return new Promise<void>((resolve, reject) => {
+      pool.query(
+        'DELETE FROM Series WHERE series_id = ?',
+        [seriesId],
+        (error) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
 }
 
 export default new SeriesService;

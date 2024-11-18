@@ -53,7 +53,6 @@ class UserService {
     // Update user details
     updateUser(user_id: number, user: Partial<User>): Promise<void> {
         return new Promise((resolve, reject) => {
-
             pool.query('UPDATE Users SET ? WHERE user_id = ?', [user, user_id], (error) => {
                 if (error) {
                     return reject(error);
@@ -62,7 +61,7 @@ class UserService {
             });
         });
     }
-
+    
     // Update user profile picture
     updateProfilePicture(user_id: number, profilePicture: Buffer) {
         return new Promise<void>((resolve, reject) => {
