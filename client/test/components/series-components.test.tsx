@@ -10,17 +10,26 @@ jest.mock('js-cookie', () => ({
   get: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom', () => ({
+  ..jest.requireActual('react-router-dom'),
+  useParams:jest.fn(),
+}));
+
+describe('SeriesList Components Tests' () => {
   let wrapper: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     (useParams as jest.Mock).mockReturnValue({ series_id: 1});
     Cookies.get.mockReturnValue('{ "role": "admin" }');
-    wrapper = shallow(<SeriesList/>);
+    wrapper = shallow(<SeriesList />);
   });
 
-  test('renders series name and angels correctly', () => {
+  test('renders loading message initially', () => {
+    expect(wrapper.text()).toContain('Loading series information...');
+  });
+
+  test('renders series name and angels correctly', async() => {
     const mockSeriesName = 'Engel-series';
     const mockAngels = [
       { angel_id: 1, name: 'angel1', image: 'angel1.jpg'},
@@ -30,12 +39,51 @@ jest.mock('react-router-dom', () => {
     wrapper.setState({ seriesName: mockSeriesName, angels: mockAngels});
     wrapper.update();
 
+    await new Promise((resolve) => setTimeout(resolve,0));
+
     expect(wrapper.find('h1').text()).toBe(mockSeriesName);
     expect(wrapper.find('.angel-card')).toHaveLength(mockAngels.length);
   });
 
-  test('renders no angels message when no angels are available')
-})
+  test('renders no angels message when no angels are available', async () => {
+    const mockError = 'Error getting series name: Failed to fetch';
+
+    wrapper.setState({ error: mockError });
+    wrapper.update();
+
+    await new Promise((resolve) => setTimeout(resolve,0));
+
+    expect(wrapper.find('error-message').text()).toBe(mockError);
+  });
+
+  test('renders admin button for admin users', async () => {
+    const mockSeriesName = 'Engel-series';
+
+    wrapper.setState({ seriesName: mockSeriesName, user: { role:'admin'}});
+    wrapper.update();
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(wrapper.find('btn-delete-series')).toHaveLength(0);
+    expect(wrapper.find('btn-create-angel')).toHaveLength(0);
+  });
+
+  test('Handles delete button click correctly', async() => {
+    const mockSeriesName = 'Engel-series';
+    const mockUser = { role: 'admin'};
+    window.confirm = jest.fn(() => true); //mocken tar og annerkjenner confirm
+    window.alert = jest.fn(); //Dette er en Mock alert
+
+    wrapper.setState({ seriesName: mockSeriesName, user: mockUser});
+    wrapper.update();
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    wrapper.find('btn-delete-series').simulates('click');
+    expect(window.confirm).toHaveBeenCalledWith(`do you want to delete "${mockSeriesName}"?`);
+    expect(window.alert).toHaveBeenCalled(`Series "${mockSeriesName}"? has been deleted`);
+  });
+});
 
 
 

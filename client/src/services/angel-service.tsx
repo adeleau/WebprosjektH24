@@ -14,12 +14,12 @@ export type Angel = {
     // user_name: string;
     series_id: number;
 };
-export type AngelHistory = {
+export type Angel_History = {
     angelhistory_id: number;
     angel_id?: number;
     description: string;
     user_id: string;
-    //updated_at?: Date;
+    updated_at?: Date;
   };
 
 // AngelService class to interact with the backend API
@@ -102,7 +102,7 @@ deleteAngel(angel_id: number): Promise<void> {
         throw err;
       });
 };
-    //get angels etter series_id
+    //get angels by series_id
     getBySeries(series_id: number) {
         return axios
             .get<Angel[]>(`/series/${series_id}`) 
@@ -111,6 +111,20 @@ deleteAngel(angel_id: number): Promise<void> {
                 console.error(`Error fetching angels for series with id ${series_id}:`, err);
                 throw err;
             });
+    }
+
+    //get angel count by series_id
+    getAngelCount(series_id: number): Promise<number> {
+      return axios
+        .get<{ count: number }>(`/series/${series_id}/count`)
+        .then((res) => {
+          console.log(`Fetched angel count for series_id ${series_id}: `, res.data.count);
+          return res.data.count;
+        })
+        .catch((err) => {
+          console.error(`Error fetching angel count for series_id ${series_id}: `, err);
+          throw err;
+        })
     }
 
     //søkefelt
@@ -164,6 +178,15 @@ getPopular(): Promise<Angel[]> {
         console.error("Error fetching popular angels:", err);
         throw err;
       });
-  }
+    }
+    getAngelHistory(angel_id: number): Promise<Angel_History[]> {
+      return axios
+        .get<Angel_History[]>(`/angels/${angel_id}/history`)
+        .then((res) => res.data)
+        .catch((err) => {
+          console.error(`Error fetching history for angel ID ${angel_id}:`, err);
+          throw err;
+        });
+    }
 }
 export default new AngelService();

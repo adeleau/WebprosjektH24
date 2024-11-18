@@ -15,7 +15,8 @@ export type Angel = {
     user_name: string;
 };
 
-export type AngelHistory = {
+export type Angel_History = {
+  angelhistory_id:number;
   angel_id?: number;
   description: string;
   user_id: string;
@@ -71,6 +72,57 @@ class AngelService {
   
     updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
+        // Hent den eksisterende engelen fra databasen
+        this.get(angel.angel_id!)
+          .then((result) => {
+            if (result instanceof Error) {
+              return reject(new Error('Failed to fetch existing angel data'));
+            }
+    
+            const currentAngel = result as Angel;
+    
+            // Sammenlign beskrivelsene
+            if (currentAngel.description !== angel.description) {
+              // Logg historikk hvis beskrivelsen er forskjellig
+              pool.query(
+                'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
+                [angel.angel_id, currentAngel.description, angel.user_id],
+                (historyError) => {
+                  if (historyError) return reject(historyError);
+    
+                  // Oppdater engelens data etter å ha logget historikken
+                  pool.query(
+                    'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                    [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                    (updateError) => {
+                      if (updateError) return reject(updateError);
+                      resolve();
+                    }
+                  );
+                }
+              );
+            } else {
+              // Hvis beskrivelsen ikke er endret, oppdater bare engelens andre felt
+              pool.query(
+                'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                (updateError) => {
+                  if (updateError) return reject(updateError);
+                  resolve();
+                }
+              );
+            }
+          })
+          .catch((error) => reject(error));
+      });
+    }
+
+
+
+    /*updateAngel(angel: Angel) {
+      return new Promise<void>((resolve, reject) => {
+        
+        
         pool.query(
           'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
           [angel.angel_id, angel.description, angel.user_id],
@@ -88,7 +140,7 @@ class AngelService {
           }
         );
       });
-    }    
+    }  */  
 
      // Increment views for an angel
   incrementViews(angelId: number) {
@@ -202,27 +254,34 @@ class AngelService {
   
     //legger til engel historikk
     getAngelHistory(angel_id: number) {
-      return new Promise<AngelHistory[]>((resolve, reject) => {
+      return new Promise<Angel_History[]>((resolve, reject) => {
         pool.query(
           'SELECT * FROM AngelHistory WHERE angel_id = ? ORDER BY updated_at DESC',
           [angel_id],
           (error, results: RowDataPacket[]) => {
             if (error) return reject(error);
-            resolve(results);
+            resolve(results as Angel_History[]);
           }
         );
       });
     }
 
     // Log history
-    logAngelHistory(angel_id: number, description: string, user_id: number): Promise<void> {
+    logAngelHistory(angel_id: number, description: string, user_id: number) {
       return new Promise((resolve, reject) => {
         pool.query(
-          "INSERT INTO Angel_History (angel_id, description, user_id) VALUES (?, ?, ?)",
+          "INSERT INTO AngelHistory (angel_id, description, user_id) VALUES (?, ?, ?)",
           [angel_id, description, user_id],
           (error, results: ResultSetHeader) => {
             if (error) return reject(error);
-            resolve(results.insertId);
+            pool.query(
+              "SELECT * FROM AngelHistory WHERE angelhistory_id = ?",
+              [results.insertId],
+              (selectError, rows: RowDataPacket[]) => {
+                if (selectError) return reject(selectError);
+                resolve(rows[0] as Angel_History);
+              }
+            );
           }
         );
       });
@@ -246,7 +305,7 @@ class AngelService {
 
     // get angels by series_id
     getBySeries(series_id: number): Promise<Angel[]> {
-    return new Promise<Angel[]>((resolve, reject) => {
+      return new Promise<Angel[]>((resolve, reject) => {
         pool.query(
         'SELECT * FROM Angels WHERE series_id = ?', 
         [series_id], 
@@ -258,8 +317,25 @@ class AngelService {
             resolve(results as Angel[]);
         }
         );
-    });
+      });
     }
+
+    //get angel count by series_id
+    getAngelCount(series_id: number): Promise<number> {
+      return new Promise<number>((resolve, reject) => {
+        pool.query(
+          'SELECT COUNT(*) as count FROM Angels WHERE series_id =?', [series_id], 
+          (error, results: RowDataPacket[]) => {
+            if (error) {
+              console.error(`Error counting angels for series_id ${series_id}: `, error);
+              return reject(error);
+            }
+            resolve(results[0].count);
+          }
+        )
+      })
+    }
+
     getPopular(): Promise<Angel[]> {
       return new Promise<Angel[]>((resolve, reject) => {
         pool.query(

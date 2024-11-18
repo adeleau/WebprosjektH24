@@ -66,6 +66,25 @@ angelrouter.put("/angels/:angel_id", (req, res) => {
     });
 });
 
+//Hent Angel History
+angelrouter.get("/angels/:angel_id/history", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+
+  if(isNaN(angel_id)){
+    return res.status(400).send("Invalid angel ID");
+  }
+
+  angelService
+    .getAngelHistory(angel_id)
+    .then((history) => {
+      res.status(200).json(history);
+    })
+    .catch((err) => {
+      console.error('Error fetching history from angel ID ${angel_id}:', err);
+      res.status(500).send("Failed to fetch angel history");
+    });
+});
+
 // **Delete Angel**
 angelrouter.delete("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
@@ -116,6 +135,21 @@ angelrouter.get("/series/:series_id", (req, res) => {
       res.status(500).send("Failed to fetch angels by series");
     });
 });
+
+// **Fetch Angel Count by Series**
+angelrouter.get("/series/:series_id/count", (req, res) => {
+  const series_id = Number(req.params.series_id);
+  if (isNaN(series_id)) {
+    return res.status(400).send("Invalid series ID");
+  }
+  angelService
+    .getAngelCount(series_id)
+    .then((count) => res.status(200).json({ count }))
+    .catch((err) => {
+      console.error(`Error fetching angel count for series ID ${series_id}:`, err);
+      res.status(500).send("Failed to fetch angel count by series");
+    })
+})
 
 // **Search Angels**
 angelrouter.get("/angels/search/:query", (req, res) => {

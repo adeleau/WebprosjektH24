@@ -62,6 +62,7 @@ export const PostList: React.FC<{}> = () => {
               alt="Post Header"
               className="post-preview-hipper"
             />
+            <Link to={`/user/${post.user_id}`}>
               {post.username && (
                 <Link to={`/user/${post.user_id}`} className="post-creator">
                   {post.username}
@@ -71,8 +72,7 @@ export const PostList: React.FC<{}> = () => {
                 <p className="post-preview-content">
                   {post.content.slice(0, 100)}
                 </p>
-              </Link>
-             
+            </Link>
             </div>
           ))}
         </div>

@@ -1,11 +1,11 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
 import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from 'js-cookie';
 import AngelService from "../services/angel-service";
-import type { Angel } from "../services/angel-service";
+import type { Angel, Angel_History } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment as BaseAngelComment } from "../services/angelcomment-service";
 interface AngelComment extends BaseAngelComment {
@@ -16,6 +16,7 @@ import type { Series } from "../services/series-service";
 import type { User } from "../services/user-service";
 import LikesService from "../services/likes-service";
 import WishlistService from "../services/wishlist-service";
+
 
 const history = createHashHistory();
 
@@ -364,117 +365,117 @@ export const AngelDetails: React.FC<{}> = () => {
           </div>
 
           <div className="comment-section">
-  <h2>Comments</h2>
-  <div className="comments">
-    {comments.map((comment) => (
-      <div key={comment.angelcomment_id} className="comment">
-        {user && (user.role === "admin" || user.user_id === comment.user_id) ? (
-          <div>
-            {comment.isEditing ? (
-              <input
-                type="text"
-                value={comment.content}
-                onChange={(e) => {
-                  const updatedComments = comments.map((c) =>
-                    c.angelcomment_id === comment.angelcomment_id
-                      ? { ...c, content: e.target.value }
-                      : c
-                  );
-                  setComments(updatedComments);
-                }}
-                className="edit-comment-input"
-              />
-            ) : (
-              <p>
-                <strong>
-                  <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
-                </strong>
-                : {comment.content}
-              </p>
-            )}
-            <div className="comment-actions">
-              {comment.isEditing ? (
-                <button
-                  onClick={() => {
-                    AngelCommentService.editAngelComment(
-                      comment.angelcomment_id,
-                      comment.content,
-                      user.user_id,
-                      user.role || ''
-                    )
-                      .then(() => {
-                        const updatedComments = comments.map((c) =>
-                          c.angelcomment_id === comment.angelcomment_id
-                            ? { ...c, isEditing: false }
-                            : c
-                        );
-                        setComments(updatedComments);
-                      })
-                      .catch((err) => setError(`Failed to edit comment: ${err.message}`));
-                  }}
-                  className="save-comment-button"
-                >
-                  Save
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    const updatedComments = comments.map((c) =>
-                      c.angelcomment_id === comment.angelcomment_id
-                        ? { ...c, isEditing: true }
-                        : c
-                    );
-                    setComments(updatedComments);
-                  }}
-                  className="edit-comment-button"
-                >
-                  Edit
-                </button>
-              )}
-              <button
-                onClick={() =>
-                  AngelCommentService.deleteAngelComment(
-                    comment.angelcomment_id,
-                    user.user_id,
-                    user.role || ''
-                  )
-                    .then(() => fetchComments())
-                    .catch((err) => setError(`Failed to delete comment: ${err.message}`))
-                }
-                className="delete-comment-button"
-              >
-                Delete
-              </button>
+            <h2>Comments</h2>
+            <div className="comments">
+              {comments.map((comment) => (
+                <div key={comment.angelcomment_id} className="comment">
+                  {user && (user.role === "admin" || user.user_id === comment.user_id) ? (
+                    <div>
+                      {comment.isEditing ? (
+                        <input
+                          type="text"
+                          value={comment.content}
+                          onChange={(e) => {
+                            const updatedComments = comments.map((c) =>
+                              c.angelcomment_id === comment.angelcomment_id
+                                ? { ...c, content: e.target.value }
+                                : c
+                            );
+                            setComments(updatedComments);
+                          }}
+                          className="edit-comment-input"
+                        />
+                      ) : (
+                        <p>
+                          <strong>
+                            <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
+                          </strong>
+                          : {comment.content}
+                        </p>
+                      )}
+                      <div className="comment-actions">
+                        {comment.isEditing ? (
+                          <button
+                            onClick={() => {
+                              AngelCommentService.editAngelComment(
+                                comment.angelcomment_id,
+                                comment.content,
+                                user.user_id,
+                                user.role || ''
+                              )
+                                .then(() => {
+                                  const updatedComments = comments.map((c) =>
+                                    c.angelcomment_id === comment.angelcomment_id
+                                      ? { ...c, isEditing: false }
+                                      : c
+                                  );
+                                  setComments(updatedComments);
+                                })
+                                .catch((err) => setError(`Failed to edit comment: ${err.message}`));
+                            }}
+                            className="save-comment-button"
+                          >
+                            Save
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              const updatedComments = comments.map((c) =>
+                                c.angelcomment_id === comment.angelcomment_id
+                                  ? { ...c, isEditing: true }
+                                  : c
+                              );
+                              setComments(updatedComments);
+                            }}
+                            className="edit-comment-button"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button
+                          onClick={() =>
+                            AngelCommentService.deleteAngelComment(
+                              comment.angelcomment_id,
+                              user.user_id,
+                              user.role || ''
+                            )
+                              .then(() => fetchComments())
+                              .catch((err) => setError(`Failed to delete comment: ${err.message}`))
+                          }
+                          className="delete-comment-button"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p>
+                      <strong>
+                        <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
+                      </strong>
+                      : {comment.content}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
-        ) : (
-          <p>
-            <strong>
-              <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
-            </strong>
-            : {comment.content}
-          </p>
-        )}
-      </div>
-    ))}
-  </div>
 
-  {user ? (
-    <div className="comment-input">
-      <input
-        type="text"
-        placeholder="Post a comment..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      />
-      <button className="post-button" onClick={handlePostComment}>
-        Post
-      </button>
-    </div>
-  ) : (
-    <p className="login-prompt">Log in to post a comment.</p>
-  )}
-</div>
+            {user ? (
+              <div className="comment-input">
+                <input
+                  type="text"
+                  placeholder="Post a comment..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <button className="post-button" onClick={handlePostComment}>
+                  Post
+                </button>
+              </div>
+            ) : (
+              <p className="login-prompt">Log in to post a comment.</p>
+            )}
+          </div>
 
         </div>
       ) : null}
@@ -699,6 +700,70 @@ export const AngelNew: React.FC<{}> = () => {
           Create Angel
         </button>
       </div>
+      <Footer />
+    </>
+  );
+};
+
+
+
+export const AngelHistory: React.FC = () => {
+  const { angel_id } = useParams<{ angel_id: string }>();
+  const history = useHistory();
+
+  const [AngelHistory, setAngelHistory] = useState<Angel_History[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (angel_id) {
+      AngelService.getAngelHistory(Number(angel_id))
+        .then((data) => {
+          setAngelHistory(data);
+        })
+        .catch((err) => {
+          console.error("Error fetching angel history:", err);
+          setError("Failed to fetch angel history");
+        });
+    }
+  }, [angel_id]);
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+
+      <div className="angel-history">
+        <button className="back-button" onClick={() => history.push(`/angels/${angel_id}`)}>
+          Back to Angel Details
+        </button>
+
+        <h2>Angel History</h2>
+
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <div className="history-list">
+            {AngelHistory.length > 0 ? (
+              AngelHistory.map((entry) => (
+                <div key={entry.angelhistory_id} className="history-entry">
+                  <p>
+                    <strong>Description:</strong> {entry.description}
+                  </p>
+                  <p>
+                    <strong>Updated by User ID:</strong> {entry.user_id}
+                  </p>
+                  <p>
+                    <strong>Updated at:</strong> {new Date(entry.updated_at || "").toLocaleString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>No history available for this angel.</p>
+            )}
+          </div>
+        )}
+      </div>
+
       <Footer />
     </>
   );

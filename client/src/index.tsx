@@ -32,6 +32,7 @@ if (root)
       <Route exact path="/user/:user_id" component={User.UserPage} />
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />
       <Route exact path="/angels/:angel_id/edit" component={Angel.AngelEdit} />
+      <Route exact path="/angels/:angel_id/history" component={Angel.AngelHistory} />
       <Route exact path="/masterlist" component={Angel.MasterList} />
       <Route exact path="/posts" component={Post.PostList} />
       <Route exact path="/posts/new" component={Post.PostNew} />

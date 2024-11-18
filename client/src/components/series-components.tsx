@@ -17,6 +17,7 @@ export const SeriesList: React.FC<{}> = () => {
   const [seriesName, setSeriesName] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [angelCount, setAngelCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!series_id) return;
@@ -34,7 +35,12 @@ export const SeriesList: React.FC<{}> = () => {
       .then((name) => setSeriesName(name))
       .catch((err) => setError("Error getting series name: " + err.message));
 
-    // Fetch user from cookies
+    // Fetch angel count
+    AngelService.getAngelCount(Number(series_id))
+      .then((count) => setAngelCount(count))
+      .catch((err) => setError("Error getting angel count: " + err.message));
+    
+      // Fetch user from cookies
     const userCookie = Cookies.get("user");
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
@@ -125,7 +131,9 @@ export const SeriesList: React.FC<{}> = () => {
       ) : (
         <p>Loading series information...</p>
       )}
-
+      <p className="number-of-angels">
+        Number of angels in {seriesName}: {angelCount}
+      </p>
       <Footer />
     </div>
   );
