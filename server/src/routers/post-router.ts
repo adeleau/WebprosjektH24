@@ -10,56 +10,70 @@ import userService from '../services/user-service';
 const postrouter = express.Router();
 
 // POSTS
-// get all posts
-postrouter.get('/posts', (_request, response) => {
-    postService
-      .getAll()
-      .then((rows) => response.send(rows))
-      .catch((error) => response.status(500).send(error));
-  });
+// Get all posts
+postrouter.get('/posts', (_req, res) => {
+  postService
+    .getAll()
+    .then((posts) => res.send(posts))
+    .catch((error) => res.status(500).send(error));
+});
   
-  // get spesific post
-  postrouter.get('/posts/:post_id', (request, response) => {
-    const post_id = Number(request.params.post_id);
-    postService
-      .get(post_id)
-      .then((post) => (post ? response.send(post) : response.status(404).send('Post not found')))
-      .catch((error) => response.status(500).send(error));
-  });
+// Get specific post
+postrouter.get('/posts/:post_id', (req, res) => {
+  const post_id = Number(req.params.post_id);
+  postService
+    .get(post_id)
+    .then((post) => (post ? res.send(post) : res.status(404).send('Post not found')))
+    .catch((error) => res.status(500).send(error));
+});
   
-  // post new post
-  postrouter.post('/posts', (request, response) => {
-    const data = request.body;
-    if (data && data.title && data.title.length != 0)
-      postService
-        .createPost(data.user_id, data.title, data.content, data.image, data.created_at)
-        .then((post_id) => response.send({ post_id: post_id }))
-        .catch((error) => response.status(500).send(error));
-    else response.status(400).send('Missing post title');
-  });
-  //eventuelle enderinger som skal gjøres i denne: console.log(data) --> for å finne hva som feiler
+postrouter.post('/posts', (req, res) => {
+  const { user_id, username, title, content, image } = req.body;
+
+  console.log('Request data:', req.body);
+
+  if (!title || !user_id || !username) {
+    return res.status(400).send('Missing required fields');
+  }
+
+  postService
+    .createPost(user_id, username, title, content, image)
+    .then((post_id) => res.status(201).send({ post_id }))
+    .catch((error) => {
+      console.error('Error creating post:', error.message);
+      res.status(500).send('Error creating post');
+    });
+});
+
+// Delete specific post
+postrouter.delete('/posts/:post_id', (req, res) => {
+  const post_id = Number(req.params.post_id);
+
+  postService
+    .deletePost(post_id)
+    .then(() => res.status(200).send())
+    .catch((error) => res.status(500).send(error));
+});
   
-  // delete spesific post
-  postrouter.delete('/posts/:post_id', (request, response) => {
-    postService
-      .deletePost(Number(request.params.post_id))
-      .then((_result) => response.send())
-      .catch((error) => response.status(500).send(error));
-  });
-  
-  // edit spesific post
-  postrouter.put('/posts/:post_id', (request, response) => {
-    const post_id = Number(request.params.post_id);
-    const { title, content, image, updated_at } = request.body;
-    if (title) {
-      postService
-        .updatePost(post_id, title, content, image, updated_at)
-        .then(() => response.send())
-        .catch((error) => response.status(500).send(error));
-    } else {
-      response.status(400).send('Missing post title');
-    }
-  });
+ // Update specific post
+ postrouter.put('/posts/:post_id', (req, res) => {
+  const post_id = Number(req.params.post_id);
+  const { title, content, image } = req.body;
+
+  console.log('Incoming Data:', { post_id, title, content, image });
+
+
+  postService
+    .updatePost(post_id, title, content, image) // Remove updated_at
+    .then(() => res.status(200).send('Post updated successfully'))
+    .catch((err) => {
+      console.error('Service Error:', err.message);
+      res.status(500).send('Error updating post');
+    });
+});
+
+
+
   
   // LIKES
   // like spesific post

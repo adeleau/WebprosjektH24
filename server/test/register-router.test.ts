@@ -13,8 +13,6 @@ const testUser = [
 ];
 
 let webServer: any;
-
-
 beforeAll((done) => {
     webServer = app.listen(3001, () => done());
 });
@@ -22,23 +20,26 @@ beforeAll((done) => {
 beforeEach((done) => {
     pool.query('DELETE FROM Posts', (error) => { // Slett poster som refererer til Users
         if (error) return done(error);
-        pool.query('DELETE FROM Comments', (error) => { // Slett kommentarer som refererer til Posts
+        pool.query('DELETE FROM Users', (error) => {
             if (error) return done(error);
-            pool.query('DELETE FROM Users', (error) => { // Til slutt, slett brukere
-                if (error) return done(error);
+       
                 // Legg inn testdata i Users
                 registerService
                     .register(testUser[0].username, testUser[0].email, testUser[0].password_hash)
                     .then(() => registerService.register(testUser[1].username, testUser[1].email, testUser[1].password_hash))
                     .then(() => registerService.register(testUser[2].username, testUser[2].email, testUser[2].password_hash))
-                    .then(() => done())
-                    .catch(done);
+                    .then(() => {
+
+                        pool.query(
+                        'INSERT INTO Posts (post_id, user_id, content) VALUES (1,2, "Test Post")',
+                        done
+                    );
+                })
+                .catch(done);    
             });
         });
     });
-});
-
-
+    
 afterAll((done) => {
     if(webServer) {
         webServer.close(() => pool.end(()=> done()));

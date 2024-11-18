@@ -1,6 +1,6 @@
 // user-settings.tsx
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import userService, { User } from '../services/user-service';
 import LikesService from '../services/likes-service';
 import WishlistService from '../services/wishlist-service';
@@ -177,6 +177,7 @@ export const UserSettings: React.FC = () => {
     const [formData, setFormData] = useState<Partial<User>>({});
     const [users, setUsers] = useState<User[]>([]); // To store all users
     const [isAdmin, setIsAdmin] = useState(false); // Check if logged-in user is admin
+    const history = useHistory();
 
     useEffect(() => {
         const tempUser = Cookies.get("user");
@@ -259,7 +260,7 @@ export const UserSettings: React.FC = () => {
                         onChange={handleChange}
                     />
                 </label>
-                <button type="submit">Save Changes</button>
+                <button type="submit" onClick={() => history.push('/userprofile')}>Save Changes</button>
             </form>
 
             {isAdmin && (
@@ -269,7 +270,6 @@ export const UserSettings: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Username</th>
-                                <th>Email</th>
                                 <th>Role</th>
                                 <th>Change Role</th>
                             </tr>
@@ -278,7 +278,6 @@ export const UserSettings: React.FC = () => {
                             {users.map((u) => (
                                 <tr key={u.user_id}>
                                     <td>{u.username}</td>
-                                    <td>{u.email}</td>
                                     <td>{u.role}</td>
                                     <td>
                                         <button onClick={() => handleRoleChange(u.user_id, u.role === 'admin' ? 'user' : 'admin')}>
@@ -295,3 +294,154 @@ export const UserSettings: React.FC = () => {
     );
 };
 
+
+export const UserPage: React.FC = () => {
+  const { user_id } = useParams<{ user_id: string }>();
+  const history = useHistory();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [likedAngels, setLikedAngels] = useState<Angel[]>([]);
+  const [wishlistAngels, setWishlistAngels] = useState<Angel[]>([]);
+  const [activeTab, setActiveTab] = useState<"collection" | "wishlist">("collection");
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user_id || isNaN(Number(user_id))) {
+      setError("Invalid User ID");
+      return;
+    }
+
+    // Fetch user details
+    userService
+      .getById(Number(user_id))
+      .then((fetchedUser) => setUser(fetchedUser))
+      .catch((err) => setError(`Error fetching user: ${err.message}`));
+
+    // Fetch liked angels (collection)
+    LikesService.getUserLikes(Number(user_id))
+      .then(async (likes) => {
+        const angels = await Promise.all(
+          likes.map(async (like) => {
+            try {
+              return await angelService.get(like.angel_id);
+            } catch (err) {
+              console.error("Error fetching angel details:", err);
+              return null;
+            }
+          })
+        );
+        setLikedAngels(angels.filter((angel) => angel !== null) as Angel[]);
+      })
+      .catch((err) => setError(`Error fetching liked angels: ${err.message}`));
+
+    // Fetch wishlist angels
+    WishlistService.getUserWishlist(Number(user_id))
+      .then(async (wishlist) => {
+        const angels = await Promise.all(
+          wishlist.map(async (wish) => {
+            try {
+              return await angelService.get(wish.angel_id);
+            } catch (err) {
+              console.error("Error fetching wishlist angel details:", err);
+              return null;
+            }
+          })
+        );
+        setWishlistAngels(angels.filter((angel) => angel !== null) as Angel[]);
+      })
+      .catch((err) => setError(`Error fetching wishlist: ${err.message}`));
+  }, [user_id]);
+
+  if (error) return <p>{error}</p>;
+  if (!user) return <p>Loading...</p>;
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button className="home-button" onClick={() => history.push("/")}>
+        Go to Home
+      </button>
+      <div className="series-page">
+        {/* User Details Section */}
+        <div className="profile-header">
+          <h2>{user.username}</h2>
+          <img
+            src={
+              user.profile_picture ||
+              "https://wallpapers-clan.com/wp-content/uploads/2024/10/sonny-angel-pfp-02.jpg"
+            }
+            alt="User Profile"
+            className="user-profile-image"
+          />
+        </div>
+
+        <div className="profile-divider"></div>
+
+        <div className="profile-info">
+          <p>
+            <strong>About:</strong> {user.bio || "No bio provided"}
+          </p>
+        </div>
+
+        {/* Tabs for Collection and Wishlist */}
+        <div className="profile-tabs">
+          <button
+            className={`tab-button ${activeTab === "collection" ? "active" : ""}`}
+            onClick={() => setActiveTab("collection")}
+          >
+            Collection
+          </button>
+          <button
+            className={`tab-button ${activeTab === "wishlist" ? "active" : ""}`}
+            onClick={() => setActiveTab("wishlist")}
+          >
+            Wishlist
+          </button>
+        </div>
+
+        {/* Collection Section */}
+        {activeTab === "collection" && (
+          <div className="angel-cards">
+            {likedAngels.length > 0 ? (
+              likedAngels.map((angel) => (
+                <div key={angel.angel_id} className="angel-card">
+                  <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                    <img
+                      src={angel.image || "https://placehold.co/150x150"}
+                      alt={angel.name}
+                      className="angel-card-image"
+                    />
+                    <h3 className="angel-card-name">{angel.name}</h3>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p>This user's collection is empty.</p>
+            )}
+          </div>
+        )}
+
+        {/* Wishlist Section */}
+        {activeTab === "wishlist" && (
+          <div className="angel-cards">
+            {wishlistAngels.length > 0 ? (
+              wishlistAngels.map((angel) => (
+                <div key={angel.angel_id} className="angel-card">
+                  <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                    <img
+                      src={angel.image || "https://placehold.co/150x150"}
+                      alt={angel.name}
+                      className="angel-card-image"
+                    />
+                    <h3 className="angel-card-name">{angel.name}</h3>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p>This user's wishlist is empty.</p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

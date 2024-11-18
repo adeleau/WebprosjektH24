@@ -8,12 +8,12 @@ import userService from "../services/user-service";
 import type { User } from "../services/user-service";
 import Cookies from "js-cookie";
 
+// Renders the Homepage
 export const Home: React.FC<{}> = () => {
-  
     return (
-        <>
-        <Navbar></Navbar>
-        <Leftbar></Leftbar>
+      <>
+      <Navbar />
+      <Leftbar />
         <div className="home-content">
           <div className="home-text">
           </div>
@@ -36,16 +36,17 @@ export const Home: React.FC<{}> = () => {
           </div>
         </div>
         </div>
-        <Footer></Footer>
+        <Footer />
         </>
       );
 }
 
+// Renders the Sonny Angel About page
 export const About: React.FC<{}> = () => {
     return (
         <>
-        <Navbar></Navbar>
-        <Leftbar></Leftbar>
+        <Navbar />
+        <Leftbar />
         <div className="about-container">
 
           <div className="about-section">
@@ -83,16 +84,13 @@ export const About: React.FC<{}> = () => {
               <h2>Try your luck.</h2>
               <hr className="about-divider" />
               <p className="pink-bold">
-                The major feature of Sonny Angel Mini Figures is
-                that each series is comprised of 12 different figures. 
-                Sonny Angel utilizes blind box packaging; you do not know 
-                which figure you will receive until you buy one and open the box. 
-                Unboxing Sonny Angel adds to the excitement and fans get pleasure 
-                from collecting them all. The wonder of meeting your Sonny Angel 
-                is waiting for you. Each series also has a <strong>secret figure</strong>, which
-                are randomly included in certain boxes and are the most collectible. 
-                Robby Angel is a good friend of Sonny Angel. He can change his body color at any time, 
-                like a chameleon, and he likes to dress up.
+                The major feature of Sonny Angel Mini Figures is that each series is comprised of 12 different figures. 
+                Sonny Angel utilizes blind box packaging; you do not know which figure you will receive until you buy 
+                one and open the box. Unboxing Sonny Angel adds to the excitement and fans get pleasure from collecting 
+                them all. The wonder of meeting your Sonny Angel is waiting for you. Each series also has a 
+                <strong>secret figure</strong>, which are randomly included in certain boxes and are the most collectible. 
+                Robby Angel is a good friend of Sonny Angel. He can change his body color at any time, like a chameleon, 
+                and he likes to dress up.
               </p>
             </div>
           </div>
@@ -102,12 +100,11 @@ export const About: React.FC<{}> = () => {
               <h2>All started from 18cm.</h2>
               <hr className="about-divider" />
               <p className="pink-bold">
-                The first mini figure series “Animal Series Ver. 1” was released with Sonny Angel 
-                wearing animal headgear. To date, more 1,300 types of figures were born. Currently, 
-                Sonny Angel is sold in 33 countries.As an interior design element or a world traveling 
-                companion. Sonny Angel is not just a decorative figure. He is a very photogenic buddy 
-                for social media posts and his presence provides smiles and a sense of well-being and 
-                healing to fans around the world. Each of us finds unique ways to enjoy Sonny Angel.
+                The first mini figure series “Animal Series Ver. 1” was released with Sonny Angel wearing animal headgear. 
+                To date, more 1,300 types of figures were born. Currently, Sonny Angel is sold in 33 countries. As an 
+                interior design element or a world traveling companion. Sonny Angel is not just a decorative figure. 
+                He is a very photogenic buddy for social media posts and his presence provides smiles and a sense of 
+                well-being and healing to fans around the world. Each of us finds unique ways to enjoy Sonny Angel.
               </p>
             </div>
             <div className="about-image">
@@ -117,14 +114,13 @@ export const About: React.FC<{}> = () => {
               />
             </div>
           </div>
-
         </div>
-        <Footer></Footer>
-        </>
-      );
-    };
+      <Footer />
+    </>
+  );
+};
 
-
+//Renders the Navbar 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Angel[]>([]);
@@ -146,8 +142,6 @@ export const Navbar = () => {
       }
     }
   }, [])
-
- 
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -180,7 +174,6 @@ export const Navbar = () => {
       handleSearch();
     }
   };
-
 
   return (
     <>
@@ -239,11 +232,7 @@ export const Navbar = () => {
   );
 };
 
-
-
-
-
-
+//Renders the Search page
 export const SearchPage = () => {
   const { searchQuery } = useParams<{ searchQuery: string }>();
   const [results, setResults] = useState<Angel[]>([]);
@@ -264,8 +253,8 @@ export const SearchPage = () => {
 
   return (
     <>
-    <Navbar></Navbar>
-    <Leftbar></Leftbar>
+    <Navbar />
+    <Leftbar />
     <div className="series-page">
       {searchQuery && (
         <div>
@@ -300,6 +289,7 @@ export const SearchPage = () => {
   );
 };
 
+//Renders the Leftbar
 export const Leftbar: React.FC<{}> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -389,11 +379,6 @@ export const Leftbar: React.FC<{}> = () => {
             <li className="nav-text">
               <Link to="/posts" onClick={toggleSidebar}>
                 Community
-              </Link>
-            </li>
-            <li className="nav-text">
-              <Link to="/trading" onClick={toggleSidebar}>
-                Trading
               </Link>
             </li>
           </ul>
@@ -492,3 +477,45 @@ export const Footer =() => {
     </>
     );
   } 
+
+
+
+
+export const PopularPage: React.FC<{}> = () => {
+  const [popularAngels, setPopularAngels] = useState<Angel[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    AngelService.getPopular()
+      .then((data) => setPopularAngels(data))
+      .catch((err) =>
+        setError("Error fetching popular angels: " + err.message)
+      );
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+      <Leftbar />
+      <div className="popular-page">
+        {error && <div className="error-message">{error}</div>}
+        <h2>Popular Angels</h2>
+        <div className="angel-cards">
+          {popularAngels.map((angel) => (
+            <div key={angel.angel_id} className="angel-card">
+              <Link to={`/angels/${angel.angel_id}`} className="angel-card-link">
+                <img
+                  src={angel.image}
+                  alt={angel.name}
+                  className="angel-card-image"
+                />
+                <h3>{angel.name}</h3>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};

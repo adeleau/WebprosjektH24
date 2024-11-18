@@ -14,6 +14,7 @@ export type Angel = {
     series_id: number;
 };
 export type AngelHistory = {
+    angelhistory_id: number;
     angel_id?: number;
     description: string;
     user_id: string;
@@ -33,15 +34,16 @@ class AngelService {
     }
 
     get(angel_id: number) {
-        const angelId = Number(angel_id)
+        const angelId = Number(angel_id);
         return axios
-            .get<Angel>('/angels/' + angelId)
-            .then((res) =>  res.data)
-            .catch((err) => {
-                console.error(`Error fetching angel with id ${angelId}:`, err);
-                throw err;
-            });
-    } 
+          .get<Angel>(`/angels/${angelId}`)
+          .then((res) => res.data)
+          .catch((err) => {
+            console.error(`Error fetching angel with id ${angelId}:`, err);
+            throw err;
+          });
+      }
+      
 
     createAngel(angel: Omit<Angel, 'angel_id' | 'created_at' | 'updated_at'>): Promise<Angel> {
         return axios
@@ -53,15 +55,23 @@ class AngelService {
           });
       }
 
-      updateAngel(angel: Angel) {
+      updateAngel(updatedAngel: Partial<Angel>) {
         return axios
-          .put(`/angels/${angel.angel_id}`, angel)
-          .then((response) => response.data)
+          .put<Angel>(`/angels/${updatedAngel.angel_id}`, updatedAngel)
+          .then((res) => res.data)
           .catch((err) => {
-            console.error(`Error updating angel with ID ${angel.angel_id}:`, err);
+            console.error(`Error updating angel with id ${updatedAngel.angel_id}:`, err);
             throw err;
           });
       }
+
+       // Increment views for an angel
+  incrementViews(angelId: number) {
+    return axios
+      .put<Angel>(`/angels/${angelId}/increment-views`)
+      .then((response) => response.data);
+  }
+
       
     
 
@@ -148,6 +158,17 @@ deleteAngel(angel_id: number): Promise<void> {
                 throw err;
             })
       }
-}
 
+
+
+getPopular(): Promise<Angel[]> {
+    return axios
+      .get<Angel[]>("/popular")
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error("Error fetching popular angels:", err);
+        throw err;
+      });
+  }
+}
 export default new AngelService();

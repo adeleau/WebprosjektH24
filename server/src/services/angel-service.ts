@@ -100,35 +100,118 @@ class AngelService {
       });
     }    
 
-  
-    deleteAngel(angel_id: number): Promise<void> {
-      return new Promise((resolve, reject) => {
-        console.log('Attempting to delete angel with ID:', angel_id);
-  
-        // Validate angel_id is a number
-        if (!Number.isInteger(angel_id) || angel_id <= 0) {
-          return reject(new Error('Invalid angel ID provided.'));
+     // Increment views for an angel
+  incrementViews(angelId: number) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'UPDATE Angels SET views = views + 1 WHERE angel_id = ?',
+        [angelId],
+        (err, results) => {
+          if (err) return reject(err);
+
+          // Fetch updated angel data
+          this.get(angelId)
+            .then(resolve)
+            .catch(reject);
         }
+      );
+    });
+  }
+
+  deleteAngel(angelId: number) {
+    return new Promise<void>((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) return reject(err);
   
-        // SQL Query to delete the angel
-        pool.query(
-          'DELETE FROM Angels WHERE angel_id = ?',
-          [angel_id],
-          (error, results) => {
-            if (error) {
-              console.error('Database error during delete:', error);
-              return reject(new Error(`Database error: ${error.message}`));
-            }
-            if ((results as any).affectedRows === 0) {
-              console.warn('No angel found with the specified ID:', angel_id);
-              return reject(new Error('No angel found with the specified ID.'));
-            }
-            console.log('Angel successfully deleted:', angel_id);
-            resolve();
+        connection.beginTransaction((transactionErr) => {
+          if (transactionErr) {
+            connection.release();
+            return reject(transactionErr);
           }
-        );
+  
+          // Queries to delete related records
+          const deleteComments = `DELETE FROM Angel_comments WHERE angel_id = ?`;
+          const deleteWishlists = `DELETE FROM Wishlists WHERE angel_id = ?`;
+          const deleteCollections = `DELETE FROM Collections WHERE angel_id = ?`;
+          const deleteAngelTags = `DELETE FROM Angel_tags WHERE angel_id = ?`;
+          const deleteAngelHistory = `DELETE FROM AngelHistory WHERE angel_id = ?`;
+  
+          // Delete Angel Comments
+          connection.query(deleteComments, [angelId], (error) => {
+            if (error) {
+              return connection.rollback(() => {
+                connection.release();
+                reject(error);
+              });
+            }
+  
+            // Delete Wishlists
+            connection.query(deleteWishlists, [angelId], (error) => {
+              if (error) {
+                return connection.rollback(() => {
+                  connection.release();
+                  reject(error);
+                });
+              }
+  
+              // Delete Collections
+              connection.query(deleteCollections, [angelId], (error) => {
+                if (error) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    reject(error);
+                  });
+                }
+  
+                // Delete Angel Tags
+                connection.query(deleteAngelTags, [angelId], (error) => {
+                  if (error) {
+                    return connection.rollback(() => {
+                      connection.release();
+                      reject(error);
+                    });
+                  }
+  
+                  // Delete Angel History
+                  connection.query(deleteAngelHistory, [angelId], (error) => {
+                    if (error) {
+                      return connection.rollback(() => {
+                        connection.release();
+                        reject(error);
+                      });
+                    }
+  
+                    // Finally, delete the Angel itself
+                    const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
+                    connection.query(deleteAngelQuery, [angelId], (error) => {
+                      if (error) {
+                        return connection.rollback(() => {
+                          connection.release();
+                          reject(error);
+                        });
+                      }
+  
+                      // Commit the transaction
+                      connection.commit((commitErr) => {
+                        connection.release();
+                        if (commitErr) {
+                          return reject(commitErr);
+                        }
+                        resolve();
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
       });
-    }
+    });
+  }
+  
+  
+    
 
     //legger til engel historikk
     getAngelHistory(angel_id: number) {
@@ -192,7 +275,20 @@ class AngelService {
         );
     });
     }
-
+    getPopular(): Promise<Angel[]> {
+      return new Promise<Angel[]>((resolve, reject) => {
+        pool.query(
+          "SELECT * FROM Angels ORDER BY views DESC LIMIT 10",
+          (error, results: RowDataPacket[]) => {
+            if (error) {
+              console.error("Error fetching popular angels:", error);
+              return reject(error);
+            }
+            resolve(results as Angel[]);
+          }
+        );
+      });
+    }
 
     // likeAngel(angel_id: number, user_id: number) {
     //     return new Promise<number>((resolve, reject) => {

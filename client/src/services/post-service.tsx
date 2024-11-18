@@ -1,10 +1,10 @@
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:3000/';
 
-
 export type Post = {
     post_id: number;
     user_id: number;
+    username: string;
     title: string;
     content: string;
     image: string;
@@ -31,11 +31,11 @@ export type PostCardProps = {
 };
 
 class PostService {
-    get(post_id: number) {
-      return axios
-        .get<Post>('/posts/' + post_id)
-        .then((response) => response.data);
-    }
+
+  get(post_id: number) {
+    return axios.get<Post>('/posts/' + post_id)
+    .then((response) => response.data);
+  }
   
     getAll() {
       return axios
@@ -43,39 +43,33 @@ class PostService {
         .then((response) => response.data);
     }
   
-    createPost(title: string, user_id: number, content: string, image: string, created_at: string)/*bytter om fra Date til String, rettelse byttet om igjen, står date over?*/  {
+    createPost(user_id: number, username: string, title: string, content: string, image: string) {
       return axios
-        .post<Post>('/posts', { title: title, user_id: user_id, content: content, image: image, created_at: created_at })
-        .then((response) => { //response.data.post_id);
-          console.log('Post created with response:', response.data);
-          return response.data.post_id; //consol logger for å få opp en feil
-        })
+        .post<Post>('/posts', { user_id, username, title, content, image })
+        .then((response) => response.data.post_id);
     }
-  
+    
     updatePost(post_id: number, title: string, content: string, image: string) {
-      const updated_at = new Date();
+      console.log('Sending Post Update:', { post_id, title, content, image });
+    
       return axios
-        .put<Post>('/posts/' + post_id, { title: title, content: content, image: image, updated_at })
-        .then((response) => response.data.post_id);
+        .put(`/posts/${post_id}`, { title, content, image }) 
+        .then((response) => {
+          console.log('Post Update Success:', response.data);
+          return response.data;
+        })
+        .catch((error) => {
+          console.error('Post Update Failed:', error.response?.data || error.message);
+          throw error;
+        });
     }
+    
+    
+    
   
-    deletePost(post_id: number) {
-      return axios
-        .delete<Post>('/posts/' + post_id)
-        .then((response) => response.data.post_id);
-    }
-  
-    // likePost(post_id: number): Promise<void> {
-    //   return axios
-    //   .post('/posts/' + post_id + '/likes')
-    //   .then(() => {});
-    // }
-  
-    // getPostLikes(post_id: number): Promise<number> {
-    //   return axios
-    //     .get<{ like_count: number }>('/posts/' + post_id + '/likes')
-    //     .then((response) => response.data.like_count);
-    // }
+  deletePost(post_id: number) {
+    return axios.delete('/posts/' + post_id).then((response) => response.data);
+  }
   
     addPostComment(post_id: number, user_id: number, content: string, created_at: Date) {
       return axios

@@ -19,7 +19,8 @@ class SeriesService {
     getName(id: number) {
         return new Promise<string | Error> ((resolve, reject) => {
             pool.query('SELECT name FROM Series WHERE series_id=?', [id], (error, results: RowDataPacket[]) => {
-                error ? reject(error) : resolve(results[0].name as string)
+                if (error) return reject(error);
+                resolve(results[0].name as string)
             }
             )
         })
@@ -38,6 +39,23 @@ class SeriesService {
       );
     });
   }
+
+
+  deleteSeries(seriesId: number) {
+    return new Promise<void>((resolve, reject) => {
+      pool.query(
+        'DELETE FROM Series WHERE series_id = ?',
+        [seriesId],
+        (error) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
 }
 
 export default new SeriesService;

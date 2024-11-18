@@ -8,32 +8,31 @@ export type AngelComment = {
     created_at: Date;
     updated_at: Date;
 }
-
 class AngelCommentService {
     getAngelComments(angel_id: number) {
-        return axios
-        .get<AngelComment[]>('/angels/' + angel_id + '/comments')
+      return axios
+        .get<AngelComment[]>(`/angels/${angel_id}/comments`)
         .then((response) => response.data);
     }
-    
-    addAngelComment(angelId: number, content: string, angelcomment: AngelComment) {
-        return axios
-          .post<AngelComment>('/angels/' + angelcomment.angel_id + '/comments', angelcomment)
-          .then((response) => response.data.angelcomment_id);
+  
+    addAngelComment(angel_id: number, user_id: number, content: string) {
+      return axios
+        .post(`/angels/${angel_id}/comments`, { angel_id, user_id, content })
+        .then((response) => response.data.angelcomment_id);
     }
-
+  
     editAngelComment(angelcomment_id: number, content: string) {
-        return axios
-        .put(`/comments/${angelcomment_id}`, { content })
-        .then((response) => response.data)
+      return axios
+        .put(`/angels/comments/${angelcomment_id}`, { content })
+        .then((response) => response.data);
     }
-
+  
     deleteAngelComment(angelcomment_id: number) {
-        return axios
-        .delete(`/comments/${angelcomment_id}`)
-        .then((response) => response.data)
-
+      return axios
+        .delete(`/angels/comments/${angelcomment_id}`)
+        .then((response) => response.data);
     }
-
-}
-export default new AngelCommentService();
+  }
+  
+  export default new AngelCommentService();
+  
