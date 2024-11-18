@@ -22,26 +22,21 @@ if (root)
       <Route exact path="/register" component={Register.Register} />
       <Route exact path="/login" component={Login.Login} />
       <Route exact path="/popular" component={Comp.PopularPage} />     
-
-
-      <Route exact path="/about" component={Comp.About} />
+      <Route exact path="/about" component={Comp.About} /> 
+      <Route exact path="/howto" component={Comp.HowTo} /> 
       <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
-<Route exact path="/series/:series_id" component={Series.SeriesList} />
-<Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
-<Route exact path="/userprofile/edit" component={User.UserSettings} />
-<Route exact path="/userprofile" component={User.UserProfile} />
-<Route exact path="/user/:user_id" component={User.UserPage} />
-
-      {/* <Route exact path="/angels" component={Angel.AngelList} /> */}
+      <Route exact path="/series/:series_id" component={Series.SeriesList} />
+      <Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
+      <Route exact path="/userprofile/edit" component={User.UserSettings} />
+      <Route exact path="/userprofile" component={User.UserProfile} />
+      <Route exact path="/user/:user_id" component={User.UserPage} />
       <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />
       <Route exact path="/angels/:angel_id/edit" component={Angel.AngelEdit} />
       <Route exact path="/masterlist" component={Angel.MasterList} />
-      {/* <Route exact path="/popular" component={Comp.Popular} /> */}
       <Route exact path="/posts" component={Post.PostList} />
       <Route exact path="/posts/new" component={Post.PostNew} />
       <Route exact path="/posts/:post_id(\d+)" component={Post.PostDetails} />
       <Route exact path="/posts/:post_id(\d+)/edit" component={Post.PostEdit} />
-      {/* <Route exact path="/trading" component={Comp.Trading} />     */}
 
       <Route component={NotFound} /> {/* This will catch all undefined routes */}
       </Switch>

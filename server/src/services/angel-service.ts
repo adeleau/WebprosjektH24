@@ -1,6 +1,5 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../mysql-pool';
-import { format } from 'date-fns';
 
 export type Angel = {
     angel_id?: number; 
@@ -42,8 +41,6 @@ class AngelService {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
                 let tempAngel: Angel = results[0] as Angel;
-                // tempAngel.updated_at = format(tempAngel.updated_at, 'dd/MM/yyyy HH:mm:ss') as string;
-                // tempAngel.created_at = format(tempAngel.created_at, 'dd/MM/yyyy HH:mm:ss') as string;
                 resolve(tempAngel)
             })
         })
@@ -59,7 +56,6 @@ class AngelService {
           (error, results: ResultSetHeader) => {
             if (error) return reject(error);
   
-            // Retrieve the created record with `created_at` and `updated_at`
             pool.query(
               'SELECT * FROM Angels WHERE angel_id = ?',
               [results.insertId],
@@ -75,14 +71,12 @@ class AngelService {
   
     updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
-        // Log the current state to AngelHistory
         pool.query(
           'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
           [angel.angel_id, angel.description, angel.user_id],
           (error) => {
             if (error) return reject(error);
     
-            // Update the angel
             pool.query(
               'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
               [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],

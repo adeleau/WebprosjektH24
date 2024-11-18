@@ -1,14 +1,11 @@
 import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
-import { createHashHistory } from 'history';
 import Cookies from "js-cookie";
 import type { User } from "../services/user-service";
-
 import PostService from "../services/post-service";
 import type {Post} from "../services/post-service"
 import { Navbar, Leftbar, Footer } from "./other-components";
-import postService from "../services/post-service";
 
 export const PostList: React.FC<{}> = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -31,7 +28,12 @@ export const PostList: React.FC<{}> = () => {
     }
 
     PostService.getAll()
-      .then((data) => setPosts(data))
+      .then((data) => {
+        const sortedData = data.sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setPosts(sortedData);
+      })
       .catch((err) => setError("Error getting posts: " + err.message));
   }, []);
 
@@ -65,12 +67,12 @@ export const PostList: React.FC<{}> = () => {
                   {post.username}
                 </Link>
               )}
-              <Link to={`/posts/${post.post_id}`} className="post-link">
                 <h3 className="post-title">{post.title}</h3>
                 <p className="post-preview-content">
                   {post.content.slice(0, 100)}
                 </p>
               </Link>
+             
             </div>
           ))}
         </div>

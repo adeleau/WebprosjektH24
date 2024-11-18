@@ -59,27 +59,46 @@ class AngelCommentService {
   // Edit a comment
   updateAngelComment(
     angelcomment_id: number,
+    user_id: number,
+    role: string,
     content: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       pool.query(
-        `UPDATE Angel_comments 
-         SET content = ?, updated_at = ? 
-         WHERE angelcomment_id = ?`,
-        [content, new Date(), angelcomment_id],
-        (error, results: ResultSetHeader) => {
+        `SELECT user_id FROM Angel_comments WHERE angelcomment_id = ?`,
+        [angelcomment_id],
+        (error, results: RowDataPacket[]) => {
           if (error) {
-            console.error("Error updating comment:", error);
-            return reject(new Error("Failed to update comment."));
+            console.error("Error fetching comment owner:", error);
+            return reject(new Error("Failed to fetch comment owner."));
           }
-          if (results.affectedRows === 0) {
-            return reject(new Error("No comment found to update."));
+  
+          const commentOwnerId = results[0]?.user_id;
+          if (role !== "admin" && commentOwnerId !== user_id) {
+            return reject(new Error("Unauthorized to edit this comment."));
           }
-          resolve();
+  
+          pool.query(
+            `UPDATE Angel_comments 
+             SET content = ?, updated_at = ? 
+             WHERE angelcomment_id = ?`,
+            [content, new Date(), angelcomment_id],
+            (updateError, updateResults: ResultSetHeader) => {
+              if (updateError) {
+                console.error("Error updating comment:", updateError);
+                return reject(new Error("Failed to update comment."));
+              }
+              if (updateResults.affectedRows === 0) {
+                return reject(new Error("No comment found to update."));
+              }
+              resolve();
+            }
+          );
         }
       );
     });
   }
+  
 
   // Delete a comment (with ownership or admin check)
   deleteAngelComment(

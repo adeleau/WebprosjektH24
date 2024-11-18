@@ -381,6 +381,11 @@ export const Leftbar: React.FC<{}> = () => {
                 Community
               </Link>
             </li>
+            <li className="nav-text">
+              <Link to="/howto" onClick={toggleSidebar}>
+                How to use wiki
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -389,81 +394,6 @@ export const Leftbar: React.FC<{}> = () => {
     </>
   );
 };
-
-export const Menu: React.FC<{}> = () => {
-    const [showDropDown, setShowDropDown] = useState<boolean>(false);
-
-    return (
-        <>
-        </>
-    )
-}
-
-// export const Popular: React.FC<{}> = () => {
-  
-// }
-
-// export const Trading: React.FC<{}> = () => {
-  
-// }
-//DISSE LIGGER VEL I DE ANDRE COMPONENTS?
-// export const Login: React.FC<{}> = () => {
-//     return (
-//         <>
-//         <div className="login">
-//             <div className="card">
-//                 <div className="left">
-//                     <h1>Sign In</h1>
-//                     <p>Sign in to your account to continue</p>
-//                     <span>Don't have an account?</span>
-//                     <Link to="/register">
-//                     <button>Create account</button>
-//                     </Link>
-//                 </div>
-//                 <div className="right">
-//                     <h1>Log in</h1>
-//                     <form>
-//                         <input type="text" placeholder="Username" />
-//                         <input type="password" placeholder="Password" />
-//                         <button>Log in</button>
-//                     </form>
-//                 </div>
-//             </div>
-//         </div>
-//         </>
-//     );
-//   };
-
-
-// export const Register = () => {
-//     return (
-//       <>
-//         <div className="register">
-//             <div className="card">
-//                 <div className="right">
-//                     <h1>Register here:</h1>
-//                     <form>
-//                         <input type="text" placeholder="Name" />
-//                         <input type="text" placeholder="Username" />
-//                         <input type="email" placeholder="Email" />
-//                         <input type="password" placeholder="Password" />
-//                         <button>Register</button>
-//                     </form>
-//                 </div>
-                
-//                 <div className="left">
-//                     <h1>Join the Sonny Angel wiki</h1>
-//                     <span>Already have an account?</span>
-//                     <Link to="/login">
-//                     <button>Log in</button>
-//                     </Link>
-//                 </div>
-                
-//             </div>
-//         </div>
-//         </>
-//     );
-//     };
 
 
 export const Footer =() => {
@@ -518,4 +448,84 @@ export const PopularPage: React.FC<{}> = () => {
       <Footer />
     </>
   );
+};
+
+
+
+
+export const HowTo: React.FC<{}> = () => {
+  return (
+    <>
+    <Navbar />
+    <Leftbar />
+    <div className="about-container">
+
+      <div className="about-section">
+        <div className="about-text">
+          <h2>Log in to explore this Wiki.</h2>
+          <hr className="about-divider" />
+            <p className="pink-bold">
+              Navigate through the vast collection of Sonny Angels using our easy-to-use Wiki. 
+              Use the search bar at the top to quickly find specific figures or series. Browse through 
+              categories or series to discover new figurines and learn more about them. Each figure 
+              has detailed information, including release year, series name, and other unique facts. 
+              Click on a figure's name to view its full details!  
+
+              <strong>
+                <Link to="/masterlist" style={{ color: "#f2a6b0", textDecoration: "none", fontWeight: "bold" }}>
+                    View all angels here!
+                </Link>
+              </strong>
+            </p>
+        </div>
+        <div className="about-image">
+          <img
+            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0170_-2.jpg" 
+            alt="Sonny Angel Figurines" 
+          />
+        </div>
+      </div>
+
+      <div className="about-section">
+        <div className="about-image">
+          <img
+            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0261_2cus.jpg" 
+            alt="Sonny Angel Figurines" 
+          />
+        </div>
+        <div className="about-text">
+          <h2>How to Comment and Interact.</h2>
+          <hr className="about-divider" />
+          <p className="pink-bold">
+              Share your thoughts and connect with the community! Log in to leave comments on your favorite 
+              figures and share why they are special to you. You can also like pages and add figures to your 
+              personal collection or wishlist. <strong>Admins</strong> and the post or comments creator can edit or delete 
+              for a streamlined experience. Join the admins to create and update the collection!
+          </p>
+        </div>
+      </div>
+
+      <div className="about-section">
+        <div className="about-text">
+          <h2>Manage Your Collection!</h2>
+          <hr className="about-divider" />
+          <p className="pink-bold">
+          Keep track of your favorite Sonny Angels by adding them to your collection or wishlist. 
+          Log in to access your personalized profile page where you can view your liked pages, wishlist, 
+          and trading options. You can also explore other people's collections to see what they have and 
+          get inspiration for your own collection. Share your love for Sonny Angels and connect with 
+          the community through your collections!
+          </p>
+        </div>
+        <div className="about-image">
+          <img
+            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_original_image-1-768x512.jpg" 
+            alt="Sonny Angel Figurines" 
+          />
+        </div>
+      </div>
+    </div>
+  <Footer />
+</>
+);
 };

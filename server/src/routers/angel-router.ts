@@ -170,20 +170,21 @@ angelrouter.post("/angels/:angel_id/comments", (req, res) => {
 // **Edit Comment**
 angelrouter.put("/angels/comments/:angelcomment_id", (req, res) => {
   const angelcomment_id = Number(req.params.angelcomment_id);
-  const { content } = req.body;
+  const { user_id, role, content } = req.body;
 
-  if (!content) {
-    return res.status(400).send("Missing comment content");
+  if (!content || isNaN(user_id) || !role) {
+    return res.status(400).send("Invalid input data");
   }
 
   angelCommentService
-    .updateAngelComment(angelcomment_id, content)
+    .updateAngelComment(angelcomment_id, user_id, role, content)
     .then(() => res.status(200).send("Comment updated successfully"))
     .catch((err) => {
       console.error(`Error updating comment ID ${angelcomment_id}:`, err);
       res.status(500).send("Failed to update comment");
     });
 });
+
 
 // **Delete Comment**
 angelrouter.delete("/angels/comments/:angelcomment_id", (req, res) => {

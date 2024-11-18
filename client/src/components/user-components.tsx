@@ -171,7 +171,6 @@ export const UserProfile: React.FC = () => {
 
 
 export const UserSettings: React.FC = () => {
-
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<User>>({});
@@ -182,39 +181,55 @@ export const UserSettings: React.FC = () => {
     useEffect(() => {
         const tempUser = Cookies.get("user");
         if (tempUser) {
-            setUser(JSON.parse(tempUser));
-            setIsAdmin(JSON.parse(tempUser).role === "admin");
+            const parsedUser = JSON.parse(tempUser);
+            setUser(parsedUser);
+            setIsAdmin(parsedUser.role === "admin");
         }
 
         if (isAdmin) {
-            userService.getAllUsers()
+            userService
+                .getAllUsers()
                 .then(setUsers)
-                .catch(err => setError('Error fetching users: ' + err.message));
+                .catch(err => setError("Error fetching users: " + err.message));
         }
     }, [isAdmin]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        console.log(formData);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSaveAndLogout = (e: React.FormEvent) => {
         e.preventDefault();
-        if(user) {
-            userService.update(user.user_id, formData)
-                .then(() => alert('User updated successfully'))
-                .catch(err => setError('Error updating user: ' + err.message));
+        if (user) {
+            userService
+                .update(user.user_id, formData)
+                .then(() => {
+                    alert("Changes saved successfully. You will be logged out.");
+                    Cookies.remove("user"); // Clear the user cookie
+                    setUser(null); // Clear user state
+                    history.push("/login"); // Redirect to login page
+                })
+                .catch(err => setError("Error saving changes: " + err.message));
         }
     };
 
     const handleRoleChange = (userId: number, newRole: string) => {
-        userService.update(userId, { role: newRole })
+        userService
+            .update(userId, { role: newRole })
             .then(() => {
-                setUsers(users.map(user => user.user_id === userId ? { ...user, role: newRole } : user));
-                alert('User role updated successfully');
+                setUsers(
+                    users.map(user =>
+                        user.user_id === userId ? { ...user, role: newRole } : user
+                    )
+                );
+                alert("User role updated successfully");
             })
-            .catch(err => setError('Error updating role: ' + err.message));
+            .catch(err => setError("Error updating role: " + err.message));
+    };
+
+    const handleBack = () => {
+        history.goBack(); // Navigate to the previous page
     };
 
     if (error) return <p>{error}</p>;
@@ -223,7 +238,10 @@ export const UserSettings: React.FC = () => {
     return (
         <div className="user-settings">
             <h2>User Settings</h2>
-            <form onSubmit={handleSubmit}>
+            <button onClick={handleBack} className="goback-button">
+                Back
+            </button>
+            <form onSubmit={handleSaveAndLogout}>
                 <label>
                     Username:
                     <input
@@ -260,7 +278,7 @@ export const UserSettings: React.FC = () => {
                         onChange={handleChange}
                     />
                 </label>
-                <button type="submit" onClick={() => history.push('/userprofile')}>Save Changes</button>
+                <button type="submit">Save Changes and Log Out</button>
             </form>
 
             {isAdmin && (
@@ -275,13 +293,22 @@ export const UserSettings: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((u) => (
+                            {users.map(u => (
                                 <tr key={u.user_id}>
                                     <td>{u.username}</td>
                                     <td>{u.role}</td>
                                     <td>
-                                        <button onClick={() => handleRoleChange(u.user_id, u.role === 'admin' ? 'user' : 'admin')}>
-                                            {u.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
+                                        <button
+                                            onClick={() =>
+                                                handleRoleChange(
+                                                    u.user_id,
+                                                    u.role === "admin" ? "user" : "admin"
+                                                )
+                                            }
+                                        >
+                                            {u.role === "admin"
+                                                ? "Revoke Admin"
+                                                : "Make Admin"}
                                         </button>
                                     </td>
                                 </tr>
