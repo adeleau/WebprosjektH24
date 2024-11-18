@@ -25,8 +25,6 @@ class SeriesService {
     })
     }
 
-    
-
   // Add a new series (new method)
   createSeries(series: { name: string }): Promise<Series> {
     return axios
@@ -38,6 +36,5 @@ class SeriesService {
       });
   }
 }
-
 
 export default new SeriesService();
