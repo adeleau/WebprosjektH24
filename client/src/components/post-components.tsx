@@ -15,10 +15,9 @@ export const PostList: React.FC<{}> = () => {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const history = useHistory();
-
   useEffect(() => {
     const userCookie = Cookies.get("user");
-
+  
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
         setUser(JSON.parse(userCookie));
@@ -29,12 +28,15 @@ export const PostList: React.FC<{}> = () => {
       console.error("Error parsing user cookie:", err);
       setUser(null);
     }
-
+  
     PostService.getAll()
-      .then((data) => setPosts(data))
+      .then((data) => {
+        const sortedData = data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setPosts(sortedData);
+      })
       .catch((err) => setError("Error getting posts: " + err.message));
   }, []);
-
+  
   return (
     <>
       <Navbar />

@@ -146,7 +146,6 @@ export const MasterList: React.FC = () => {
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
-
   const [angel, setAngel] = useState<Angel | null>(null);
   const [series, setSeries] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
