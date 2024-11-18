@@ -18,8 +18,6 @@ seriesrouter.get("/series", (_request, response) => {
     .catch((error) => {response.status(500).send(error)})
 });
  
-
- 
 //get name of series by id
 seriesrouter.get('/series/name/:id',(req, res) =>{
    seriesService.getName(Number(req.params.id))

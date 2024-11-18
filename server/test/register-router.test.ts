@@ -31,7 +31,7 @@ beforeEach((done) => {
                     .then(() => {
 
                         pool.query(
-                        'INSERT INTO Posts (post_id, user_id, content) VALUES (1,2, 'Test Post')',
+                        'INSERT INTO Posts (post_id, user_id, content) VALUES (1,2, "Test Post")',
                         done
                     );
                 })
@@ -40,9 +40,6 @@ beforeEach((done) => {
         });
     });
     
-
-
-
 afterAll((done) => {
     if(webServer) {
         webServer.close(() => pool.end(()=> done()));

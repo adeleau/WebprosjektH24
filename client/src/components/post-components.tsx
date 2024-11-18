@@ -166,8 +166,6 @@ export const PostNew: React.FC<{}> = () => {
   );
 };
 
-
-
 export const PostEdit: React.FC<{}> = () => {
   const { post_id } = useParams<{ post_id: string }>();
   const [post, setPost] = useState<Post>({

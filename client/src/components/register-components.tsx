@@ -57,10 +57,11 @@ import RegisterService from "../services/register-service";
     };
 
     return (
-        <div>
+        <div className="register-page">
             <h2>Register</h2>
             {error["form"] && <p style={{ color: "red" }}>{error["form"]}</p>}
             
+            <div className="input-group">
             <input
                 type="text"
                 value={username}
@@ -68,7 +69,9 @@ import RegisterService from "../services/register-service";
                 onChange={(e) => setUsername(e.target.value)}
             />
             {error["username"] && <p style={{ color: "red" }}>{error["username"]}</p>}
+            </div>
             
+            <div className="input-group">
             <input
                 type="email"
                 value={email}
@@ -76,7 +79,9 @@ import RegisterService from "../services/register-service";
                 onChange={(e) => setEmail(e.target.value)}
             />
             {error["email"] && <p style={{ color: "red" }}>{error["email"]}</p>}
+            </div>
             
+            <div className="input-group">
             <input
                 type="password"
                 value={password_hash}
@@ -84,7 +89,9 @@ import RegisterService from "../services/register-service";
                 onChange={(e) => setPasswordHash(e.target.value)}
             />
             {error["password_hash"] && <p style={{ color: "red" }}>{error["password_hash"]}</p>}
+            </div>
             
+            <div className="input-group">
             <input
                 type="password"
                 value={confirmPassword}
@@ -92,10 +99,11 @@ import RegisterService from "../services/register-service";
                 onChange={(e) => setConfirmPassword(e.target.value)}
             />
             {error["confirmPassword"] && <p style={{ color: "red" }}>{error["confirmPassword"]}</p>}
+            </div>
             
-            <button type="button" onClick={handleRegister}>Register</button>
+            <button className="btn-register" onClick={handleRegister}>Register</button>
             
-            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+            {successMessage && <p className="success-message">{successMessage}</p>}
         </div>
     );
 };

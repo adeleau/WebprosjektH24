@@ -2,25 +2,20 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import React from "react";
 import {useState, useEffect, useRef} from "react";
 import { createHashHistory } from 'history';
+import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from 'js-cookie';
-import userService from "../services/user-service";
-import type { User } from "../services/user-service";
-import LikesService from "../services/likes-service";
-import WishlistService from "../services/wishlist-service";
-
 
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment } from "../services/angelcomment-service";
-
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
+import userService from "../services/user-service";
+import type { User } from "../services/user-service";
+import LikesService from "../services/likes-service";
+import WishlistService from "../services/wishlist-service";
 
-// import UserService from "../services/user-service";
-// import type { User } from "../services/user-service";
-
-import { Navbar, Leftbar, Footer } from "./other-components";
 const history = createHashHistory();
 
 
@@ -211,6 +206,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   }, [user, angel]);
 
+  // kilde til toggles?
   // Handle like toggle
   const handleLikeToggle = async () => {
     if (!user) {
@@ -263,12 +259,14 @@ export const AngelDetails: React.FC<{}> = () => {
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
+      const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
       setComments(fetchedComments);
     } catch (err) {
       setError(`Error fetching comments: ${err}`);
     }
   };
 
+  // Handle posting a comment
   const handlePostComment = async () => {
     if (!comment.trim()) {
       setError("Comment cannot be empty");

@@ -1,142 +1,91 @@
-.register {
-    height: 100vh;
-    background-color: #f2a6b0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-  }
-  
-  .register .card {
-    width: 90%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: row;
-    background-color: #ffffff;
-    border-radius: 10px;
-    min-height: 400px;
-    max-height: 600px;
-    overflow: hidden;
-  }
-  
-  .register .card .left {
-    flex: 1;
-    background: linear-gradient(rgba(164, 216, 225, 0.2), rgba(135, 206, 235, 0.5));
-    background-size: cover;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    color: white;
-    justify-content: center;
-  }
-  
-  .register .card .left h1 {
-    font-size: 2rem;
-    line-height: 2.5rem;
-  }
-  
-  .register .card .left span {
-    font-size: 0.8rem;
-  }
-  
-  .register .card .left button {
-    background-color: white;
-    border: 2px solid #f2a6b0;
-    border-radius: 50px;
-    padding: 10px 20px;
-    color: #f2a6b0;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .register .card .left button:hover {
-    background-color: #f2a6b0;
-    color: white;
-  }
-  
-  .register .card .right {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    justify-content: center;
-  }
-  
-  .register .card .right h1 {
-    color: #f2a6b0;
-    font-size: 2rem;
-    line-height: 2.5rem;
-  }
-  
-  .register .card form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .register .card form input {
-    background-color: white;
-    padding: 10px 15px;
-    border: 2px solid #f2a6b0;
-    border-radius: 50px;
-    color: #f2a6b0;
-    font-weight: bold;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .register .card form input:focus {
-    border-color: #f2a6b0;
-    outline: none;
-  }
-  
-  .register .card form button {
-    background-color: #f2a6b0;
-    border: 2px solid #f2a6b0;
-    border-radius: 50px;
-    padding: 10px 20px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-  }
-  
-  .register .card form button:hover {
+.register-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; 
+  width: 100%; 
+  margin: 0 auto; 
+  background: linear-gradient(to bottom, #f2a6b0, #ffffff);
+}
+
+.register-page h2 {
+  text-align: center;
+  font-size: 3rem;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #f2a6b0;
+  border-radius: 25px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #f2a6b0;
+  box-shadow: 0 0 10px rgba(242, 166, 176, 0.5);
+  outline: none;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.success-message {
+  color: green;
+  font-size: 1rem;
+  margin-top: 10px;
+  text-align: center;
+} 
+
+.btn-register {
+  background-color: #f2a6b0;
+  border: 2px solid #f2a6b0;
+  border-radius: 50px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+  .btn-register:hover {
     background-color: #d18b9e;
   }
   
 
-  /* Media query for smaller screens */
-  @media (max-width: 600px) {
-    .register .card {
-        flex-direction: column;
-        max-width: 90%;
-        height: auto;
-    }
-  
-    .register .card .left,
-    .register .card .right {
+  @media (max-width: 768px) {
+    .register-page {
+        width: 80%;
         padding: 15px;
-        gap: 10px;
     }
-  
-    .register .card .left h1,
-    .register .card .right h1 {
-        font-size: 1.8rem;
-        line-height: 2.2rem;
+
+    .btn-register {
+        padding: 10px 20px;
     }
-  
-    .register .card .left span {
-        font-size: 0.7rem;
+}
+
+@media (max-width: 480px) {
+    .register-page {
+        width: 90%;
     }
-  
-    .register .card form input,
-    .register .card form button {
+
+    .input-group input {
+        padding: 10px;
+    }
+
+    .btn-register {
         padding: 8px 15px;
     }
-  }
+}

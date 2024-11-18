@@ -5,7 +5,7 @@ import type { User } from "../services/user-service";
 import Cookies from "js-cookie";
 import userService from "../services/user-service";
 
-
+// Renders the Sonny Angel Login page
 export const Login: React.FC = () => {
     const history = useHistory();
     const [username, setUsername] = useState<string>("");
