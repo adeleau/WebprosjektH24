@@ -104,9 +104,6 @@ userrouter.post("/users/login", async (req, res) => {
         .catch((err) => res.status(500).send(err))
 })
 
-
-
-
 // Get likes of a user by user ID
 userrouter.get('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
@@ -183,9 +180,5 @@ userrouter.delete('/:userId/wishlist', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
-
-
 
 export default userrouter;

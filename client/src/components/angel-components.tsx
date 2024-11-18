@@ -399,7 +399,6 @@ export const AngelDetails: React.FC<{}> = () => {
 ) : (
   <p className="login-prompt">Log in to post a comment.</p>
 )}
-
             
           </div>
         </div>
@@ -409,7 +408,6 @@ export const AngelDetails: React.FC<{}> = () => {
     </>
   );
 };
-
 
 export const AngelNew: React.FC<{}> = () => {
   const { series_id: routeSeriesId } = useParams<{ series_id: string }>();

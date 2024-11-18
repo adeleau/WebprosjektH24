@@ -176,7 +176,7 @@ class AngelService {
                         reject(error);
                       });
                     }
-  
+                    
                     // Finally, delete the Angel itself
                     const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
                     connection.query(deleteAngelQuery, [angelId], (error) => {
@@ -206,37 +206,33 @@ class AngelService {
     });
   }
   
-  
-    
-
     //legger til engel historikk
     getAngelHistory(angel_id: number) {
       return new Promise<AngelHistory[]>((resolve, reject) => {
         pool.query(
           'SELECT * FROM AngelHistory WHERE angel_id = ? ORDER BY updated_at DESC',
           [angel_id],
-          (error, results) => {
+          (error, results: RowDataPacket[]) => {
             if (error) return reject(error);
-            resolve(results as AngelHistory[]); // Returner historikken som en liste
+            resolve(results);
           }
         );
       });
     }
 
     // Log history
-    logHistory(angel_id: number, description: string, user_id: number): Promise<void> {
-      return new Promise<void>((resolve, reject) => {
+    logAngelHistory(angel_id: number, description: string, user_id: number): Promise<void> {
+      return new Promise((resolve, reject) => {
         pool.query(
-          'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, ?)', //hva med resten? skal ikke alt kunne oppdateres, vet ikke om denne funker da
+          "INSERT INTO Angel_History (angel_id, description, user_id) VALUES (?, ?, ?)",
           [angel_id, description, user_id],
-          (error) => {
+          (error, results: ResultSetHeader) => {
             if (error) return reject(error);
-            resolve();
+            resolve(results.insertId);
           }
-        )
-      })
+        );
+      });
     }
-
     //søkefelt
     search(query: string): Promise<Angel[]> {
         return new Promise<Angel[]>((resolve, reject) => {

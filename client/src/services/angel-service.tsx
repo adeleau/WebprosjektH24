@@ -19,7 +19,7 @@ export type AngelHistory = {
     angel_id?: number;
     description: string;
     user_id: string;
-    // updated_at?: string;
+    //updated_at?: Date;
   };
 
 // AngelService class to interact with the backend API
@@ -45,7 +45,6 @@ class AngelService {
           });
       }
       
-
     createAngel(angel: Omit<Angel, 'angel_id' | 'created_at' | 'updated_at'>): Promise<Angel> {
         return axios
           .post<Angel>('/angels', angel)
@@ -67,16 +66,13 @@ class AngelService {
       }
 
        // Increment views for an angel
-  incrementViews(angelId: number) {
-    return axios
-      .put<Angel>(`/angels/${angelId}/increment-views`)
-      .then((response) => response.data);
-  }
+      incrementViews(angelId: number) {
+        return axios
+          .put<Angel>(`/angels/${angelId}/increment-views`)
+          .then((response) => response.data);
+      }
 
-      
-    
-
-  /*  updateAngel(angel: Angel) {
+  /*updateAngel(angel: Angel) {
         // Logg gammel versjon før oppdatering
         return axios
             .post(`/angel/history`, {
@@ -89,7 +85,7 @@ class AngelService {
                 // Oppdater engelen etter logging
                 return axios.put<null>(`/angels/${angel.angel_id}`, angel);
             });
-    } */
+    }*/
 
 
 // Delete an angel by angel_id
@@ -159,8 +155,6 @@ deleteAngel(angel_id: number): Promise<void> {
                 throw err;
             })
       }
-
-
 
 getPopular(): Promise<Angel[]> {
     return axios

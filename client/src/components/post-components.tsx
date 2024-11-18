@@ -55,6 +55,11 @@ export const PostList: React.FC<{}> = () => {
         <div className="post-list-content">
           {posts.map((post) => (
             <div key={post.post_id} className="post-preview-card">
+            <img
+              src="https://www.sonnyangel-france.com/cdn/shop/files/Sonny_angel_hippers_barre_de_recherche.svg?v=1709401074&width=80"
+              alt="Post Header"
+              className="post-preview-hipper"
+            />
               {post.username && (
                 <Link to={`/user/${post.user_id}`} className="post-creator">
                   {post.username}
@@ -74,9 +79,6 @@ export const PostList: React.FC<{}> = () => {
     </>
   );
 };
-
-
-
 
 export const PostNew: React.FC<{}> = () => {
   const [title, setTitle] = useState("");

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Login } from '../src/components/login-components';
-import UserService from '../src/services/user-service';
+import { Login } from '../../src/components/login-components';
+import UserService from '../../src/services/user-service';
 import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';

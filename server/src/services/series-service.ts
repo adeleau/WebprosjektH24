@@ -18,11 +18,14 @@ class SeriesService {
 
     getName(id: number) {
         return new Promise<string | Error> ((resolve, reject) => {
-            pool.query('SELECT name FROM Series WHERE series_id=?', [id], (error, results: RowDataPacket[]) => {
+            pool.query('SELECT name FROM Series WHERE series_id=?', 
+            [id], 
+            (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
+                if (results.length === 0) return reject(new Error('Series not found'));
                 resolve(results[0].name as string)
             }
-            )
+          )
         })
     }
 

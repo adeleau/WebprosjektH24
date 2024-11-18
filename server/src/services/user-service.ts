@@ -15,8 +15,8 @@ export type User = {
 
 class UserService {
 
-      // Get all users
-      getAllUsers(): Promise<User[]> {
+    // Get all users
+    getAllUsers(): Promise<User[]> {
         return new Promise((resolve, reject) => {
             pool.query('SELECT * FROM Users', (error, results) => {
                 if (error) return reject(error);

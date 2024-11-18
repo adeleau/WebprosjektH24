@@ -31,7 +31,7 @@ beforeEach((done) => {
                     .then(() => {
 
                         pool.query(
-                        'INSERT INTO Posts (post_id, user_id, content) VALUES (1,2, "Test Post")',
+                        'INSERT INTO Posts (post_id, user_id, title, content) VALUES (1,2,"Test title", "Test Post")',
                         done
                     );
                 })
@@ -88,6 +88,7 @@ describe('Register Router Tests', () => {
             done();
         }).catch(done);
     });
+
     test('Register a user with missing fields (POST /register) 400 Bad Request', (done) => {
         axios.post('/register', {username: 'incomplete'}).then(() => {
             done(new Error('Should have failed due to missing fields'));
@@ -97,6 +98,7 @@ describe('Register Router Tests', () => {
             done();
         });
     });
+
     //sjekker så om en bruker eksisterer
     test('Check if User exists (GET /check/users) -user exists', (done) => {
         axios.get('/check/users', { params: { username: 'adele', email:'Adele@SonniSan.com' }}).then((response) => {
