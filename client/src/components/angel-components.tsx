@@ -8,7 +8,11 @@ import Cookies from 'js-cookie';
 import AngelService from "../services/angel-service";
 import type { Angel } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
-import type { AngelComment } from "../services/angelcomment-service";
+import type { AngelComment as BaseAngelComment } from "../services/angelcomment-service";
+
+interface AngelComment extends BaseAngelComment {
+  isEditing: boolean;
+}
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import userService from "../services/user-service";
@@ -146,6 +150,7 @@ export const MasterList: React.FC = () => {
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
+
   const [angel, setAngel] = useState<Angel | null>(null);
   const [series, setSeries] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -258,11 +263,12 @@ export const AngelDetails: React.FC<{}> = () => {
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
-      setComments(fetchedComments);
+      setComments(fetchedComments.map((c) => ({ ...c, isEditing: false }))); // Add isEditing property
     } catch (err) {
       setError(`Error fetching comments: ${err}`);
     }
   };
+  
 
   // Handle posting a comment
   const handlePostComment = async () => {
@@ -372,35 +378,118 @@ export const AngelDetails: React.FC<{}> = () => {
           </div>
 
           <div className="comment-section">
-            <h2>Comments</h2>
-            <div className="comments">
-              {comments.map((comment) => (
-                <div key={comment.angelcomment_id} className="comment">
-                  <p>
-                    <strong>
-                      <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
-                    </strong>
-                    : {comment.content}
-                  </p>
-                </div>
-              ))}
+  <h2>Comments</h2>
+  <div className="comments">
+    {comments.map((comment) => (
+      <div key={comment.angelcomment_id} className="comment">
+        {user && (user.role === "admin" || user.user_id === comment.user_id) ? (
+          <div>
+            {comment.isEditing ? (
+              <input
+                type="text"
+                value={comment.content}
+                onChange={(e) => {
+                  const updatedComments = comments.map((c) =>
+                    c.angelcomment_id === comment.angelcomment_id
+                      ? { ...c, content: e.target.value }
+                      : c
+                  );
+                  setComments(updatedComments);
+                }}
+                className="edit-comment-input"
+              />
+            ) : (
+              <p>
+                <strong>
+                  <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
+                </strong>
+                : {comment.content}
+              </p>
+            )}
+            <div className="comment-actions">
+              {comment.isEditing ? (
+                <button
+                  onClick={() => {
+                    AngelCommentService.editAngelComment(
+                      comment.angelcomment_id,
+                      comment.content,
+                      user.user_id,
+                      user.role || ''
+                    )
+                      .then(() => {
+                        const updatedComments = comments.map((c) =>
+                          c.angelcomment_id === comment.angelcomment_id
+                            ? { ...c, isEditing: false }
+                            : c
+                        );
+                        setComments(updatedComments);
+                      })
+                      .catch((err) => setError(`Failed to edit comment: ${err.message}`));
+                  }}
+                  className="save-comment-button"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    const updatedComments = comments.map((c) =>
+                      c.angelcomment_id === comment.angelcomment_id
+                        ? { ...c, isEditing: true }
+                        : c
+                    );
+                    setComments(updatedComments);
+                  }}
+                  className="edit-comment-button"
+                >
+                  Edit
+                </button>
+              )}
+              <button
+                onClick={() =>
+                  AngelCommentService.deleteAngelComment(
+                    comment.angelcomment_id,
+                    user.user_id,
+                    user.role || ''
+                  )
+                    .then(() => fetchComments())
+                    .catch((err) => setError(`Failed to delete comment: ${err.message}`))
+                }
+                className="delete-comment-button"
+              >
+                Delete
+              </button>
             </div>
-            {user ? (
-  <div className="comment-input">
-    <input
-      type="text"
-      placeholder="Post a comment..."
-      value={comment}
-      onChange={(e) => setComment(e.target.value)}
-    />
-    <button className="post-button" onClick={handlePostComment}>Post</button>
-  </div>
-) : (
-  <p className="login-prompt">Log in to post a comment.</p>
-)}
-
-            
           </div>
+        ) : (
+          <p>
+            <strong>
+              <Link to={`/user/${comment.user_id}`}>{comment.username}</Link>
+            </strong>
+            : {comment.content}
+          </p>
+        )}
+      </div>
+    ))}
+  </div>
+
+  {user ? (
+    <div className="comment-input">
+      <input
+        type="text"
+        placeholder="Post a comment..."
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      />
+      <button className="post-button" onClick={handlePostComment}>
+        Post
+      </button>
+    </div>
+  ) : (
+    <p className="login-prompt">Log in to post a comment.</p>
+  )}
+</div>
+
         </div>
       ) : null}
 

@@ -22,18 +22,19 @@ class AngelCommentService {
         .then((response) => response.data.angelcomment_id);
     }
   
-    editAngelComment(angelcomment_id: number, content: string) {
+    editAngelComment(angelcomment_id: number, content: string, user_id: number, role: string) {
       return axios
-        .put(`/angels/comments/${angelcomment_id}`, { content })
+        .put(`/angels/comments/${angelcomment_id}`, { content, user_id, role })
         .then((response) => response.data);
     }
+    
   
-    deleteAngelComment(angelcomment_id: number) {
+    deleteAngelComment(angelcomment_id: number, user_id: number, role: string) {
       return axios
-        .delete(`/angels/comments/${angelcomment_id}`)
+        .delete(`/angels/comments/${angelcomment_id}`, { data: { user_id, role } })
         .then((response) => response.data);
     }
-  }
+  }    
   
   export default new AngelCommentService();
   
