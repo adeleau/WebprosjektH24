@@ -259,7 +259,6 @@ export const AngelDetails: React.FC<{}> = () => {
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
-      const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
       setComments(fetchedComments);
     } catch (err) {
       setError(`Error fetching comments: ${err}`);
