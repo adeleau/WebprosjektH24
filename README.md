@@ -33,8 +33,6 @@ Welcome to the **Sonny Angels Wiki**, a community for Sonny Angel enthusiasts! T
 
 Follow these steps to set up the project locally:
 
-### Prerequisites 🌸 
-- MySQL Server ?
 
 ### Steps 🌷 
 
@@ -46,6 +44,11 @@ Follow these steps to set up the project locally:
 ### Install dependencies:
 
 1. ```bash
+   cd client
+   npm install
+
+2. ```bash
+   cd server
    npm install
 
 
