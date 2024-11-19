@@ -7,10 +7,8 @@ import { response } from 'express';
 
 axios.defaults.baseURL = 'http://localhost:3001';
 const normalizeDate = (date: string | Date) => {
-    if (typeof date === 'string') {
-        return date.split('.')[0]; // Antar allerede normalisert
-    }
-    return new Date(date).toISOString().split('.')[0];
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toISOString().split('.')[0];
 };
 
 

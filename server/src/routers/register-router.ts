@@ -11,12 +11,25 @@ const registerrouter = express.Router();
 
 //Registrering
 // get all users
-registerrouter.get('/users', (_request, response) =>{
+registerrouter.get('/users', (_request, response) => {
+  registerService
+      .getAllUsers()
+      .then((users) => {
+          // Returner normaliserte brukere
+          response.send(users.map(user => ({
+              ...user,
+              created_at: user.created_at.split('.')[0], // Fjern millisekunder
+          })));
+      })
+      .catch((error) => response.status(500).send(error));
+});
+
+/*registerrouter.get('/users', (_request, response) =>{
     registerService
       .getAllUsers()
       .then((users) =>  response.send(users))
       .catch((error) => response.status(500).send(error));
-});
+});*/
   
 // get a user
 registerrouter.get('/users/:user_id', (req, res) => {
@@ -27,10 +40,25 @@ registerrouter.get('/users/:user_id', (req, res) => {
           if (!user) {
               return res.status(404).send('User not found');
           }
+          res.status(200).send({
+              ...user,
+              created_at: user.created_at.split('.')[0], // Fjern millisekunder
+          });
+      })
+      .catch(() => res.status(500).send('Error fetching user'));
+});
+/*registerrouter.get('/users/:user_id', (req, res) => {
+  const user_id = Number(req.params.user_id);
+  registerService
+      .getUserById(user_id)
+      .then((user) => {
+          if (!user) {
+              return res.status(404).send('User not found');
+          }
           res.status(200).send(user);
       })
       .catch((error) => res.status(500).send('Error fetching user'));
-});
+});*/
 
 /*registerrouter.get('/users/:user_id', (_request, response) =>{
     const user_id = Number(_request.params.user_id);
