@@ -126,7 +126,7 @@
   font-family: 'Poppins', sans-serif;
 }
   
-.back-button, .edit-button, .delete-button {
+.back-button, .edit-button, .delete-button, .save-button {
   display: inline-block;
   margin-top: 20px;
   margin-right: 2px;

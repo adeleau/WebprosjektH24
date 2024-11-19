@@ -256,7 +256,7 @@ class AngelService {
     getAngelHistory(angel_id: number) {
       return new Promise<Angel_History[]>((resolve, reject) => {
         pool.query(
-          'SELECT * FROM AngelHistory WHERE angel_id = ? ORDER BY updated_at DESC',
+          'SELECT angelhistory_id, angel_id, description, user_id, updated_at FROM AngelHistory WHERE angel_id = ? ORDER BY updated_at DESC',
           [angel_id],
           (error, results: RowDataPacket[]) => {
             if (error) return reject(error);

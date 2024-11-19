@@ -11,11 +11,11 @@ jest.mock('js-cookie', () => ({
 }));
 
 jest.mock('react-router-dom', () => ({
-  ..jest.requireActual('react-router-dom'),
+  ...jest.requireActual('react-router-dom'),
   useParams:jest.fn(),
 }));
 
-describe('SeriesList Components Tests' () => {
+describe('SeriesList Components Tests', () => {
   let wrapper: any;
 
   beforeEach(() => {

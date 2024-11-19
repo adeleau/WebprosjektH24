@@ -1,6 +1,7 @@
 import axios from 'axios';
 import pool from '../src/mysql-pool';
 import app from '../src/app';
+import format from 'date-fns'
 import userService, {User} from '../src/services/user-service';
 import { response } from 'express';
 
@@ -11,10 +12,12 @@ beforeAll((done) => {
     webServer = app.listen(3004, () => done());
 });
 
+const date = new Date().toISOString().split('.')[0].replace('T', ' ');
+
 const testUser: User[] = [
-  { user_id: 1, username: 'fitti', email: 'fit@ti.com', password_hash:'Angel123!', created_at: new Date (), role: 'user', bio:'hei', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_534_01.jpg'},
-  { user_id: 2, username: 'titti', email: 'tit@ti.com', password_hash: 'Angel123!', created_at: new Date(), role: 'user', bio:'hallo', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_733_01.jpg'}, 
-  { user_id: 3, username: 'slikki', email: 'sli@kki.com', password_hash: 'Angel123!', created_at: new Date(), role: 'user', bio:'hey', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2021/05/raccoon_dog.png'},
+  { user_id: 1, username: 'user1', email: '1@test.com', password_hash:'Angel123!', created_at: date, role: 'user', bio:'hei', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_534_01.jpg'},
+  { user_id: 2, username: 'user2', email: '2@test.com', password_hash: 'Angel123!', created_at: date, role: 'user', bio:'hallo', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_733_01.jpg'}, 
+  { user_id: 3, username: 'user3', email: '3@test.com', password_hash: 'Angel123!', created_at: date, role: 'user', bio:'hey', profile_picture:'https://www.sonnyangel.com/renewal/wp-content/uploads/2021/05/raccoon_dog.png'},
 ];
 
 beforeEach((done) => {

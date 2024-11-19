@@ -360,9 +360,15 @@ textarea, input, select {
   transition: background-color 0.3s ease;
   margin-right: 10px;
 }
-  .button-container button:hover {
-    background-color: #f27484;
-    color: white;
-  }
+.button-container button:hover {
+  background-color: #f27484;
+  color: white;
+}
 
+.number-of-angels {
+  margin: 20px;
+  color: #f2a6b0;
+  font-size: 20px;
+  font-weight: bold;
+}
 

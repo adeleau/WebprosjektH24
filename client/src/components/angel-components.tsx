@@ -950,10 +950,10 @@ export const AngelEdit: React.FC<{}> = () => {
         </div>
 
         <div className="form-actions">
-          <button className="btn btn-success" onClick={handleSave}>
+          <button className="save-button" onClick={handleSave}>
             Save Changes
           </button>
-          <button className="btn btn-danger" onClick={handleDelete}>
+          <button className="delete-button" onClick={handleDelete}>
             Delete Angel
           </button>
         </div>
