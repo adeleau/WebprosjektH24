@@ -2,7 +2,7 @@ import express from 'express';
 import seriesService, { Series } from "../services/series-service"
 import angelService, { Angel } from "../services/angel-service" //legg til angellikes
 import angelCommentService, { AngelComment } from "../services/angelcomment-service"
-import postService, { Post, PostComment } from "../services/post-service" //legg til postlikes
+import postService, { Post } from "../services/post-service" //legg til postlikes
 import registerService from '../services/register-service';
 import { AxiosPromise } from 'axios';
 import userService from '../services/user-service';
@@ -21,6 +21,9 @@ postrouter.get('/posts', (_req, res) => {
 // Get specific post
 postrouter.get('/posts/:post_id', (req, res) => {
   const post_id = Number(req.params.post_id);
+  if (isNaN(post_id)) {
+    return res.status(400).send('Invalid post ID');
+  }
   postService
     .get(post_id)
     .then((post) => (post ? res.send(post) : res.status(404).send('Post not found')))
@@ -28,16 +31,18 @@ postrouter.get('/posts/:post_id', (req, res) => {
 });
   
 postrouter.post('/posts', (req, res) => {
-  const { user_id, username, title, content, image } = req.body;
+  const { user_id, title, content, image } = req.body;
 
-  console.log('Request data:', req.body);
-
-  if (!title || !user_id || !username) {
+  if (!title || !user_id) {
     return res.status(400).send('Missing required fields');
   }
 
+  if (title.length > 255 || content.length > 5000) {
+    return res.status(400).send('Title or content too long');
+  }
+  
   postService
-    .createPost(user_id, username, title, content, image)
+    .createPost(user_id/*, username*/, title, content, image)
     .then((post_id) => res.status(201).send({ post_id }))
     .catch((error) => {
       console.error('Error creating post:', error.message);
@@ -48,11 +53,24 @@ postrouter.post('/posts', (req, res) => {
 // Delete specific post
 postrouter.delete('/posts/:post_id', (req, res) => {
   const post_id = Number(req.params.post_id);
+  
+  if(isNaN(post_id)) {
+    return res.status(400).send('Invalid post ID');
+  }
 
   postService
-    .deletePost(post_id)
-    .then(() => res.status(200).send())
-    .catch((error) => res.status(500).send(error));
+    .get(post_id)
+    .then((post) => {
+      if (!post) return res.status(404).send('Post not found');
+      return postService
+        .deletePost(post_id)
+        .then(() => res.status(200).send('Post deleted successfully'))
+        .catch((error) => res.status(500).send('Error deleting post'));
+    })
+    .catch((error) => {
+      console.error('Error finding post: ', error.message);
+      res.status(500).send('Error finding post');
+    })
 });
   
  // Update specific post
@@ -60,11 +78,13 @@ postrouter.delete('/posts/:post_id', (req, res) => {
   const post_id = Number(req.params.post_id);
   const { title, content, image } = req.body;
 
-  console.log('Incoming Data:', { post_id, title, content, image });
+  if (!title && !content && !image) {
+    return res.status(400).send('No changes made');
+  }  
 
 
   postService
-    .updatePost(post_id, title, content, image) // Remove updated_at
+    .updatePost(post_id, title, content, image)
     .then(() => res.status(200).send('Post updated successfully'))
     .catch((err) => {
       console.error('Service Error:', err.message);
@@ -72,58 +92,6 @@ postrouter.delete('/posts/:post_id', (req, res) => {
     });
 });
 
-
-
-  
-  // LIKES
-  // like spesific post
-  // router.post('/posts/:post_id/likes', (request, response) => {
-  //   const post_id = Number(request.params.post_id);
-  //   if (post_id) {
-  //     postService
-  //       .likePost(post_id)
-  //       .then(() => response.status(201).send('Post liked successfully'))
-  //       .catch((error) => response.status(500).send(error));
-  //   } else {
-  //     response.status(400).send('Invalid post ID');
-  //   }
-  // });
-  
-  // get the likes of a post
-  // router.get('/posts/:post_id/likes', (request, response) => {
-  //   const post_id = Number(request.params.post_id);
-  
-  //   postService
-  //     .getPosLikes(post_id)
-  //     .then((posLikeCount) => response.json({ post_id: post_id, like_count: posLikeCount }))
-  //     .catch((error) => response.status(500).send(error));
-  // });
-  
-  // COMMENTS
-  // add a comment on a post
-  postrouter.post('/posts/:post_id/comments', (request, response) => {
-    const post_id = Number(request.params.post_id);
-    const { user_id, content, created_at } = request.body;
-  
-    if (user_id && content) {
-      postService
-        .addPostComment(post_id, user_id, content, created_at)
-        .then((comment_id) => response.status(201).send({ comment_id }))
-        .catch((error) => response.status(500).send(error));
-    } else {
-      response.status(400).send('Missing user ID or comment content');
-    }
-  });
-  
-  // get all comments on a post
-  postrouter.get('/posts/:post_id/comments', (request, response) => {
-    const post_id = Number(request.params.post_id);
-  
-    postService
-      .getPostComments(post_id)
-      .then((comments) => response.send(comments))
-      .catch((error) => response.status(500).send(error));
-  });
 
 
 export default postrouter;

@@ -23,7 +23,7 @@ class RegisterService {
             .get<Users[]>('/users')
             .then((response) => response.data);
     }
-
+    
     // Registrerer en ny bruker
     registerUser(username: string, email: string, password_hash: string) {
         return axios
@@ -31,8 +31,8 @@ class RegisterService {
             .then((response) => response.data)
             .catch((error) => {
                 console.error("Error during registration", error.response?.data || error.message);
-                throw error.response?.data || error.message;
-            });
+            throw new Error(error.response?.data || error.message); // Explicitly throw an Error object
+        });
     }
     
     checkUserExists(username: string, email:string):Promise<boolean> {
@@ -50,29 +50,6 @@ class RegisterService {
             return false;
         });
     }
-
 }
 
 export default new RegisterService();
-
-//Sjekker om en bruker allerede eksisterer basert på brukernavn eller e-post
-    /*checkUserExists(username: string, email: string) {
-        return axios
-            axios.get(`/users/check?username=${username}&email=${email}`)
-            .then((response) => response.data.exists)  // Returnerer true/false
-            .catch((error) => {
-                console.error("Error checking user existence", error);
-                throw error;
-            });
-    }
-}*/
-
-/*checkUserExists(username: string, email: string) {
-    return axios
-        .get(`/users/check?username=${username}&email=${email}&timestamp=${new Date().getTime()}`)
-        .then((response) => response.data.exists)
-        .catch((error) => {
-            console.error("Error checking user existence", error);
-            return false;
-        });
-    }*/

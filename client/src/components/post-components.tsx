@@ -111,7 +111,7 @@ export const PostNew: React.FC<{}> = () => {
       return;
     }
 
-    PostService.createPost(user.user_id, user.username, title, content, image)
+    PostService.createPost(user.user_id, /*user.username,*/ title, content, image)
       .then((post_id) => history.push(`/posts/${post_id}`))
       .catch((err) => setError("Error creating post: " + err.message));
   };

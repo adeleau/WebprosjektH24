@@ -6,7 +6,6 @@ import WishlistService from '../services/wishlist-service';
 const userrouter = express.Router();
 
 // USERS 
-
 // Get user by ID
 userrouter.get('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
@@ -37,11 +36,41 @@ userrouter.get('/users/uname/:username', async (req, res) => {
     }
 });
   
+// Get user by ID
+userrouter.get('/users/:id', async (req, res) => {
+    const user_id = parseInt(req.params.id, 10);
+    try {
+        const user = await userService.getById(user_id);
+        if (user) {
+            res.send(user);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).send('Server error');
+    }
+});
+  
+userrouter.get('/users/uname/:username', async (req, res) => {
+    const username = req.params.username;
+    try {
+        const user = await userService.getByUsername(username);
+        if (user) {
+         res.send(user);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        res.status(500).send("Shits fucked");
+    }
+});
+  
 // Get all users
 userrouter.get('/users', async (req, res) => {
     try {
         const users = await userService.getAllUsers();
-        res.json(users);
+        res.send(users);
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).send('Server error');
@@ -74,10 +103,10 @@ userrouter.put('/users/:id', async (req, res) => {
     const updatedData = req.body;
 
     try {
-        // Map `password` to `password_hash` if provided
+        // Map `password` to `password_hash` 
         if (updatedData.password) {
             updatedData.password_hash = updatedData.password; // Map to `password_hash`
-            delete updatedData.password; // Remove plaintext `password` from payload
+            delete updatedData.password; 
         }
 
         await userService.updateUser(user_id, updatedData);
@@ -108,14 +137,14 @@ userrouter.get('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
         const likes = await LikesService.getUserLikes(userId);
-        res.json(likes);
+        res.send(likes);
     } catch (error) {
         console.error('Error fetching user likes:', error);
         res.status(500).send('Server error');
     }
 });
 
-// Add a like for a user
+// Add a like (collection) for a user
 userrouter.post('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -128,7 +157,7 @@ userrouter.post('/:userId/likes', async (req, res) => {
     }
 });
 
-// Delete a like for a user
+// Delete a like (collection) for a user
 userrouter.delete('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;
@@ -142,19 +171,19 @@ userrouter.delete('/:userId/likes', async (req, res) => {
 });
 
 
-// Get wishlist of a user by user ID
+// Get wishlist of a user for a user
 userrouter.get('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
         const wishlist = await WishlistService.getUserWishlist(userId);
-        res.json(wishlist);
+        res.send(wishlist);
     } catch (error) {
         console.error('Error fetching user wishlist:', error);
         res.status(500).send('Server error');
     }
 });
 
-// Add an item to a user's wishlist
+// Add an item to wishlist
 userrouter.post('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -167,7 +196,7 @@ userrouter.post('/:userId/wishlist', async (req, res) => {
     }
 });
 
-// Delete an item from a user's wishlist
+// Delete an item from wishlist
 userrouter.delete('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;

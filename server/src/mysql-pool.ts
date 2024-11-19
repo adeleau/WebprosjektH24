@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
   
-  connectionLimit: 4,
+  connectionLimit: 8,
   // Convert MySQL boolean values to JavaScript boolean values
   typeCast: (field, next) =>
     field.type == 'TINY' && field.length == 1 ? field.string() == '1' : next(),

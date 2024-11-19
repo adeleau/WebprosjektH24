@@ -40,7 +40,7 @@ angelrouter.post("/angels", (req, res) => {
   }
 
   angelService
-    .createAngel({ name, description, image, release_year, views: 0, user_id, series_id, user_name: req.body.user_name })
+    .createAngel({ name, description, image, release_year, views: 0, user_id, series_id/*, user_name: req.body.user_name*/ })
     .then((newAngel) => res.status(201).json(newAngel))
     .catch((err) => {
       console.error("Error creating angel:", err);
@@ -90,17 +90,27 @@ angelrouter.delete("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
 
   if (isNaN(angel_id)) {
-    return res.status(400).send("Invalid angel ID");
+      console.warn("Invalid angel ID received:", req.params.angel_id);
+      return res.status(400).json({ error: "Invalid angel ID" });
   }
 
-  angelService
-    .deleteAngel(angel_id)
-    .then(() => res.status(200).send("Angel deleted successfully"))
-    .catch((err) => {
-      console.error(`Error deleting angel with ID ${angel_id}:`, err);
-      res.status(500).send("Failed to delete angel");
-    });
+  angelService.deleteAngel(angel_id)
+      .then(() => res.status(200).json({ message: "Angel deleted successfully" }))
+      .catch((err) => {
+          console.error(`Error deleting angel with ID ${angel_id}:`, {
+              message: err.message,
+              stack: err.stack,
+              sqlError: err.sqlMessage || "No SQL error available",
+          });
+          res.status(500).json({
+              error: "Failed to delete angel",
+              details: err.message,
+          });
+      });
 });
+
+
+
 
 // **Increment Views**
 angelrouter.put("/angels/:angel_id/increment-views", (req, res) => {

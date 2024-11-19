@@ -138,6 +138,7 @@ export const MasterList: React.FC = () => {
   );
 };
 
+
 export const AngelDetails: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -773,7 +774,7 @@ export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
 
-  const [angel, setAngel] = useState<Angel>({
+  const [angel, setAngel] = useState<Partial<Angel>>({
     angel_id: 0,
     name: "",
     description: "",
@@ -846,8 +847,8 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleSave = () => {
-    AngelService.updateAngel(angel)
-      .then(() => {
+    console.log('Angel being updated:', angel);
+    AngelService.updateAngel(angel).then(() => {
         history.push(`/angels/${angel.angel_id}`);
       })
       .catch((err) => setError("Error saving angel: " + err.message));

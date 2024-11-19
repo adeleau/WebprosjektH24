@@ -55,7 +55,10 @@ class AngelService {
           });
       }
 
-      updateAngel(updatedAngel: Partial<Angel>) {
+      updateAngel(updatedAngel: Partial<Angel>): Promise<Angel> {
+        if (!updatedAngel.angel_id) {
+          return Promise.reject(new Error('Missing angel_id'));
+        }
         return axios
           .put<Angel>(`/angels/${updatedAngel.angel_id}`, updatedAngel)
           .then((res) => res.data)
@@ -90,12 +93,9 @@ class AngelService {
 
     // Delete an angel by angel_id
     deleteAngel(angel_id: number): Promise<void> {
-        console.log('Sending DELETE request for angel ID:', angel_id);
-
         return axios
           .delete(`/angels/${angel_id}`)
           .then(() => {
-            console.log(`Angel with ID ${angel_id} deleted successfully.`);
           })
           .catch((err) => {
             console.error(`Error deleting angel with ID ${angel_id}:`, err.response?.data || err.message);

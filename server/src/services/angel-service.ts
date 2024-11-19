@@ -9,10 +9,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    // created_at: string;
-    // updated_at?: string;
     series_id: number;
-    user_name: string;
+    //user_name: string;
 };
 
 export type Angel_History = {
@@ -21,10 +19,6 @@ export type Angel_History = {
   description: string;
   user_id: string;
   updated_at?: Date;
-};
-
-export type AngelCardProps = {
-    angel: Angel;
 };
 
 class AngelService {
@@ -117,31 +111,6 @@ class AngelService {
       });
     }
 
-
-
-    /*updateAngel(angel: Angel) {
-      return new Promise<void>((resolve, reject) => {
-        
-        
-        pool.query(
-          'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
-          [angel.angel_id, angel.description, angel.user_id],
-          (error) => {
-            if (error) return reject(error);
-    
-            pool.query(
-              'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
-              [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
-              (updateError) => {
-                if (updateError) return reject(updateError);
-                resolve();
-              }
-            );
-          }
-        );
-      });
-    }  */  
-
      // Increment views for an angel
   incrementViews(angelId: number) {
     return new Promise((resolve, reject) => {
@@ -160,87 +129,66 @@ class AngelService {
     });
   }
 
-  deleteAngel(angelId: number) {
+
+deleteAngel(angelId: number) {
     return new Promise<void>((resolve, reject) => {
-      pool.getConnection((err, connection) => {
-        if (err) return reject(err);
-  
-        connection.beginTransaction((transactionErr) => {
-          if (transactionErr) {
-            connection.release();
-            return reject(transactionErr);
-          }
-  
-          // Queries to delete related records
-          const deleteComments = `DELETE FROM Angel_comments WHERE angel_id = ?`;
-          const deleteWishlists = `DELETE FROM Wishlists WHERE angel_id = ?`;
-          const deleteCollections = `DELETE FROM Collections WHERE angel_id = ?`;
-          const deleteAngelHistory = `DELETE FROM AngelHistory WHERE angel_id = ?`;
-  
-          // Delete Angel Comments
-          connection.query(deleteComments, [angelId], (error) => {
-            if (error) {
-              return connection.rollback(() => {
-                connection.release();
-                reject(error);
-              });
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error("Error acquiring connection:", err.message);
+                return reject(err);
             }
-  
-            // Delete Wishlists
-            connection.query(deleteWishlists, [angelId], (error) => {
-              if (error) {
-                return connection.rollback(() => {
-                  connection.release();
-                  reject(error);
-                });
-              }
-  
-              // Delete Collections
-              connection.query(deleteCollections, [angelId], (error) => {
-                if (error) {
-                  return connection.rollback(() => {
+
+            connection.beginTransaction((transactionErr) => {
+                if (transactionErr) {
+                    console.error("Error starting transaction:", transactionErr.message);
                     connection.release();
-                    reject(error);
-                  });
+                    return reject(transactionErr);
                 }
-  
-                // Delete Angel History
-                connection.query(deleteAngelHistory, [angelId], (error) => {
-                  if (error) {
-                    return connection.rollback(() => {
-                      connection.release();
-                      reject(error);
-                    });
-                  }
-                    
-                  // Finally, delete the Angel itself
-                  const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
-                  connection.query(deleteAngelQuery, [angelId], (error) => {
-                    if (error) {
-                      return connection.rollback(() => {
-                        connection.release();
-                        reject(error);
-                      });
+
+                // Delete related records sequentially
+                const queries = [
+                    `DELETE FROM Angel_comments WHERE angel_id = ?`,
+                    `DELETE FROM Wishlists WHERE angel_id = ?`,
+                    `DELETE FROM Collections WHERE angel_id = ?`,
+                    `DELETE FROM AngelHistory WHERE angel_id = ?`,
+                    `DELETE FROM Angels WHERE angel_id = ?`,
+                ];
+
+                let index = 0;
+
+                const executeQuery = () => {
+                    if (index >= queries.length) {
+                        // Commit the transaction if all queries succeeded
+                        connection.commit((commitErr) => {
+                            connection.release();
+                            if (commitErr) {
+                                console.error("Error committing transaction:", commitErr.message);
+                                return reject(commitErr);
+                            }
+                            resolve();
+                        });
+                        return;
                     }
-  
-                    // Commit the transaction
-                    connection.commit((commitErr) => {
-                      connection.release();
-                      if (commitErr) {
-                        return reject(commitErr);
-                      }
-                      resolve();
+
+                    const query = queries[index++];
+                    connection.query(query, [angelId], (queryErr) => {
+                        if (queryErr) {
+                            console.error(`Error executing query: ${query}`, queryErr.message);
+                            return connection.rollback(() => {
+                                connection.release();
+                                reject(queryErr);
+                            });
+                        }
+                        executeQuery(); // Proceed to the next query
                     });
-                  });
-                });
-              });
+                };
+
+                executeQuery(); // Start executing queries
             });
-          });
         });
-      });
     });
-  }
-  
+}
+
     //legger til engel historikk
     getAngelHistory(angel_id: number) {
       return new Promise<Angel_History[]>((resolve, reject) => {
