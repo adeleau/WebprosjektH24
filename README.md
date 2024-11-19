@@ -60,10 +60,11 @@ Configure your MySQL server and create a database:
 
 ### Create a .env file in the root directory and set the following variables:
 
-DB_HOST=your-database-host
-DB_USER=your-database-user
-DB_PASSWORD=your-database-password
-DB_NAME=your-database-name
+process.env.MYSQL_HOST = 'hostname';
+process.env.MYSQL_USER = 'username';
+process.env.MYSQL_PASSWORD = 'password';
+process.env.MYSQL_DATABASE = 'database-name';
+
 
 
 ### Add following tables into your database: 
