@@ -40,7 +40,7 @@ Follow these steps to set up the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/sonny-angels-wiki.git
+   git clone https://github.com/adeleau/WebprosjektH24.git  ---her må vi gjer gurotull til main branch
    cd sonny-angels-wiki
 
 ### Install dependencies:
