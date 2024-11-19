@@ -98,3 +98,12 @@ ChatGPT by OpenAI and GitHub Copilot by GitHub for
 - Error trouble shooting.
 - Suggestions for improvement to enhance the readability, structure, and technical accuracy of both code and textual explanations.
 - Optimizing code: To suggest more efficient solutions for existing code
+
+Veit ikkje om vi må ha, men her e : 
+Following youtube videos for educations and a deeper understanding: 
+https://www.youtube.com/watch?v=o080tU3sd0k&t=17625s
+https://www.youtube.com/watch?v=XQDp4Btvkh8&list=PLD9SRxG6ST3HQzNZLdcOFTwuD5MF03dWN 
+https://www.youtube.com/watch?v=py6sUc3yq-w&list=PLD9SRxG6ST3EmhnWBLGpVcTJ_39S8lohn
+https://www.youtube.com/watch?v=0aPLk2e2Z3g&t=2666s
+https://www.youtube.com/watch?v=wIyHSOugGGw
+https://www.youtube.com/watch?v=LOH1l-MP_9k
