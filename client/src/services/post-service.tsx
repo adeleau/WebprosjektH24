@@ -32,12 +32,10 @@ class PostService {
   
     
     updatePost(post_id: number, title: string, content: string, image: string) {
-      console.log('Sending Post Update:', { post_id, title, content, image });
     
       return axios
         .put(`/posts/${post_id}`, { title, content, image }) 
         .then((response) => {
-          console.log('Post Update Success:', response.data);
           return response.data;
         })
         .catch((error) => {
@@ -46,7 +44,7 @@ class PostService {
         });
     }
     
-  
+    
   deletePost(post_id: number) {
     return axios.delete('/posts/' + post_id)
     .then((response) => response.data);

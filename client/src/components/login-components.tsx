@@ -16,7 +16,6 @@ export const Login: React.FC = () => {
       if (username && password) {
         const userLoggedIn = await userService.login(username, password);
         if (userLoggedIn) {
-          window.alert("Login successful");
           setUser(await userService.getByUsername(username));
         } else {
           setError("Invalid Username or Password");

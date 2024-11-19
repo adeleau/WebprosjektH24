@@ -26,6 +26,8 @@ class PostService {
           );
         });
       }
+
+      // get specific post
       get(post_id: number) {
         return new Promise<Post>((resolve, reject) => {
           pool.query(
@@ -39,7 +41,8 @@ class PostService {
         });
       }
 
-      createPost(user_id: number, /*username: string, */title: string, content: string, image: string) {
+      //post post
+      createPost(user_id: number, username: string, title: string, content: string, image: string) {
         return new Promise<number>((resolve, reject) => {
           pool.query(
             'INSERT INTO Posts (user_id, title, content, image) VALUES (?, ?, ?, ?)',
@@ -55,8 +58,10 @@ class PostService {
         });
       }
       
+      //update post
       updatePost(post_id: number, title: string, content: string, image: string) {
         return new Promise((resolve, reject) => {
+      
           pool.query(
             'UPDATE Posts SET title = ?, content = ?, image = ? WHERE post_id = ?',
             [title, content, image, post_id], 
@@ -71,7 +76,8 @@ class PostService {
         });
       }
       
-    
+      
+    // delete posts
       deletePost(post_id: number) {
         return new Promise<void>((resolve, reject) => {
           pool.query('DELETE FROM Posts WHERE post_id = ?', [post_id], (error, results: ResultSetHeader) => {
@@ -81,7 +87,6 @@ class PostService {
           });
         });
       }
-  
-}
+    }
 
 export default new PostService();

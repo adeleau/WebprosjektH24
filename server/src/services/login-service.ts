@@ -10,6 +10,7 @@ export type User = {
 };
 
 class LoginService {
+    
     // Find user by username
     async getUserByUsername(username: string): Promise<User | null> {
         return new Promise((resolve, reject) => {

@@ -72,6 +72,7 @@ class UserService {
         });
     }
 
+    
     login(userData: {username: string, password: string}): Promise<boolean> {
         return new Promise<boolean> ((res, rej) => {
             pool.query("SELECT * FROM Users WHERE username = ? AND password_hash = ?", [userData.username, userData.password], (err, result: RowDataPacket[]) => {

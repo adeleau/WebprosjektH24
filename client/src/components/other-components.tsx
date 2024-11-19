@@ -4,7 +4,6 @@ import {useState, useEffect, useRef } from "react";
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
-import userService from "../services/user-service";
 import type { User } from "../services/user-service";
 import Cookies from "js-cookie";
 
@@ -136,7 +135,6 @@ export const Navbar = () => {
         setUser(JSON.parse(stringifiedUser))
       }
       if (stringifiedUser === undefined) {
-        console.log(stringifiedUser); 
         const partialUser: Partial<User> = {};
         setUser(partialUser);
       }
@@ -397,7 +395,6 @@ export const Leftbar: React.FC<{}> = () => {
 
 
 export const Footer =() => {
-  const [isAtBottom, setIsAtBottom] = useState(false);
 
     return (
     <>
@@ -480,8 +477,8 @@ export const HowTo: React.FC<{}> = () => {
         </div>
         <div className="about-image">
           <img
-            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0170_-2.jpg" 
-            alt="Sonny Angel Figurines" 
+            src="https://i.pinimg.com/736x/58/81/29/588129ad14daa7fa334fa52449e3f931.jpg" 
+            alt="Loign image" 
           />
         </div>
       </div>
@@ -489,8 +486,8 @@ export const HowTo: React.FC<{}> = () => {
       <div className="about-section">
         <div className="about-image">
           <img
-            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/180907_0261_2cus.jpg" 
-            alt="Sonny Angel Figurines" 
+            src="https://img.freepik.com/free-vector/empty-speech-bubbles_53876-93197.jpg" 
+            alt="chat image" 
           />
         </div>
         <div className="about-text">
@@ -519,7 +516,7 @@ export const HowTo: React.FC<{}> = () => {
         </div>
         <div className="about-image">
           <img
-            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/sa_original_image-1-768x512.jpg" 
+            src="https://www.sonnyangel.com/renewal/wp-content/uploads/2022/02/img_peaceful_spring_01.png" 
             alt="Sonny Angel Figurines" 
           />
         </div>

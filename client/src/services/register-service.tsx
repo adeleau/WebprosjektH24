@@ -64,7 +64,6 @@ class RegisterService {
             params: { username, email, timestamp }
         })
         .then((response) => {
-            console.log('Check user exists response:', response.data);
             return response.data.exists;
         })
         .catch((error) => {

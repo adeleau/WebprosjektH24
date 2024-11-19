@@ -100,7 +100,7 @@ class AngelCommentService {
   }
   
 
-  // Delete a comment (with ownership or admin)
+  // Delete a comment (with ownership or if admin)
   deleteAngelComment(
     angelcomment_id: number,
     user_id: number,

@@ -21,14 +21,13 @@ class LikesService {
  // Add a like (add to collection)
 addLike(userId: number, angelId: number): Promise<void> {
     return new Promise((resolve, reject) => {
-        console.log('Inserting into Collections table with:', [userId, angelId]);
         pool.query(
             'INSERT INTO Collections (user_id, angel_id) VALUES (?, ?)',
             [userId, angelId],
             (error) => {
                 if (error) {
                     console.error('Error executing query:', error);
-                    return reject(error);  // Log the error if any
+                    return reject(error);  
                 }
                 resolve();
             }

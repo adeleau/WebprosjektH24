@@ -8,9 +8,7 @@ import AngelService from "../services/angel-service";
 import type { Angel, Angel_History } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment as BaseAngelComment } from "../services/angelcomment-service";
-interface AngelComment extends BaseAngelComment {
-  isEditing: boolean;
-}
+interface AngelComment extends BaseAngelComment { isEditing: boolean; }
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import type { User } from "../services/user-service";
@@ -28,7 +26,7 @@ export const MasterList: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Fetch logged-in user from cookies
+    // get logged in user from cookies
     const userCookie = Cookies.get("user");
   
     try {
@@ -47,10 +45,9 @@ export const MasterList: React.FC = () => {
       }
     } catch (error) {
       console.error("Error parsing user cookie:", error);
-      setUser(null); // Treat as not logged in if parsing fails
+      setUser(null); // set as not logged in if parsing fails
     }
 
-    // Fetch all angels
     AngelService.getAll()
       .then((data) => setAngels(data))
       .catch((err) => {
@@ -59,7 +56,7 @@ export const MasterList: React.FC = () => {
       });
   }, []);
 
-  // Group angels by their starting letter
+  // grouping angels by their starting letter
   const groupedAngels = angels.reduce((acc: { [key: string]: Angel[] }, angel) => {
     const firstLetter = angel.name.charAt(0).toUpperCase();
     if (!acc[firstLetter]) acc[firstLetter] = [];
@@ -82,7 +79,6 @@ export const MasterList: React.FC = () => {
       <div className="angel-master-list">
         <h2>Angel Master List</h2>
         <hr className="masterlist-divider" />
-
 
         {error && <div className="error-message">{error}</div>}
 
@@ -118,7 +114,7 @@ export const MasterList: React.FC = () => {
                 id={letter}
                 className="angel-group"
                 ref={(el) => (sectionRefs.current[letter] = el)}
-              >
+                >
                 <h2>{letter}</h2>
                 <ul>
                   {groupedAngels[letter].map((angel) => (
@@ -152,7 +148,7 @@ export const AngelDetails: React.FC<{}> = () => {
   const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<AngelComment[]>([]);
 
-  // Fetch angel details and user information
+  // get angel details and user information
   useEffect(() => {
     if (angel_id) {
       AngelService.get(Number(angel_id))
@@ -223,7 +219,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  //  wishlist toggle
+  //  toggle button
   const handleWishlistToggle = async () => {
     if (!user) {
       setError("You must be logged in to add this angel to your wishlist");
@@ -492,20 +488,16 @@ export const AngelNew: React.FC<{}> = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [release_year, setReleaseYear] = useState(0);
-  const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>(
-    Number(routeSeriesId)
-  );
+  const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>( Number(routeSeriesId) );
   const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [newSeriesName, setNewSeriesName] = useState("");
   const [showAddSeries, setShowAddSeries] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<{ username: string; user_id: number; role: string } | null>(
-    null
-  );
+  const [user, setUser] = useState<{ username: string; user_id: number; role: string } | null>( null );
   const history = useHistory();
 
   useEffect(() => {
-    // get loggedin user from cookies
+    // get logged in user from cookies
     const userCookie = Cookies.get("user");
 
     try {
@@ -518,7 +510,7 @@ export const AngelNew: React.FC<{}> = () => {
           }
         } else if (userCookie === "guest") {
           setUser({ username: "Guest", user_id: 0, role: "guest" });
-          history.push("/"); // guests are restircted
+          history.push("/"); // restirctions for guests
         } else {
           setUser(null);
           history.push("/login");
@@ -533,7 +525,6 @@ export const AngelNew: React.FC<{}> = () => {
       history.push("/login");
     }
 
-    // series list
     SeriesService.getAll()
       .then((data) => setSeriesList(data))
       .catch((error) => setError("Error fetching series: " + error.message));
@@ -567,7 +558,7 @@ export const AngelNew: React.FC<{}> = () => {
     SeriesService.createSeries({ name: newSeriesName })
       .then((newSeries) => {
         setSeriesList([...seriesList, newSeries]); 
-        setSelectedSeriesId(newSeries.series_id); // Automatically select the new series
+        setSelectedSeriesId(newSeries.series_id); // automatically select the new series
         setNewSeriesName(""); 
         setShowAddSeries(false); // hide input
       })
@@ -613,7 +604,7 @@ export const AngelNew: React.FC<{}> = () => {
 
         <h2>Add New Angel as {user?.username || "Unknown"}</h2>
 
-        {/* Angel Creation Form */}
+        {/*  Creation Form */}
         <div className="form-group">
           <label htmlFor="name">Name:</label>
           <input
@@ -706,8 +697,6 @@ export const AngelNew: React.FC<{}> = () => {
   );
 };
 
-
-
 export const AngelHistory: React.FC = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
@@ -769,7 +758,6 @@ export const AngelHistory: React.FC = () => {
     </>
   );
 };
-
 export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();

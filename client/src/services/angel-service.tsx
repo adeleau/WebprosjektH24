@@ -119,7 +119,6 @@ class AngelService {
       return axios
         .get<{ count: number }>(`/series/${series_id}/count`)
         .then((res) => {
-          console.log(`Fetched angel count for series_id ${series_id}: `, res.data.count);
           return res.data.count;
         })
         .catch((err) => {

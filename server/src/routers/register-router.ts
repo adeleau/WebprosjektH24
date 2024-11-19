@@ -72,13 +72,11 @@ registerrouter.get('/users/:user_id', (req, res) => {
 registerrouter.post('/register', (request,response) =>{
   const {username, email, password_hash} = request.body;
   
-  console.log('Received registration request:', request.body);
   
   if (username && email && password_hash) {
       registerService
         .register(username, email, password_hash)
         .then((users) => { 
-          console.log('User register successfully:', users)
           response.status(201).send({ username : users });
         })
         .catch((error) => {
