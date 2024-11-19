@@ -4,7 +4,7 @@ axios.defaults.baseURL = 'http://localhost:3000/';
 export type Post = {
     post_id: number;
     user_id: number;
-    username: string;
+    username?: string;
     title: string;
     content: string;
     image: string;

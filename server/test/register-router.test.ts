@@ -2,14 +2,15 @@ import axios from 'axios';
 import pool from '../src/mysql-pool';
 import app from '../src/app';
 import registerService from '../src/services/register-service';
+import {Users} from '../src/services/register-service';
 import { response } from 'express';
 
 axios.defaults.baseURL = 'http://localhost:3001';
 
-const testUser = [
-    {user_id:2, username:'Adele', email:'Adele@san.com', password_hash:'Angel123!'},
-    {user_id:3, username:'Julia', email:'Julia@kun.com', password_hash:'Angel123!'},
-    {user_id:4, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123!'},
+const testUser : Users[]= [
+    {user_id:2, username:'Adele', email:'Adele@san.com', password_hash:'Angel123!', created_at: new Date()},
+    {user_id:3, username:'Julia', email:'Julia@kun.com', password_hash:'Angel123!', created_at: new Date()},
+    {user_id:4, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123!', created_at: new Date()},
 ];
 
 let webServer: any;
@@ -40,13 +41,18 @@ beforeEach((done) => {
         });
     });
     
+// afterAll((done) => {
+//     if(webServer) {
+//         webServer.close(() => pool.end(()=> done()));
+//     }else {
+//         done();
+//     }
+// });
+
 afterAll((done) => {
-    if(webServer) {
-        webServer.close(() => pool.end(()=> done()));
-    }else {
-        done();
-    }
-});
+    if (!webServer) return done(new Error());
+    webServer.close(() => pool.end(() => done()));
+  });
 
 //tester tilfeller
 describe('Register Router Tests', () => {

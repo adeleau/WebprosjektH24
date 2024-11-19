@@ -88,20 +88,21 @@ class AngelService {
     }*/
 
 
-// Delete an angel by angel_id
-deleteAngel(angel_id: number): Promise<void> {
-    console.log('Sending DELETE request for angel ID:', angel_id);
+    // Delete an angel by angel_id
+    deleteAngel(angel_id: number): Promise<void> {
+        console.log('Sending DELETE request for angel ID:', angel_id);
 
-    return axios
-      .delete(`/angels/${angel_id}`)
-      .then(() => {
-        console.log(`Angel with ID ${angel_id} deleted successfully.`);
-      })
-      .catch((err) => {
-        console.error(`Error deleting angel with ID ${angel_id}:`, err.response?.data || err.message);
-        throw err;
-      });
-};
+        return axios
+          .delete(`/angels/${angel_id}`)
+          .then(() => {
+            console.log(`Angel with ID ${angel_id} deleted successfully.`);
+          })
+          .catch((err) => {
+            console.error(`Error deleting angel with ID ${angel_id}:`, err.response?.data || err.message);
+            throw err;
+          });
+    };
+    
     //get angels by series_id
     getBySeries(series_id: number) {
         return axios

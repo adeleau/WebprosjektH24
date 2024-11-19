@@ -854,6 +854,7 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleDelete = () => {
+    console.log("Deleting angel with ID:", angel.angel_id);
     AngelService.deleteAngel(angel.angel_id!)
       .then(() => {
         history.push(`/`);

@@ -1,61 +1,3 @@
-// import * as React from 'react';
-// import { Home, About, Navbar, SearchPage, Leftbar, Menu, Footer } from '../../src/components/other-components';
-// import { Link, MemoryRouter } from 'react-router-dom';
-// import { shallow, mount } from 'enzyme';
-
-// describe('Navbar component tests', () => {
-  // test('Navbar draws correctly', (done) => {
-  //     const wrapper = shallow(
-  //         <MemoryRouter>
-  //             <Navbar />
-  //         </MemoryRouter>
-  //     );
-  //     console.log(wrapper.debug());
-  //     setTimeout(() => {
-  //         expect(
-  //             wrapper.containsAllMatchingElements([
-  //                 <div className="navbar">
-  //                     <div className="navbar_search">
-  //                         <input type="text" placeholder="Search..." value="" />
-  //                     </div>
-  //                     <div className="navbar_logo-container">
-  //                         <Link to="/">
-  //                             <img src="https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SonnyAngel_logo.png" alt="Main Logo" className="navbar_logo" />
-  //                         </Link>
-  //                     </div>
-  //                     <div className="navbar_profile">
-  //                         <Link to="/login" className="login-link">
-  //                             Log in
-  //                         </Link>
-  //                     </div>
-  //                 </div>
-  //             ])
-  //         ).toContain(true);
-  //         done();
-  //     });
-  // });
-
-//   test('Typing in the searchbar works', (done) => {
-    
-//   })
-// });
-
-// describe('Leftbar component tests', () => {
-//     test('Leftbar draws correctly', (done) => {
-//         const wrapper = shallow(<Home />);
-//         setTimeout(() => {
-//             expect(
-//                 wrapper.containsAllMatchingElements([
-                    
-//                 ])
-//             ).toEqual(true);
-//             done();
-//         })
-//     })
-
-//     test('')
-// });
-
 import * as React from 'react';
 import { Home, About, Navbar, SearchPage, Leftbar, Footer, PopularPage, HowTo } from '../../src/components/other-components';
 import { shallow, mount } from 'enzyme';
@@ -81,7 +23,7 @@ describe('Other Components Tests', () => {
     );
 
     expect(wrapper.find('.home-content').exists()).toBe(true);
-    expect(wrapper.find('h2').text()).toContain('INFORMATION');
+    expect(wrapper.find('h2').at(0).text()).toContain('INFORMATION');
     expect(wrapper.find('.home-image img').at(0).prop('src')).toBe(
       'https://www.sonnyangel.com/renewal/wp-content/uploads/2021/10/sa_christmas2021_banner.jpg'
     );
@@ -122,7 +64,7 @@ describe('Other Components Tests', () => {
         </Router>
       );
 
-      expect(wrapper.find('.login-link').text()).toBe('Log in');
+      expect(wrapper.find('.login-link').first().text()).toBe('Log in');
     });
 
     test('Navbar handles search correctly', async () => {
@@ -140,7 +82,7 @@ describe('Other Components Tests', () => {
       searchInput.simulate('change', { target: { value: 'Angel' } });
       searchInput.simulate('keyDown', { key: 'Enter' });
 
-      await new Promise(setImmediate); // wait for async operations
+      await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
 
       expect(wrapper.find('.search-results').exists()).toBe(true);

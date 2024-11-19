@@ -1,101 +1,104 @@
-import * as React from 'react';
-import { Login } from '../../src/components/login-components';
-import UserService from '../../src/services/user-service';
-import { shallow } from 'enzyme';
-import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import * as React from "react";
+import { mount } from "enzyme";
+import { MemoryRouter as Router } from "react-router-dom";
+import { Login } from "../../src/components/login-components";
+import userService from "../../src/services/user-service";
+import Cookies from "js-cookie";
 
-//Mocker User-service
-jest.mock('../src/components/login-components', () => {
-    return class UserService{
-        login(username: string, password:string){
-            if (username ==='Guro' && password ==='Passord123?'){
-                return Promise.resolve(true);
-            }else{
-                return Promise.resolve(false);
-            }
-        }
-        getByUsername(username:string){
-            if (username === 'Guro'){
-                return Promise.resolve({
-                    user_id: 1,
-                    username: 'Guro',
-                    email: 'Guro@Oniichan.com',
-                });
-            }
-            return Promise.reject('User not found');
-        }
-    };   
-});
+jest.mock("../../src/services/user-service");
+jest.mock("js-cookie");
 
-//mocker jest-cookie
-jest.mock('js-cookie', () =>({
-    get: jest.fn(),
-    get: jest.fn(),
-  }));
+describe("Login Component Tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-  //Må lage en mocking for history også..når den eksisterer
-  //jest.mock('react-router-dom', () => ({
-    //...jest.requireActual('react-router-dom'),
-    //useHistory: () => ({
-        //push: jest.fn(),
-    //}),
-  //}));
+  test("renders Login component correctly", () => {
+    const wrapper = mount(
+      <Router>
+        <Login />
+      </Router>
+    );
 
-let wrapper: any; 
+    expect(wrapper.find("h1").at(0).text()).toBe("Sign In");
+    expect(wrapper.find("h1").at(1).text()).toBe("Log in");
+    expect(wrapper.find("input[type='text']").exists()).toBe(true);
+    expect(wrapper.find("input[type='password']").exists()).toBe(true);
+    expect(wrapper.find(".login-btn").text()).toBe("Login");
+  });
 
-describe('Login components Test', () => {
-    const mockSetCookie = Cookies.set as jest.MockedFunction<typeof Cookies.set>;
-    //const mockHistoryPush = useHistory().push as jest.Mock;
+  test("shows error message on invalid credentials", async () => {
+    (userService.login as jest.Mock).mockResolvedValue(false);
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        wrapper = shallow(<Login />);
-    });
+    const wrapper = mount(
+      <Router>
+        <Login />
+      </Router>
+    );
 
-    test('Renders correctly', () => {
-        const wrapper = shallow(<Login/>);
-        expect(wrapper.find('.login')).toHaveLength(1);
-        expect(wrapper.find('input[type="text"]')).toHaveLength(1);
-        expect(wrapper.find('input[type="password"]')).toHaveLength(1);
-        expect(wrapper.find('button.login-btn')).toHaveLength(1);
-    });
+    const usernameInput = wrapper.find("input[type='text']");
+    const passwordInput = wrapper.find("input[type='password']");
+    const loginButton = wrapper.find(".login-btn");
 
-    test('Handles successfull login', async () => {
-        const wrapper = shallow(<Login/>);
-        const instance = wrapper.instance() as any;
+    usernameInput.simulate("change", { target: { value: "invalidUser" } });
+    passwordInput.simulate("change", { target: { value: "invalidPass" } });
 
-        jest.spyOn(instance, 'handleLogin').mockImplementation(() => {
-            return Promise.resolve(true);
-        });
+    await loginButton.simulate("click");
 
-        wrapper.find('input[type="text"]').simulate('change', { target: {value: 'Guro'}});
-        wrapper.find('input [type = "password]').simulate('change', { target: {value: 'Passord123?'}});
-        wrapper.find('button.login-btn').simulate('click');
+    wrapper.update();
 
-        setTimeout(() => {
-            expect(mockSetCookie).toHaveBeenCalledWith('user', 'Guro');
-            //expect(mockHistoryPush).toHaveBeenCalledWith('/home');
-            done();
-        }, 0);  
-    });
+    expect(userService.login).toHaveBeenCalledWith("invalidUser", "invalidPass");
+    expect(wrapper.find(".error-message").text()).toBe("Invalid Username or Password");
+  });
 
-    test('handles failed login', async (done) => {
-        const wrapper = shallow(<Login />);
-        const instance = wrapper.instance() as any;
+  test("redirects and sets cookie on successful login", async () => {
+    const mockUser = { user_id: 1, username: "testuser", email: "test@example.com" };
+    (userService.login as jest.Mock).mockResolvedValue(true);
+    (userService.getByUsername as jest.Mock).mockResolvedValue(mockUser);
+    const setMock = jest.spyOn(Cookies, "set");
 
-        jest.spyOn(instance, 'handleLogin').mockImplementation(() => {
-            return Promise.resolve(false);
-        });
+    const wrapper = mount(
+      <Router>
+        <Login />
+      </Router>
+    );
 
-        wrapper.find('input[type="text"]').simulate('change', { target: { value: 'WrongUser' } });
-        wrapper.find('input[type="password"]').simulate('change', { target: { value: 'WrongPass' } });
-        wrapper.find('button.login-btn').simulate('click');
+    const usernameInput = wrapper.find("input[type='text']");
+    const passwordInput = wrapper.find("input[type='password']");
+    const loginButton = wrapper.find(".login-btn");
 
-        setTimeout(() => {
-            expect(wrapper.find('.error-message').text()).toEqual('Invalid Username or password');
-            //expect(mockHistoryPush).not.toHaveBeenCalled();
-            done();
-        }, 0);
-    });
+    usernameInput.simulate("change", { target: { value: "testuser" } });
+    passwordInput.simulate("change", { target: { value: "testpass" } });
+
+    await loginButton.simulate("click");
+
+    wrapper.update();
+
+    expect(userService.login).toHaveBeenCalledWith("testuser", "testpass");
+    expect(userService.getByUsername).toHaveBeenCalledWith("testuser");
+    expect(setMock).toHaveBeenCalledWith("user", JSON.stringify(mockUser), { domain: "localhost" });
+  });
+
+  test("handles Enter key for login", async () => {
+    (userService.login as jest.Mock).mockResolvedValue(false);
+
+    const wrapper = mount(
+      <Router>
+        <Login />
+      </Router>
+    );
+
+    const usernameInput = wrapper.find("input[type='text']");
+    const passwordInput = wrapper.find("input[type='password']");
+
+    usernameInput.simulate("change", { target: { value: "invalidUser" } });
+    passwordInput.simulate("change", { target: { value: "invalidPass" } });
+
+    await usernameInput.simulate("keydown", { key: "Enter" });
+
+    wrapper.update();
+
+    expect(userService.login).toHaveBeenCalledWith("invalidUser", "invalidPass");
+    expect(wrapper.find(".error-message").text()).toBe("Invalid Username or Password");
+  });
 });

@@ -175,7 +175,6 @@ class AngelService {
           const deleteComments = `DELETE FROM Angel_comments WHERE angel_id = ?`;
           const deleteWishlists = `DELETE FROM Wishlists WHERE angel_id = ?`;
           const deleteCollections = `DELETE FROM Collections WHERE angel_id = ?`;
-          const deleteAngelTags = `DELETE FROM Angel_tags WHERE angel_id = ?`;
           const deleteAngelHistory = `DELETE FROM AngelHistory WHERE angel_id = ?`;
   
           // Delete Angel Comments
@@ -205,42 +204,32 @@ class AngelService {
                   });
                 }
   
-                // Delete Angel Tags
-                connection.query(deleteAngelTags, [angelId], (error) => {
+                // Delete Angel History
+                connection.query(deleteAngelHistory, [angelId], (error) => {
                   if (error) {
                     return connection.rollback(() => {
                       connection.release();
                       reject(error);
                     });
                   }
-  
-                  // Delete Angel History
-                  connection.query(deleteAngelHistory, [angelId], (error) => {
+                    
+                  // Finally, delete the Angel itself
+                  const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
+                  connection.query(deleteAngelQuery, [angelId], (error) => {
                     if (error) {
                       return connection.rollback(() => {
                         connection.release();
                         reject(error);
                       });
                     }
-                    
-                    // Finally, delete the Angel itself
-                    const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
-                    connection.query(deleteAngelQuery, [angelId], (error) => {
-                      if (error) {
-                        return connection.rollback(() => {
-                          connection.release();
-                          reject(error);
-                        });
-                      }
   
-                      // Commit the transaction
-                      connection.commit((commitErr) => {
-                        connection.release();
-                        if (commitErr) {
-                          return reject(commitErr);
-                        }
-                        resolve();
-                      });
+                    // Commit the transaction
+                    connection.commit((commitErr) => {
+                      connection.release();
+                      if (commitErr) {
+                        return reject(commitErr);
+                      }
+                      resolve();
                     });
                   });
                 });

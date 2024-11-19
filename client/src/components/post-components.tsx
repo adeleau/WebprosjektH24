@@ -4,7 +4,7 @@ import {useState, useEffect, useRef} from "react";
 import Cookies from "js-cookie";
 import type { User } from "../services/user-service";
 import PostService from "../services/post-service";
-import type {Post} from "../services/post-service"
+import type { Post } from "../services/post-service"
 import { Navbar, Leftbar, Footer } from "./other-components";
 
 export const PostList: React.FC<{}> = () => {
@@ -20,7 +20,7 @@ export const PostList: React.FC<{}> = () => {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
         setUser(JSON.parse(userCookie));
       } else {
-        setUser(null); // No valid user data in cookies
+        setUser(null); 
       }
     } catch (err) {
       console.error("Error parsing user cookie:", err);
@@ -62,14 +62,14 @@ export const PostList: React.FC<{}> = () => {
               alt="Post Header"
               className="post-preview-hipper"
             />
-            <Link to={`/user/${post.user_id}`}>
-              {post.username && (
+            {post.username && (
                 <Link to={`/user/${post.user_id}`} className="post-creator">
                   {post.username}
                 </Link>
               )}
+            <Link to={`/posts/${post.post_id}`} className="post-link">
                 <h3 className="post-title">{post.title}</h3>
-                <p className="post-preview-content">
+                <p className="post-preview-content"> 
                   {post.content.slice(0, 100)}
                 </p>
             </Link>

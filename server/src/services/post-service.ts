@@ -5,6 +5,7 @@ export type Post = {
     post_id: number;
     user_id: number;
     title: string;
+    username: string;
     content: string;
     image: string;
     created_at: Date;
