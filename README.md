@@ -89,11 +89,12 @@ Run the following command to execute tests:
 
 ### Sources 📚
 Sonny Angel Official Site
-Community Forums
 
-chatgpt Håkon, github copilot, youtube (ramse opp?)
+In this project, we have used the following AI tools to support our work:
 
-
-DATABASEN VÅR:
-BRUKER: 'fs_dcst2002_1_gruppe3'
-PASSORD: Passord123
+ChatGPT by OpenAI and GitHub Copilot by GitHub for 
+- Syntax correction.
+- To refine and correct code snippets, ensuring proper syntax.
+- Error trouble shooting.
+- Suggestions for improvement to enhance the readability, structure, and technical accuracy of both code and textual explanations.
+- Optimizing code: To suggest more efficient solutions for existing code
