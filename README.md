@@ -41,22 +41,13 @@ Follow these steps to set up the project locally:
 1. Clone the repository:
    ```bash
    git clone https://github.com/adeleau/WebprosjektH24.git  ---her må vi gjer gurotull til main branch
-   cd sonny-angels-wiki
+   cd WebprosjektH24
 
 ### Install dependencies:
 
 1. ```bash
    npm install
 
-### Set up the database:
-
-Configure your MySQL server and create a database:
-
- Import the database schema from db/schema.sql:
-1. ```bash
-   mysql -u [username] -p [database_name] < db/schema.sql
-
-### Configure environment variables:
 
 ### Create a .env file in the root directory and set the following variables:
 
@@ -64,7 +55,6 @@ process.env.MYSQL_HOST = 'hostname';
 process.env.MYSQL_USER = 'username';
 process.env.MYSQL_PASSWORD = 'password';
 process.env.MYSQL_DATABASE = 'database-name';
-
 
 
 ### Add following tables into your database: 
@@ -91,7 +81,7 @@ Register or log in to explore features like the wiki, collections, and community
 Run the following command to execute tests:
 
 1. ```bash
-   npm run test ?? ? ? 
+   npm test ?? ? ? 
 
 ### Development 🛠️
 
