@@ -205,7 +205,6 @@ export const UserSettings: React.FC = () => {
             userService
                 .update(user.user_id, formData)
                 .then(() => {
-                    alert("Changes saved successfully. You will be logged out.");
                     Cookies.remove("user"); // Clear the user cookie
                     setUser(null); // Clear user state
                     history.push("/login"); // Redirect to login page
@@ -223,7 +222,6 @@ export const UserSettings: React.FC = () => {
                         user.user_id === userId ? { ...user, role: newRole } : user
                     )
                 );
-                alert("User role updated successfully");
             })
             .catch(err => setError("Error updating role: " + err.message));
     };
@@ -338,13 +336,13 @@ export const UserPage: React.FC = () => {
       return;
     }
 
-    // Fetch user details
+    // Get user details
     userService
       .getById(Number(user_id))
       .then((fetchedUser) => setUser(fetchedUser))
       .catch((err) => setError(`Error fetching user: ${err.message}`));
 
-    // Fetch liked angels (collection)
+    // Get liked angels (collection)
     LikesService.getUserLikes(Number(user_id))
       .then(async (likes) => {
         const angels = await Promise.all(
@@ -361,7 +359,7 @@ export const UserPage: React.FC = () => {
       })
       .catch((err) => setError(`Error fetching liked angels: ${err.message}`));
 
-    // Fetch wishlist angels
+    // Get wishlist angels
     WishlistService.getUserWishlist(Number(user_id))
       .then(async (wishlist) => {
         const angels = await Promise.all(
@@ -388,7 +386,8 @@ export const UserPage: React.FC = () => {
         Go to Home
       </button>
       <div className="series-page">
-        {/* User Details Section */}
+
+        {/* User userdetails section */}
         <div className="profile-header">
           <h2>{user.username}</h2>
           <img

@@ -117,32 +117,7 @@ class AngelService {
       });
     }
 
-
-
-    /*updateAngel(angel: Angel) {
-      return new Promise<void>((resolve, reject) => {
-        
-        
-        pool.query(
-          'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
-          [angel.angel_id, angel.description, angel.user_id],
-          (error) => {
-            if (error) return reject(error);
-    
-            pool.query(
-              'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
-              [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
-              (updateError) => {
-                if (updateError) return reject(updateError);
-                resolve();
-              }
-            );
-          }
-        );
-      });
-    }  */  
-
-     // Increment views for an angel
+  // Increment views for an angel
   incrementViews(angelId: number) {
     return new Promise((resolve, reject) => {
       pool.query(
@@ -151,7 +126,6 @@ class AngelService {
         (err, results) => {
           if (err) return reject(err);
 
-          // Fetch updated angel data
           this.get(angelId)
             .then(resolve)
             .catch(reject);
@@ -177,7 +151,7 @@ class AngelService {
           const deleteCollections = `DELETE FROM Collections WHERE angel_id = ?`;
           const deleteAngelHistory = `DELETE FROM AngelHistory WHERE angel_id = ?`;
   
-          // Delete Angel Comments
+          // delete Angel Comments
           connection.query(deleteComments, [angelId], (error) => {
             if (error) {
               return connection.rollback(() => {
@@ -186,7 +160,7 @@ class AngelService {
               });
             }
   
-            // Delete Wishlists
+            // delete Wishlists
             connection.query(deleteWishlists, [angelId], (error) => {
               if (error) {
                 return connection.rollback(() => {
@@ -195,7 +169,7 @@ class AngelService {
                 });
               }
   
-              // Delete Collections
+              // delete Collections
               connection.query(deleteCollections, [angelId], (error) => {
                 if (error) {
                   return connection.rollback(() => {
@@ -204,7 +178,7 @@ class AngelService {
                   });
                 }
   
-                // Delete Angel History
+                // delete Angel History
                 connection.query(deleteAngelHistory, [angelId], (error) => {
                   if (error) {
                     return connection.rollback(() => {
@@ -213,7 +187,7 @@ class AngelService {
                     });
                   }
                     
-                  // Finally, delete the Angel itself
+                  // finally, delete the Angel itself
                   const deleteAngelQuery = `DELETE FROM Angels WHERE angel_id = ?`;
                   connection.query(deleteAngelQuery, [angelId], (error) => {
                     if (error) {
@@ -275,6 +249,7 @@ class AngelService {
         );
       });
     }
+
     //søkefelt
     search(query: string): Promise<Angel[]> {
         return new Promise<Angel[]>((resolve, reject) => {
@@ -340,27 +315,8 @@ class AngelService {
       });
     }
 
-    // likeAngel(angel_id: number, user_id: number) {
-    //     return new Promise<number>((resolve, reject) => {
-    //       pool.query('INSERT INTO AngelLikes SET angel_id=?, user_id=?', [angel_id, user_id], (error, results: ResultSetHeader) => {
-    //         if (error) return reject(error);
-    
-    //         resolve(results.insertId);
-    //       });
-    //     });
-    // }
-    
-    // getAngelLikes(angel_id: number) {
-    //     return new Promise<number[]>((resolve, reject) => {
-    //       pool.query('SELECT like_count FROM AngelLikes WHERE angel_id = ?', [angel_id], (error, results: RowDataPacket[]) => {
-    //         if (error) return reject(error);
-    //         const angelLikeCount = results[0].like_count;
-    //         resolve(angelLikeCount);
-    //       });
-    //     });
-    // }
 
-    //midlertidig for å se brukernavn
+    // temporary to view usernames
     getUsername(angel_id: number) {
         return new Promise<string | Error> ((resolve, reject) => {
             pool.query('SELECT username FROM Users JOIN Angels ON Users.user_id = Angels.user.id WHERE Angels.angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {

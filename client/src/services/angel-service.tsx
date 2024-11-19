@@ -90,12 +90,9 @@ class AngelService {
 
     // Delete an angel by angel_id
     deleteAngel(angel_id: number): Promise<void> {
-        console.log('Sending DELETE request for angel ID:', angel_id);
-
         return axios
           .delete(`/angels/${angel_id}`)
           .then(() => {
-            console.log(`Angel with ID ${angel_id} deleted successfully.`);
           })
           .catch((err) => {
             console.error(`Error deleting angel with ID ${angel_id}:`, err.response?.data || err.message);
@@ -119,7 +116,6 @@ class AngelService {
       return axios
         .get<{ count: number }>(`/series/${series_id}/count`)
         .then((res) => {
-          console.log(`Fetched angel count for series_id ${series_id}: `, res.data.count);
           return res.data.count;
         })
         .catch((err) => {

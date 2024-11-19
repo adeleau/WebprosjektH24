@@ -21,7 +21,6 @@ class WishlistService {
     // Add an item to the wishlist
     addWishlistItem(userId: number, angelId: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            console.log('Inserting into Wishlist table with:', [userId, angelId]);
             pool.query(
                 'INSERT INTO Wishlists (user_id, angel_id) VALUES (?, ?)',
                 [userId, angelId],

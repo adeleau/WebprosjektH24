@@ -15,19 +15,19 @@ class LikesService {
             .catch((error) => { console.log(error); return []; });
     }
 
-// Add a like
-addLike(userId: number, angelId: number): Promise<void> {
+    // Add a like
+    addLike(userId: number, angelId: number): Promise<void> {
     return axios
-        .post(`/${userId}/likes`, { angelId })  // Updated path and body parameter
-        .then(() => console.log("Like added"))
+        .post(`/${userId}/likes`, { angelId })  
+        .then((response) => response.data)
         .catch((error) => console.log(error));
 }
 
     // Remove a like
     removeLike(userId: number, angelId: number): Promise<void> {
         return axios
-            .delete(`/${userId}/likes`, { data: { seriesId: angelId } })  // Updated path and body parameter
-            .then(() => console.log("Like removed"))
+            .delete(`/${userId}/likes`, { data: { seriesId: angelId } }) 
+            .then((response) => response.data)
             .catch((error) => console.log(error));
     }
 }

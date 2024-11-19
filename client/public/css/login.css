@@ -9,13 +9,13 @@
 
     .card {
         width: 90%;
-        max-width: 500px;
+        max-width: 400px;
         display: flex;
         flex-direction: row;
         background-color: #ffffff;
         border-radius: 10px;
-        min-height: 400px;
-        max-height: 600px;
+        min-height: 600px;
+        max-height: 400px;
         overflow: hidden;
   
         .left {

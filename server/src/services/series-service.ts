@@ -43,7 +43,7 @@ class SeriesService {
     });
   }
 
-
+//delete a series without deleting all the angels in it
   deleteSeries(seriesId: number) {
     return new Promise<void>((resolve, reject) => {
       pool.query(

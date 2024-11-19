@@ -59,7 +59,6 @@ export const SeriesList: React.FC<{}> = () => {
     if (!series_id) return;
 
     if (!user || user.role !== "admin") {
-      alert("You are not authorized to delete this series.");
       return;
     }
 
@@ -69,7 +68,6 @@ export const SeriesList: React.FC<{}> = () => {
 
     SeriesService.deleteSeries(Number(series_id))
       .then(() => {
-        alert(`Series "${seriesName}" has been deleted.`);
         history.push("/"); // Redirect to the home page after deletion
       })
       .catch((err) => {
