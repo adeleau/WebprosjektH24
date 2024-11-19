@@ -34,8 +34,7 @@ Welcome to the **Sonny Angels Wiki**, a community for Sonny Angel enthusiasts! T
 Follow these steps to set up the project locally:
 
 ### Prerequisites 🌸 
-- Node.js (v16+)
-- MySQL Server
+- MySQL Server ?
 
 ### Steps 🌷 
 
@@ -62,17 +61,26 @@ Configure your MySQL server and create a database:
 ### Create a .env file in the root directory and set the following variables:
 
 DB_HOST=your-database-host
-
 DB_USER=your-database-user
-
-DB_PASS=your-database-password
-
+DB_PASSWORD=your-database-password
 DB_NAME=your-database-name
+
+
+### Add following tables into your database: 
+
+xxxx
+
+We recomend to set a user as admin now to access more features
 
 ### Start the development server:
 
 1. ```bash
-   npm run dev
+   cd client
+   npm start
+   
+2. ```bash
+   cd server
+   npm start
 
 ## Usage ✨
 Open your browser and navigate to http://localhost:3000.
@@ -82,7 +90,7 @@ Register or log in to explore features like the wiki, collections, and community
 Run the following command to execute tests:
 
 1. ```bash
-   npm run test
+   npm run test ?? ? ? 
 
 ### Development 🛠️
 
