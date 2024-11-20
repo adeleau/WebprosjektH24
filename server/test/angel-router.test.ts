@@ -7,9 +7,6 @@ axios.defaults.baseURL = "http://localhost:3005";
 
 let webServer: any;
 
-jest.mock("../src/mysql-pool", () => ({
-  query: jest.fn(),
-}));
 
 const testAngels: Angel[] = [
   {
@@ -635,12 +632,7 @@ describe("Angel Router Tests", () => {
     );
   });
   
-  test("Fail to create angel with database error", async () => {
-    // Sett opp mock for feil under opprettelse
-    pool.query.mockImplementationOnce((query, params, callback) => {
-      callback(new Error("Database error"), null);
-    });
-  });
+  
 
   
 });

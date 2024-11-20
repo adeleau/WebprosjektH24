@@ -30,8 +30,22 @@ class AngelService {
             })
         })
     }
-
+    
     get(angel_id: number) {
+      return new Promise<Angel>((resolve, reject) => {
+        pool.query(
+          "SELECT * FROM Angels WHERE angel_id=?",
+          [angel_id],
+          (error, results: RowDataPacket[]) => {
+            if (error) return reject(error);
+            if (results.length === 0) return reject(new Error("Angel not found"));
+            resolve(results[0] as Angel);
+          }
+        );
+      });
+    }
+    
+    /*get(angel_id: number) {
         return new Promise<Angel | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
@@ -39,7 +53,7 @@ class AngelService {
                 resolve(tempAngel)
             })
         })
-    }
+    }*/
     
    
 

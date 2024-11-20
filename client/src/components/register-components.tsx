@@ -2,7 +2,10 @@ import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
 import RegisterService from "../services/register-service";
 
-export const Register: React.FC = () => {
+
+//Joshi,G.(03.2023), Building a System for User Registration and Login using TypeScript (Part 2 ), Building by learning: https://gauravjoshi.hashnode.dev/building-a-system-for-user-registration-and-login-using-typescript-part-2
+//Brukt deler av strukturen for oppsettet til å bygge off for registreringen
+export const Register: React.FC = () => {  
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -15,6 +18,8 @@ export const Register: React.FC = () => {
     let isValid = true;
     const errors: { [key: string]: string } = {};
 
+//Oraro,P(23.09.23), Building A Simple React Login Form: A Step By Step Guide, DEV, https://dev.to/paulineoraro/building-a-simple-react-login-form-a-step-by-step-guide-17g1
+//For validering og oppsett av krav for passord
     if (username.length < 3 || username.length > 20) {
       errors.username = "Username must be between 3 and 20 characters.";
       isValid = false;
@@ -43,6 +48,7 @@ export const Register: React.FC = () => {
     return isValid;
   };
 
+
   const handleRegister = async () => {
     const isFormValid = await validateForm();
     if (isFormValid) {
@@ -55,7 +61,9 @@ export const Register: React.FC = () => {
       }
     }
   };
-
+  
+//Denne delen er det brukt chat.gpt, men hjelp fra øvinger og følgende nettside:
+//Pantoja, E (29.05.23), React Registration Form, Medium
   return (
     <div className="register">
       <div className="card">

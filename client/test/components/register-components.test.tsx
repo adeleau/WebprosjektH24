@@ -32,16 +32,16 @@ describe('Register Component Tests', () => {
       </Router>
     );
 
-    // Simulate user input with invalid data
+    // simulate user input with invalid data
     wrapper.find('input[type="text"]').simulate('change', { target: { value: 'ab' } });
     wrapper.find('input[type="email"]').simulate('change', { target: { value: 'invalidemail' } });
     wrapper.find('input[type="password"]').at(0).simulate('change', { target: { value: 'short' } });
     wrapper.find('input[type="password"]').at(1).simulate('change', { target: { value: 'mismatch' } });
 
-    // Simulate form submission
+    // simulate form submission
     wrapper.find('button.btn-register').simulate('click');
 
-    // Wait for state updates
+    // wait for state updates
     await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
 
@@ -62,16 +62,16 @@ describe('Register Component Tests', () => {
       </Router>
     );
 
-    // Simulate valid user input
+    // simulate valid user input
     wrapper.find('input[type="text"]').simulate('change', { target: { value: 'validuser' } });
     wrapper.find('input[type="email"]').simulate('change', { target: { value: 'user@example.com' } });
     wrapper.find('input[type="password"]').at(0).simulate('change', { target: { value: 'Valid123!' } });
     wrapper.find('input[type="password"]').at(1).simulate('change', { target: { value: 'Valid123!' } });
 
-    // Simulate form submission
+    // simulate form submission
     wrapper.find('button.btn-register').simulate('click');
 
-    // Wait for state updates
+    // wait for state updates
     await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
 
@@ -88,16 +88,16 @@ describe('Register Component Tests', () => {
       </Router>
     );
 
-    // Simulate valid user input
+    // simulate valid user input
     wrapper.find('input[type="text"]').simulate('change', { target: { value: 'validuser' } });
     wrapper.find('input[type="email"]').simulate('change', { target: { value: 'user@example.com' } });
     wrapper.find('input[type="password"]').at(0).simulate('change', { target: { value: 'Valid123!' } });
     wrapper.find('input[type="password"]').at(1).simulate('change', { target: { value: 'Valid123!' } });
 
-    // Simulate form submission
+    // simulate form submission
     wrapper.find('button.btn-register').simulate('click');
 
-    // Wait for state updates
+    // wait for state updates
     await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
 
