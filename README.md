@@ -1,5 +1,3 @@
-# EN MAL IKKJE FERDIG #
-
 # 🌸✨ Sonny Angels Wiki ✨🌸  
 
 Welcome to the **Sonny Angels Wiki**, a community for Sonny Angel enthusiasts! This platform lets you browse and manage your Sonny Angel collection, join discussions, and interact with the community. Administrators can even create and edit wiki pages. 🎀
@@ -87,10 +85,6 @@ Run the following command to execute tests:
 
 1. ```bash
    npm test ?? ? ? 
-
-### Development 🛠️
-
-??? ? 
 
 ### Sources 📚
 Sonny Angel Official Site
