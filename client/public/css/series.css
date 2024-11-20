@@ -1,0 +1,115 @@
+.series-page {
+    padding: 20px;
+    background: linear-gradient(to bottom, #f2a6b0, #ffffff);
+}
+
+.series-page h1 {
+    color: #f2a6b0; 
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.2rem;
+    margin-top: -2px;
+    margin-bottom: 20px;
+    padding: 15px 30px;  
+    border-radius: 25px;  
+    background: rgb(247, 234, 236); 
+    position: relative;
+    z-index: 1;
+    letter-spacing: 1px;  
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  
+    max-width: 70%; 
+    margin-left: auto;  
+    margin-right: auto;
+  }
+
+.angel-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 50px; 
+    margin-top: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.angel-card {
+    border: 2px solid #f2a6b0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    position: relative; 
+    transition: transform 0.3s ease; 
+    height: 280px; 
+    background-color: white; 
+}
+
+.angel-card:hover {
+    transform: scale(1.05); 
+}
+
+.angel-card img {
+    width: 80%; 
+    height: 80%; 
+    object-fit: contain; 
+    border-radius: 8px; 
+    margin-top: 10px;
+}
+
+.angel-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f2a6b0; 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent; 
+    margin: 0;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.angel-card:hover h3 {
+    background-color: #f2a6b0;
+    color: white; 
+}
+
+@media (max-width: 768px) {
+    .angel-cards {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 480px) {
+    .angel-cards {
+        grid-template-columns: 1fr; 
+    }
+}
+
+.btn-create-angel, .btn-delete-series {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #f2a6b0;
+    border: 2px solid #f2a6b0;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.btn-create-angel:hover {
+    background-color: #e68693;
+    border: 2px solid #e68693;
+    color: white;
+}
+
+.btn-delete-series:hover {
+    background-color: #e68693;
+    border: 2px solid #e68693;
+    color: white;
+}

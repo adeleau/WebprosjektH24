@@ -1,119 +1,48 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Component } from 'react-simplified';
-import { HashRouter, Route } from 'react-router-dom';
-import { NavBar, Card, Alert } from './widgets';
-import {
-  AngelList,
-  AngelDetails,
-  PostList,
-  PostDetails,
-  PostEdit,
-  PostNew,
-} from './angel-components';
-import { NavLink } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+import * as Comp from './components/other-components'
+import * as Series from './components/series-components'
+import * as Angel from './components/angel-components'
+import * as Post from './components/post-components'
+import * as Register from './components/register-components';
+import * as User from './components/user-components';
+import * as Login from './components/login-components'
+import { NotFound } from './components/not-found';
 
-class Menu extends Component {
-  state ={
-    showDropDown: false,
-  };
-  handleMouseEnter =() => {
-    this.setState({showDropDown: true});
-  };
-  handleMouseLeave =() => {
-    this.setState({showDropDown: false});
-  };
 
-  render() {
-    return (
-      <NavBar brand="Sonny Angel Wiki">
-        <NavBar.Link to="/about">About</NavBar.Link>
-        <div
-          onMouseEnter={this.handleMouseEnter} 
-          onMouseLeave={this.handleMouseLeave} 
-          style={{ position: 'relative' }} >
-
-          <NavBar.Link to="/angels">Collection</NavBar.Link>
-
-          {this.state.showDropDown && (
-            <div style={dropdownStyles}>
-              <NavLink to="/angels/animals" style={dropdownItemStyles}>Animals Series🐨</NavLink>
-              <NavLink to="/angels/vegetable" style={dropdownItemStyles}>Vegetable Series🥕</NavLink>
-              <NavLink to="/angels/marine" style={dropdownItemStyles}>Marine Series🪼</NavLink>
-              <NavLink to="/angels/fruit" style={dropdownItemStyles}>Fruit Series🍎</NavLink>
-              <NavLink to="/angels/flower" style={dropdownItemStyles}>Flower Series🌺</NavLink>
-              <NavLink to="/angels/sweets" style={dropdownItemStyles}>Sweets Series🧁</NavLink>
-              <NavLink to="/angels/catlife" style={dropdownItemStyles}>Cat Life😽</NavLink>
-              <NavLink to="/angels/dino" style={dropdownItemStyles}>Dinosaur🦖</NavLink>
-              <NavLink to="/angels/christmas" style={dropdownItemStyles}>Dreaming Christmas🎁</NavLink>
-              <NavLink to="/angels/valentine" style={dropdownItemStyles}>Valentine Series💝</NavLink>
-              <NavLink to="/angels/bugs" style={dropdownItemStyles}>Bug's World🐞</NavLink>
-              <NavLink to="/angels/dog" style={dropdownItemStyles}>Dog Time🐶</NavLink>
-            </div>
-          )}
-        </div>
-
-        <NavBar.Link to="/posts">Community</NavBar.Link>
-      </NavBar>
-    );
-  }
-}
-
-const dropdownStyles: React.CSSProperties = {
-  position: 'absolute',
-  top: '100%',
-  left: 0,
-  backgroundColor: 'white',
-  border: '1px solid #ddd',
-  boxShadow: '0px 8px 16px rgba(0,0,0,0.2)',
-  zIndex: 1,
-  minWidth: '400px',
-  display: 'grid',           
-  gridTemplateColumns: '1fr 1fr', 
-};
-
-const dropdownItemStyles: React.CSSProperties = {
-  display: 'block',
-  padding: '8px 16px',
-  color: '#333',
-  backgroundColor: '#fcdeed',
-  textDecoration: 'none',
-};
-//bør være i css fil, men kan flytte senere
-
-class Home extends Component {
-  render() {
-    return <Card title="Welcome">He may bring you happiness</Card>;
-  }
-}
-
-class About extends Component {
-  render() {
-    return (
-      <>
-        <Card title="About">
-          <p>This is Sonny Angel</p>
-        </Card>
-      </>
-    );
-  }
-}
 
 let root = document.getElementById('root');
 if (root)
   createRoot(root).render(
     <HashRouter>
-      <div>
-        <Alert />
-        <Menu />
-        <Route exact path="/" component={Home} />
-        <Route exact path="/about" component={About} />
-        <Route exact path="/angels" component={AngelList} /> {/* collection */}
-        <Route exact path="/angels/:angel_id(\d+)" component={AngelDetails} />
-        <Route exact path="/posts" component={PostList} /> {/* community */}
-        <Route exact path="/posts/:post_id(\d+)" component={PostDetails} />
-        <Route exact path="/posts/new" component={PostNew} />
-        <Route exact path="/posts/:post_id(\d+)/edit" component={PostEdit} />
-      </div>
-    </HashRouter>,
+      <Switch>
+
+      <Route exact path="/" component={Comp.Home} />     
+      <Route exact path="/register" component={Register.Register} />
+      <Route exact path="/login" component={Login.Login} />
+      <Route exact path="/popular" component={Comp.PopularPage} />     
+      <Route exact path="/about" component={Comp.About} /> 
+      <Route exact path="/howto" component={Comp.HowTo} /> 
+      <Route exact path="/search/:searchQuery" component={Comp.SearchPage} />
+      <Route exact path="/series/:series_id" component={Series.SeriesList} />
+      <Route exact path="/series/:series_id/new" component={Angel.AngelNew} />
+      <Route exact path="/userprofile/edit" component={User.UserSettings} />
+      <Route exact path="/userprofile" component={User.UserProfile} />
+      <Route exact path="/user/:user_id" component={User.UserPage} />
+      <Route exact path="/angels/:angel_id" component={Angel.AngelDetails} />
+      <Route exact path="/angels/:angel_id/edit" component={Angel.AngelEdit} />
+      <Route exact path="/angels/:angel_id/history" component={Angel.AngelHistory} />
+      <Route exact path="/masterlist" component={Angel.MasterList} />
+      <Route exact path="/posts" component={Post.PostList} />
+      <Route exact path="/posts/new" component={Post.PostNew} />
+      <Route exact path="/posts/:post_id(\d+)" component={Post.PostDetails} />
+      <Route exact path="/posts/:post_id(\d+)/edit" component={Post.PostEdit} />
+
+      <Route component={NotFound} /> {/* This will catch all undefined routes */}
+      </Switch>
+    </HashRouter>
   );
+
+
+
