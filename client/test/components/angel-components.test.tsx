@@ -21,6 +21,7 @@ describe("Angel Components Tests", () => {
         { angel_id: 1, name: "Angel A", series_id: 1 },
         { angel_id: 2, name: "Angel B", series_id: 1 },
       ];
+      
       (AngelService.getAll as jest.Mock).mockResolvedValue(mockAngels);
 
       const wrapper = mount(
@@ -87,6 +88,8 @@ describe("AngelDetails Component", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
 
+      const errorMessage = wrapper.find(".error-message");
+      expect(errorMessage.exists()).toBe(true);
       expect(wrapper.find(".error-message").text()).toBe("Error fetching angel: Failed to fetch angel details");
     });
   });

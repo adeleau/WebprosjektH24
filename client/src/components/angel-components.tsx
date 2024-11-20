@@ -15,7 +15,6 @@ import type { User } from "../services/user-service";
 import LikesService from "../services/likes-service";
 import WishlistService from "../services/wishlist-service";
 
-
 const history = createHashHistory();
 
 export const MasterList: React.FC = () => {

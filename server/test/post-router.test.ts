@@ -67,7 +67,7 @@ afterAll((done) => {
 jest.setTimeout(60000);
 
 describe('PostService GET Tests', () => {
-  test('Fetch all posts (GET /posts) - 200 OK', (done) => {
+  test('Get all posts (GET /posts) - 200 OK', (done) => {
     axios.get('/posts').then((response) => {
       // console.log('Response data:', response.data);
       // console.log('Response status:', response.status);
@@ -77,7 +77,7 @@ describe('PostService GET Tests', () => {
     }).catch(done);
   });
 
-  test('Fetch all posts (empty table) when no posts exist (GET /posts) - 200 OK', (done) => {
+  test('Get all posts (empty table) when no posts exist (GET /posts) - 200 OK', (done) => {
     pool.query('DELETE FROM Posts', (error) => {
       if (error) return done(error);
       axios.get('/posts').then((response) => {
@@ -86,7 +86,19 @@ describe('PostService GET Tests', () => {
         done();
       }).catch(done);
     });
-  });  
+  });
+
+  test('Get all posts (GET /posts) - 500 Internal Server Error', (done) => {
+    jest.spyOn(postService, 'getAll').mockRejectedValueOnce(new Error('Database error'));
+    axios.get('/posts').then(() => {
+        done(new Error('Request should have failed with a 500 error'));
+    })
+    .catch((error) => {
+      expect(error.response.status).toEqual(500);
+      expect(error.response.data).toEqual('Database error');
+      done();
+    });
+  });
 
   test('Fetch post by ID (GET /posts/:post_id) - 200 OK', (done) => {
     axios.get('/posts/32').then((response) => {
@@ -117,6 +129,18 @@ describe('PostService GET Tests', () => {
         expect(error.response.data).toEqual('Post not found');
         done();
       });
+  });
+
+  test('Get post with ID (GET /posts/:post_id) - 500 Internal Server Error', (done) => {
+    jest.spyOn(postService, 'get').mockRejectedValueOnce(new Error('Database error'));
+    axios.get('/posts/21').then(() => {
+      done(new Error('Request should have failed with a 500 error'));
+    })
+    .catch((error) => {
+      expect(error.response.status).toEqual(500);
+      expect(error.response.data).toEqual('Database error');
+      done();
+    });
   });
   
 });
@@ -161,13 +185,29 @@ describe('PostService POST Tests', () => {
       expect(error.response.data).toEqual('Title or content too long');
       done();
     });
-  });  
+  });
+
+  test('Create post (POST /posts) - 500 Internal Server Error', (done) => {
+    jest.spyOn(postService, 'createPost').mockRejectedValueOnce(new Error('Database error'));
+    axios.post('/posts', {
+      user_id: 31, title: 'Post4', content: 'Heisann', image: 'test.img',
+    })
+      .then(() => {
+        done(new Error('Request should have failed with a 500 error'));
+      })
+      .catch((error) => {
+        expect(error.response.status).toEqual(500);
+        expect(error.response.data).toEqual('Error creating post');
+        done();
+      });
+  });
 });
 
 describe('PostService DELETE Tests', () => {
   test('Delete post (DELETE /posts/:post_id) - 200 OK', (done) => {
-    axios.delete('/posts/32').then((response) => {
+    axios.delete('/posts/22').then((response) => {
       expect(response.status).toEqual(200);
+      expect(response.data).toEqual('Post deleted successfully');
       done();
     }).catch(done);
   })
@@ -192,16 +232,43 @@ describe('PostService DELETE Tests', () => {
       });
   });
   
+  test('Delete post (DELETE /posts/:post_id) - 500 Internal Server Error on get', (done) => {
+    jest.spyOn(postService, 'get').mockRejectedValueOnce(new Error('Database error'));
+    axios.delete('/posts/21').then(() => {
+      done(new Error('Request should have failed with a 500 error'));
+    })
+      .catch((error) => {
+        expect(error.response.status).toEqual(500);
+        expect(error.response.data).toEqual('Error finding post');
+        done();
+      });
+  });
+
+  test('Delete post (DELETE /posts/:post_id) - 500 Internal Server Error on deletePost', (done) => {
+    jest.spyOn(postService, 'get').mockResolvedValueOnce({
+      post_id: 21, user_id: 31, title: 'Post1', content: 'Hello', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/new_cameleon_01-1.jpg', created_at: new Date(), updated_at: new Date()
+    });
+    jest.spyOn(postService, 'deletePost').mockRejectedValueOnce(new Error('Database error'));
+
+    axios.delete('/posts/21').then(() => {
+        done(new Error('Request should have failed with a 500 error'));
+    })
+      .catch((error) => {
+        expect(error.response.status).toEqual(500);
+        expect(error.response.data).toEqual('Error deleting post: Error: Database error');
+        done();
+      });
+  });
 });
 
 describe('PostService PUT Tests', () => {
   test('Update post (PUT /posts/:post_id) - 200 OK', (done) => {
-    axios.put('/posts/31', 
+    axios.put('/posts/21', 
       { title: 'Updated title', content: 'Updated content', image: 'updated.img'}
     ).then((response) => {
       expect(response.status).toEqual(200);
       expect(response.data).toEqual("Post updated successfully")
-      return axios.get('/posts/31');
+      return axios.get('/posts/21');
     })
     .then((res) => {
       expect(res.data.toEqual(expect.objectContaining({ title: 'Updated title' })))
@@ -211,12 +278,63 @@ describe('PostService PUT Tests', () => {
   });
 
   test('Update post with no changes (PUT /posts/:post_id) - 400 Bad Request', (done) => {
-    axios.put('/posts/31', {}).then(() => {
+    axios.put('/posts/21', {}).then(() => {
         done(new Error('Request should have failed due to no changes provided'));
       })
       .catch((error) => {
         expect(error.response.status).toEqual(400);
         expect(error.response.data).toEqual('No changes made');
+        done();
+      });
+  });
+
+  test('Update post that does not exist (PUT /posts/:post_id) - 404 Not Found', (done) => {
+    axios.put('/posts/999', { title: 'Non-existent' }).then(() => {
+      done(new Error('Request should have failed due to non-existing id'))
+    })
+    .catch((error) => {
+      expect(error.response.status).toEqual(404);
+      expect(error.response.data).toEqual('Post not found');
+    });
+  });
+
+  test('Update post with invalid ID format (PUT /posts/:post_id) - 400 Bad Request', (done) => {
+    axios.put('/posts/invalid-id', { title: 'Invalid ID' }).then(() => {
+      done(new Error('Request should have failed due to invalid ID'))
+    })
+    .catch((error) => {
+      expect(error.response.status).toEqual(400);
+      expect(error.response.data).toEqual('Invalid post ID');
+    });
+  });
+
+  test('Update post (PUT /posts/:post_id) - 500 Internal Server Error on get', (done) => {
+    jest.spyOn(postService, 'get').mockRejectedValueOnce(new Error('Database error'));
+
+    axios.put('/posts/21', { title: 'Updated title' })
+      .then(() => {
+        done(new Error('Request should have failed with a 500 error'));
+      })
+      .catch((error) => {
+        expect(error.response.status).toEqual(500);
+        expect(error.response.data).toEqual('Error finding post');
+        done();
+      });
+  });
+
+  test('Update post (PUT /posts/:post_id) - 500 Internal Server Error on updatePost', (done) => {
+    jest.spyOn(postService, 'get').mockResolvedValueOnce({
+      post_id: 21, user_id: 31, title: 'Post1', content: 'Hello', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/new_cameleon_01-1.jpg', created_at: new Date(), updated_at: new Date()
+    });
+    jest.spyOn(postService, 'updatePost').mockRejectedValueOnce(new Error('Database error'));
+
+    axios.put('/posts/24', { title: 'Updated title' })
+      .then(() => {
+        done(new Error('Request should have failed with a 500 error'));
+      })
+      .catch((error) => {
+        expect(error.response.status).toEqual(500);
+        expect(error.response.data).toEqual('Error updating post');
         done();
       });
   });

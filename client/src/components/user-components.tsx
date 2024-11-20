@@ -169,7 +169,6 @@ export const UserProfile: React.FC = () => {
 };
 
 
-
 export const UserSettings: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);

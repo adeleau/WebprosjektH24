@@ -8,7 +8,6 @@ import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from "js-cookie";
 import { User } from "../services/user-service";
 
-
 const history = createHashHistory();
 
 export const SeriesList: React.FC<{}> = () => {

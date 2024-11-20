@@ -36,8 +36,8 @@ export const Login: React.FC = () => {
     if (user) {
       Cookies.set("user", JSON.stringify(user), { domain: "localhost" });
       history.push("/");
-    } else {
-      Cookies.set("user", "guest", { domain: "localhost" });
+    } else if (user==null){
+      Cookies.remove("user"); 
     }
   }, [user, history]);
 

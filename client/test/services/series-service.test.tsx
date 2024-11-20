@@ -90,4 +90,19 @@ describe('SeriesService test', () => {
 
     consoleSpy.mockRestore(); // Restore the original console.error behavior
   });
+
+  test('getAll should handle errors gracefully and return an empty array', async () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); // Mock console.log
+
+    mockedAxios.get.mockRejectedValueOnce(new Error('Failed to fetch series'));
+
+    const series = await seriesService.getAll();
+
+    expect(mockedAxios.get).toHaveBeenCalledWith('/series'); // Verify API call
+    expect(series).toEqual([]); // Verify that it returns an empty array
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error)); // Ensure the error is logged
+
+    consoleSpy.mockRestore(); // Restore original console.log
+});
+
 });

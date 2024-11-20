@@ -25,11 +25,17 @@ describe('User Components Tests', () => {
 
   describe('UserProfile Tests', () => {
     test('renders user profile with collection and wishlist', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+      // Mock Cookies
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
-      LikesService.getUserLikes.mockResolvedValue([{ angel_id: 1 }]);
-      WishlistService.getUserWishlist.mockResolvedValue([{ angel_id: 2 }]);
-      angelService.get
+      // Mock LikesService
+      (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
+
+      // Mock WishlistService
+      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([{ angel_id: 2 }]);
+
+      // Mock AngelService
+      (angelService.get as jest.Mock)
         .mockResolvedValueOnce({ angel_id: 1, name: 'Angel One', image: '/angel1.jpg' })
         .mockResolvedValueOnce({ angel_id: 2, name: 'Angel Two', image: '/angel2.jpg' });
 
@@ -49,9 +55,14 @@ describe('User Components Tests', () => {
     });
 
     test('handles errors gracefully when fetching user data', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
-      LikesService.getUserLikes.mockRejectedValue(new Error('Error fetching liked angels'));
-      WishlistService.getUserWishlist.mockResolvedValue([]);
+      // Mock Cookies
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+
+      // Mock LikesService to throw error
+      (LikesService.getUserLikes as jest.Mock).mockRejectedValue(new Error('Error fetching liked angels'));
+
+      // Mock WishlistService
+      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
 
       const wrapper = mount(
         <Router>
@@ -66,9 +77,14 @@ describe('User Components Tests', () => {
     });
 
     test('renders empty collection and wishlist messages', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
-      LikesService.getUserLikes.mockResolvedValue([]);
-      WishlistService.getUserWishlist.mockResolvedValue([]);
+      // Mock Cookies
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+
+      // Mock LikesService
+      (LikesService.getUserLikes as jest.Mock).mockResolvedValue([]);
+
+      // Mock WishlistService
+      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
 
       const wrapper = mount(
         <Router>
@@ -86,79 +102,79 @@ describe('User Components Tests', () => {
 
   describe('UserSettings Tests', () => {
     test('renders user settings and updates user info', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser', role: 'user' }));
-
-      userService.update.mockResolvedValue();
-
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser', role: 'user' }));
+  
+      (userService.update as jest.Mock).mockResolvedValue();
+  
       const wrapper = mount(
         <Router>
           <UserSettings />
         </Router>
       );
-
+  
       wrapper.find('input[name="username"]').simulate('change', { target: { name: 'username', value: 'updateduser' } });
       wrapper.find('form').simulate('submit');
-
+  
       await waitForAsyncUpdates();
-
+  
       expect(userService.update).toHaveBeenCalledWith(1, { username: 'updateduser' });
     });
-
+  
     test('renders admin user settings with all users', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
-
-      userService.getAllUsers.mockResolvedValue([
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
+  
+      (userService.getAllUsers as jest.Mock).mockResolvedValue([
         { user_id: 2, username: 'user1', role: 'user' },
         { user_id: 3, username: 'user2', role: 'admin' },
       ]);
-
+  
       const wrapper = mount(
         <Router>
           <UserSettings />
         </Router>
       );
-
+  
       await waitForAsyncUpdates();
       wrapper.update();
-
+  
       expect(wrapper.find('table tbody tr').length).toBe(2);
       expect(wrapper.find('table tbody tr').at(0).text()).toContain('user1');
       expect(wrapper.find('table tbody tr').at(1).text()).toContain('user2');
     });
-
+  
     test('handles errors when updating user roles', async () => {
-      Cookies.get.mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
-
-      userService.getAllUsers.mockResolvedValue([{ user_id: 2, username: 'user1', role: 'user' }]);
-      userService.update.mockRejectedValue(new Error('Error updating role'));
-
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
+  
+      (userService.getAllUsers as jest.Mock).mockResolvedValue([{ user_id: 2, username: 'user1', role: 'user' }]);
+      (userService.update as jest.Mock).mockRejectedValue(new Error('Error updating role'));
+  
       const wrapper = mount(
         <Router>
           <UserSettings />
         </Router>
       );
-
+  
       await waitForAsyncUpdates();
       wrapper.update();
-
+  
       wrapper.find('button').at(1).simulate('click'); // Simulate role change button click
-
+  
       await waitForAsyncUpdates();
       wrapper.update();
-
+  
       expect(wrapper.text()).toContain('Error updating role');
     });
   });
-
+  
   describe('UserPage Tests', () => {
     test('renders user details and tabs for collection and wishlist', async () => {
-      userService.getById.mockResolvedValue({ user_id: 1, username: 'testuser' });
-      LikesService.getUserLikes.mockResolvedValue([{ angel_id: 1 }]);
-      WishlistService.getUserWishlist.mockResolvedValue([{ angel_id: 2 }]);
-      angelService.get
+      (userService.getById as jest.Mock).mockResolvedValue({ user_id: 1, username: 'testuser' });
+      (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
+      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([{ angel_id: 2 }]);
+      (angelService.get as jest.Mock)
         .mockResolvedValueOnce({ angel_id: 1, name: 'Angel One', image: '/angel1.jpg' })
         .mockResolvedValueOnce({ angel_id: 2, name: 'Angel Two', image: '/angel2.jpg' });
-
+  
       const wrapper = mount(
         <Router initialEntries={['/users/1']}>
           <Route path="/users/:user_id">
@@ -166,19 +182,19 @@ describe('User Components Tests', () => {
           </Route>
         </Router>
       );
-
+  
       await waitForAsyncUpdates();
       wrapper.update();
-
+  
       expect(wrapper.find('.profile-header h2').text()).toBe('testuser');
       expect(wrapper.find('.angel-card').length).toBe(2);
       expect(wrapper.find('.angel-card h3').at(0).text()).toBe('Angel One');
       expect(wrapper.find('.angel-card h3').at(1).text()).toBe('Angel Two');
     });
-
+  
     test('handles errors gracefully when fetching user data', async () => {
-      userService.getById.mockRejectedValue(new Error('Error fetching user'));
-
+      (userService.getById as jest.Mock).mockRejectedValue(new Error('Error fetching user'));
+  
       const wrapper = mount(
         <Router initialEntries={['/users/1']}>
           <Route path="/users/:user_id">
@@ -186,11 +202,11 @@ describe('User Components Tests', () => {
           </Route>
         </Router>
       );
-
+  
       await waitForAsyncUpdates();
       wrapper.update();
-
+  
       expect(wrapper.text()).toContain('Error fetching user');
     });
   });
-});
+})  

@@ -120,4 +120,3 @@ register(username: string, email: string, password_hash: string): Promise<Users 
 
 export default new RegisterService();
     
-
