@@ -26,7 +26,7 @@ postrouter.get('/posts/:post_id', (req, res) => {
   }
   postService
     .get(post_id)
-    .then((post) => (post ? res.send(post) : res.status(404).send('Post not found')))
+    .then((post) => (post ? res.status(200).send(post) : res.status(404).send('Post not found')))
     .catch((error) => res.status(500).send(error));
 });
   
@@ -65,7 +65,7 @@ postrouter.delete('/posts/:post_id', (req, res) => {
       return postService
         .deletePost(post_id)
         .then(() => res.status(200).send('Post deleted successfully'))
-        .catch((error) => res.status(500).send('Error deleting post'));
+        .catch((error) => res.status(500).send('Error deleting post: '+ error));
     })
     .catch((error) => {
       console.error('Error finding post: ', error.message);
@@ -78,18 +78,30 @@ postrouter.delete('/posts/:post_id', (req, res) => {
   const post_id = Number(req.params.post_id);
   const { title, content, image } = req.body;
 
+  if (isNaN(post_id)) {
+    return res.status(400).send('Invalid post ID')
+  }
+
   if (!title && !content && !image) {
     return res.status(400).send('No changes made');
-  }  
-
+  } 
 
   postService
-    .updatePost(post_id, title, content, image)
-    .then(() => res.status(200).send('Post updated successfully'))
+    .get(post_id)
+    .then((post) => {
+      if (!post) return res.status(404).send('Post not found')
+      return postService
+        .updatePost(post_id, title, content, image)
+        .then(() => res.status(200).send('Post updated successfully'))
+        .catch((err) => {
+        console.error('Service Error:', err.message);
+        res.status(500).send('Error updating post');
+        });
+    })
     .catch((err) => {
-      console.error('Service Error:', err.message);
-      res.status(500).send('Error updating post');
-    });
+      console.error('Error fetching post: ', err.message);
+      res.status(500).send('Error finding post')
+    })
 });
 
 

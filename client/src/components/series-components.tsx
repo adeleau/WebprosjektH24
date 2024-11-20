@@ -8,9 +8,10 @@ import { Navbar, Leftbar, Footer } from "./other-components";
 import Cookies from "js-cookie";
 import { User } from "../services/user-service";
 
-
 const history = createHashHistory();
 
+//samme oppsett som for både register og login
+//Joshi,G.(03.2023), Building a System for User Registration and Login using TypeScript (Part 2 ), Building by learning: https://gauravjoshi.hashnode.dev/building-a-system-for-user-registration-and-login-using-typescript-part-2
 export const SeriesList: React.FC<{}> = () => {
   const { series_id } = useParams<{ series_id: string }>();
   const [angels, setAngels] = useState<Angel[]>([]);
@@ -19,6 +20,7 @@ export const SeriesList: React.FC<{}> = () => {
   const [error, setError] = useState<string | null>(null);
   const [angelCount, setAngelCount] = useState<number | null>(null);
 
+  
   useEffect(() => {
     if (!series_id) return;
 
@@ -41,6 +43,7 @@ export const SeriesList: React.FC<{}> = () => {
       .catch((err) => setError("Error getting angel count: " + err.message));
     
       // Fetch user from cookies
+      //Bruker Cookies for å se hvem som er logget inn og begrense brukertilgang til kun admin
     const userCookie = Cookies.get("user");
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {

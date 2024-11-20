@@ -133,6 +133,5 @@ describe('RegisterService tests', () => {
         email,
         password_hash,
     });
-});
-
+  });
 })

@@ -42,7 +42,7 @@ class PostService {
       }
 
       //post post
-      createPost(user_id: number, username: string, title: string, content: string, image: string) {
+      createPost(user_id: number/*, username: string*/, title: string, content: string, image: string) {
         return new Promise<number>((resolve, reject) => {
           pool.query(
             'INSERT INTO Posts (user_id, title, content, image) VALUES (?, ?, ?, ?)',

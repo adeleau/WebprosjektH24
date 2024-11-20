@@ -1,5 +1,3 @@
-# EN MAL IKKJE FERDIG #
-
 # 🌸✨ Sonny Angels Wiki ✨🌸  
 
 Welcome to the **Sonny Angels Wiki**, a community for Sonny Angel enthusiasts! This platform lets you browse and manage your Sonny Angel collection, join discussions, and interact with the community. Administrators can even create and edit wiki pages. 🎀
@@ -38,7 +36,7 @@ Follow these steps to set up the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/adeleau/WebprosjektH24.git  ---her må vi gjer gurotull til main branch
+   git clone https://github.com/adeleau/WebprosjektH24.git 
    cd WebprosjektH24
 
 ### Install dependencies:
@@ -55,16 +53,18 @@ Follow these steps to set up the project locally:
 ### Create a .env file in the root directory and set the following variables:
 
 process.env.MYSQL_HOST = 'hostname';
+
 process.env.MYSQL_USER = 'username';
+
 process.env.MYSQL_PASSWORD = 'password';
+
 process.env.MYSQL_DATABASE = 'database-name';
 
 
 ### Add following tables into your database: 
 
-xxxx
+Look at the database-setup.txt file to create all tables. There are a few test varibles added here - including one admin user.
 
-We recomend to set a user as admin now to access more features
 
 ### Start the development server:
 
@@ -85,10 +85,6 @@ Run the following command to execute tests:
 
 1. ```bash
    npm test ?? ? ? 
-
-### Development 🛠️
-
-??? ? 
 
 ### Sources 📚
 Sonny Angel Official Site

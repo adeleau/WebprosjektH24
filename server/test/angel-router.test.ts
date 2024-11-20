@@ -7,8 +7,10 @@ axios.defaults.baseURL = "http://localhost:3005";
 
 let webServer: any;
 
+
 const testAngels: Angel[] = [
   {
+    angel_id: 1,
     name: "Test Angel 1",
     description: "Description 1",
     image: "http://example.com/angel1.jpg",
@@ -18,6 +20,7 @@ const testAngels: Angel[] = [
     series_id: 1,
   },
   {
+    angel_id: 2,
     name: "Test Angel 2",
     description: "Description 2",
     image: "http://example.com/angel2.jpg",
@@ -31,8 +34,124 @@ const testAngels: Angel[] = [
 beforeAll((done) => {
   webServer = app.listen(3005, () => done());
 });
-
 beforeEach((done) => {
+  pool.query("SET FOREIGN_KEY_CHECKS = 0", (err) => {
+    if (err) return done(err);
+
+    // Tabeller som må tømmes
+    const tables = [
+      "AngelHistory",
+      "Angel_comments",
+      "Collections",
+      "Wishlists",
+      "Angels",
+      "Users",
+      "Series",
+    ];
+
+    // Slett innhold i alle tabeller
+    const truncatePromises = tables.map(
+      (table) =>
+        new Promise((resolve, reject) => {
+          pool.query(`DELETE FROM ${table}`, (error) => {
+            if (error) reject(error);
+            else resolve(true);
+          });
+        })
+    );
+
+    Promise.all(truncatePromises)
+      .then(() => {
+        pool.query("SET FOREIGN_KEY_CHECKS = 1", (enableErr) => {
+          if (enableErr) return done(enableErr);
+
+          // Sett inn nødvendige data i Users og Series før Angels
+          const user = {
+            user_id: 1, // Sørger for riktig bruker-ID
+            username: "TestUser",
+            email: "test@example.com",
+            password_hash: "Passord123",
+          };
+
+          const series = { series_id: 1, name: "TestSeries" };
+
+          const insertUsers = new Promise((resolve, reject) => {
+            pool.query(
+              `INSERT INTO Users (user_id, username, email, password_hash) 
+               VALUES (?, ?, ?, ?) 
+               ON DUPLICATE KEY UPDATE 
+               username = VALUES(username), 
+               email = VALUES(email), 
+               password_hash = VALUES(password_hash)`,
+              [user.user_id, user.username, user.email, user.password_hash],
+              (error) => {
+                if (error) reject(error);
+                else resolve(true);
+              }
+            );
+          });
+
+          const insertSeries = new Promise((resolve, reject) => {
+            pool.query(
+              `INSERT INTO Series (series_id, name) 
+               VALUES (?, ?) 
+               ON DUPLICATE KEY UPDATE 
+               name = VALUES(name)`,
+              [series.series_id, series.name],
+              (error) => {
+                if (error) reject(error);
+                else resolve(true);
+              }
+            );
+          });
+
+          Promise.all([insertUsers, insertSeries])
+            .then(() => {
+              const values = testAngels.map((angel) => [
+                angel.angel_id, // Legger til angel_id
+                angel.name,
+                angel.description,
+                angel.image,
+                angel.release_year,
+                angel.views,
+                angel.user_id,
+                angel.series_id,
+              ]);
+
+              // Sett inn data i Angels
+              pool.query(
+                `INSERT INTO Angels (angel_id, name, description, image, release_year, views, user_id, series_id)
+                 VALUES ?
+                 ON DUPLICATE KEY UPDATE 
+                 name = VALUES(name), 
+                 description = VALUES(description), 
+                 image = VALUES(image), 
+                 release_year = VALUES(release_year), 
+                 views = VALUES(views), 
+                 user_id = VALUES(user_id), 
+                 series_id = VALUES(series_id)`,
+                [values],
+                (error, results) => {
+                  if (error) {
+                    console.error("Error inserting Angels:", error);
+                    done(error);
+                  } else {
+                    console.log("Inserted rows into Angels:", results.affectedRows);
+                    done();
+                  }
+                }
+              );
+            })
+            .catch(done);
+        });
+      })
+      .catch(done);
+  });
+
+  
+});
+
+/*beforeEach((done) => {
     pool.query("SET FOREIGN_KEY_CHECKS = 0", (err) => {
       if (err) return done(err);
   
@@ -116,6 +235,8 @@ beforeEach((done) => {
                 ]);
   
                 // Sett inn data i Angels
+               
+                
                 pool.query(
                   "INSERT INTO Angels (name, description, image, release_year, views, user_id, series_id) VALUES ?",
                   [values],
@@ -137,7 +258,7 @@ beforeEach((done) => {
         })
         .catch(done);
     });
-  });
+  });*/
   
 
 afterAll((done) => {
@@ -252,6 +373,37 @@ describe("Angel Router Tests", () => {
   });
 
   test("Update angel (PUT /angels/:angel_id) - 200 OK", (done) => {
+    const updatedAngel = {
+      name: "Updated Angel Name",
+      description: "Updated Description",
+      image: "http://example.com/updatedangel.jpg",
+      release_year: 2023,
+      series_id: 1,
+    };
+  
+    axios
+      .put("/angels/1", updatedAngel)
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        return axios.get("/angels/1"); // Hent oppdatert engel
+      })
+      .then((response) => {
+        expect(response.data).toEqual(
+          expect.objectContaining({
+            name: "Updated Angel Name",
+            description: "Updated Description",
+            image: "http://example.com/updatedangel.jpg",
+            release_year: 2023,
+            series_id: 1,
+          })
+        );
+        done();
+      })
+      .catch(done);
+  });
+  
+
+  /*test("Update angel (PUT /angels/:angel_id) - 200 OK", (done) => {
     const updatedAngel = { description: 'Updated Description' };
 
     axios
@@ -262,7 +414,7 @@ describe("Angel Router Tests", () => {
         expect(response.data.description).toEqual("Updated Description");
       })
       .catch(done);
-  });
+  });*/
 
   test("Delete angel (DELETE /angels/:angel_id) - 200 OK", (done) => {
     axios
@@ -278,6 +430,31 @@ describe("Angel Router Tests", () => {
         done();
       });
   });
+
+  //testing av sletting av engel
+  test("Update angel with missing description - should fail", (done) => {
+    const invalidAngel = {
+      name: "Updated Angel",
+      image: "http://example.com/image.jpg",
+      release_year: 2022,
+      series_id: 1,
+      // description mangler
+    };
+  
+    axios
+      .put("/angels/1", invalidAngel)
+      .then(() => done(new Error("Request should have failed")))
+      .catch((error) => {
+        expect(error.response.status).toEqual(400);
+        expect(error.response.data).toEqual("Description cannot be empty");
+        done();
+      });
+  });
+  
+  
+
+  
+  
 
   test("Increment angel views (PUT /angels/:angel_id/increment-views) - 200 OK", (done) => {
     axios
@@ -339,6 +516,28 @@ describe("Angel Router Tests", () => {
         );
     });
 
+    test("Create angel with invalid release_year (POST /angels) - 400 Bad Request", (done) => {
+      const invalidAngel = {
+        name: "Test Angel",
+        description: "Invalid release year test",
+        image: "http://example.com/image.jpg",
+        release_year: "invalid-year", // Feil datatype
+        views: 0,
+        user_id: 1,
+        series_id: 1,
+      };
+    
+      axios
+        .post("/angels", invalidAngel)
+        .then(() => done(new Error("Request should have failed")))
+        .catch((error) => {
+          expect(error.response.status).toEqual(400);
+          expect(error.response.data).toEqual("Invalid release year");
+          done();
+        });
+    });
+    
+/*
   test("Create angel with invalid data type (POST /angels) - 400 Bad Request", (done) => {
     const invalidAngel = {
       name: "Invalid Angel",
@@ -358,7 +557,7 @@ describe("Angel Router Tests", () => {
         expect(error.response.data).toEqual("Invalid data type for release_year");
         done();
       });
-  });
+  });*/
 
   test("Search angels with no matching results (GET /angels/search/:query) - 200 OK", async () => {
     const response = await axios.get("/angels/search/NonExistentAngel");
@@ -378,4 +577,62 @@ describe("Angel Router Tests", () => {
     expect(response.status).toBe(200);
     expect(response.data).toEqual([]);
   });
+
+  //legger til flere tester for description
+  test("Update angel with missing description - should fail", (done) => {
+    const invalidAngel = {
+      name: "Updated Angel",
+      image: "http://example.com/image.jpg",
+      release_year: 2022,
+      series_id: 1,
+      // description mangler
+    };
+  
+    axios
+      .put("/angels/1", invalidAngel)
+      .then(() => done(new Error("Request should have failed")))
+      .catch((error) => {
+        expect(error.response.status).toEqual(400);
+        expect(error.response.data).toEqual("Description cannot be empty");
+        done();
+      });
+  });
+
+  //flere tester
+  test("Fail to fetch non-existent angel by ID", async () => {
+    await expect(angelService.get(999)).rejects.toThrow("Angel not found");
+  });
+  
+  test("Fail to create angel with empty description", async () => {
+    const invalidAngel = {
+      name: "Invalid Angel",
+      description: "",
+      image: "http://example.com/image.jpg",
+      release_year: 2022,
+      views: 0,
+      user_id: 1,
+      series_id: 1,
+    };
+    await expect(angelService.createAngel(invalidAngel)).rejects.toThrow(
+      "Description is required and cannot be empty"
+    );
+  });
+  
+  test("Fail to update non-existent angel", async () => {
+    const nonExistentAngel = {
+      angel_id: 999,
+      name: "Non-existent Angel",
+      description: "Does not exist",
+      image: "http://example.com/nonexistent.jpg",
+      release_year: 2023,
+      series_id: 1,
+    };
+    await expect(angelService.updateAngel(nonExistentAngel)).rejects.toThrow(
+      "Angel with ID 999 not found."
+    );
+  });
+  
+  
+
+  
 });

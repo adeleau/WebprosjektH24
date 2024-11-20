@@ -39,6 +39,10 @@ angelrouter.post("/angels", (req, res) => {
     return res.status(400).send("Missing required fields: name, description, user_id, series_id");
   }
 
+  if (isNaN(Number(release_year))) {
+    return res.status(400).send("Invalid release year");
+  }
+
   angelService
     .createAngel({ name, description, image, release_year, views: 0, user_id, series_id/*, user_name: req.body.user_name*/ })
     .then((newAngel) => res.status(201).json(newAngel))
@@ -48,8 +52,35 @@ angelrouter.post("/angels", (req, res) => {
     });
 });
 
+
 // **Update Existing Angel**
 angelrouter.put("/angels/:angel_id", (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+  const angel: Angel = req.body;
+
+  // Valider angel_id
+  if (isNaN(angel_id)) {
+    return res.status(400).send("Invalid angel ID.");
+  }
+
+  // Valider obligatoriske felt
+  if (!angel.description || angel.description.trim() === "") {
+    return res.status(400).send("Description cannot be empty");
+  }
+  if (!angel.name || angel.name.trim() === "") {
+    return res.status(400).send("Name cannot be empty");
+  }
+
+  angelService
+    .updateAngel({ ...angel, angel_id })
+    .then(() => res.status(200).send("Angel updated successfully."))
+    .catch((err) => {
+      console.error(`Error updating angel with ID ${angel_id}:`, err);
+      res.status(500).send(err.message || "Failed to update angel.");
+    });
+});
+
+/*angelrouter.put("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
   const angel: Angel = req.body;
 
@@ -64,7 +95,7 @@ angelrouter.put("/angels/:angel_id", (req, res) => {
       console.error(`Error updating angel with ID ${angel_id}:`, err);
       res.status(500).send("Failed to update angel");
     });
-});
+});*/
 
 //Hent Angel History
 angelrouter.get("/angels/:angel_id/history", (req, res) => {
@@ -86,7 +117,29 @@ angelrouter.get("/angels/:angel_id/history", (req, res) => {
 });
 
 // **Delete Angel**
-angelrouter.delete("/angels/:angel_id", (req, res) => {
+angelrouter.delete("/angels/:angel_id", async (req, res) => {
+  const angel_id = Number(req.params.angel_id);
+
+  if (isNaN(angel_id)) {
+    console.warn("Invalid angel ID received:", req.params.angel_id);
+    return res.status(400).json({ error: "Invalid angel ID" });
+  }
+
+  try {
+    const angelExists = await angelService.get(angel_id); // Sjekk om ID-en finnes
+    if (!angelExists) {
+      return res.status(404).json({ error: "Angel not found" });
+    }
+
+    await angelService.deleteAngel(angel_id);
+    res.status(200).json({ message: "Angel deleted successfully" });
+  } catch (err) {
+    console.error(`Error deleting angel with ID ${angel_id}:`, err);
+    res.status(500).json({ error: "Failed to delete angel" });
+  }
+});
+
+/*angelrouter.delete("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
 
   if (isNaN(angel_id)) {
@@ -107,7 +160,7 @@ angelrouter.delete("/angels/:angel_id", (req, res) => {
               details: err.message,
           });
       });
-});
+});*/
 
 
 

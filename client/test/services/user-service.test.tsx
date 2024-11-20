@@ -40,6 +40,13 @@ describe('userService', () => {
         expect(users).toEqual(mockUsers);
     });
 
+    test('getAllUsers should throw an error when the API call fails', async () => {
+        mockedAxios.get.mockRejectedValue(new Error('Network Error'));
+    
+        await expect(userService.getAllUsers()).rejects.toThrow('Could not fetch users');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/users');
+    });    
+
     test('getById should fetch one user by Id', async () => {
         const mockUser: User[] = [
             {
@@ -143,7 +150,16 @@ describe('userService', () => {
       
         expect(mockedAxios.get).toHaveBeenCalledWith(`/users/uname/${username}`);
         expect(user).toEqual(mockUser);
-      });
+    });
+
+      test('getByUsername should throw an error when the API call fails', async () => {
+        const username = 'user1';
+        mockedAxios.get.mockRejectedValue(new Error('Network Error'));
+    
+        await expect(userService.getByUsername(username)).rejects.toThrow('Could not fetch user');
+        expect(mockedAxios.get).toHaveBeenCalledWith(`/users/uname/${username}`);
+    });
+    
     
       test('Login should return true on successful login', async () => {
         const uname = 'user1';
@@ -155,6 +171,5 @@ describe('userService', () => {
       
         expect(mockedAxios.post).toHaveBeenCalledWith('/users/login', { username: uname, password: passwd });
         expect(isLoggedIn).toBe(true);
-      });
-      
+    });
 });

@@ -75,23 +75,7 @@ class AngelService {
           .then((response) => response.data);
       }
 
-  /*updateAngel(angel: Angel) {
-        // Logg gammel versjon før oppdatering
-        return axios
-            .post(`/angel/history`, {
-                angel_id: angel.angel_id,
-                name: angel.name, // Kan legge til mer spesifikk logikk for å hente tidligere navn og beskrivelser
-                description: angel.description,
-                user_id: angel.user_id,
-            })
-            .then(() => {
-                // Oppdater engelen etter logging
-                return axios.put<null>(`/angels/${angel.angel_id}`, angel);
-            });
-    }*/
-
-
-    // Delete an angel by angel_id
+    // delete an angel by angel_id
     deleteAngel(angel_id: number): Promise<void> {
         return axios
           .delete(`/angels/${angel_id}`)
@@ -103,7 +87,7 @@ class AngelService {
           });
     };
     
-    //get angels by series_id
+    // get angels by series_id
     getBySeries(series_id: number) {
         return axios
             .get<Angel[]>(`/series/${series_id}`) 
@@ -136,7 +120,7 @@ class AngelService {
                 console.error(`Error searching for angels with query "${query}":`, err);
                 throw err;
             });
-          }
+    }
 
     getUsername(angel_id: number) {
         return axios
