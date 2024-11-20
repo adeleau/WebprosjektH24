@@ -2,7 +2,7 @@ import express from 'express';
 import seriesService, { Series } from "../services/series-service"
 import angelService, { Angel } from "../services/angel-service" //legg til angellikes
 import angelCommentService, { AngelComment } from "../services/angelcomment-service"
-import postService, { Post, PostComment } from "../services/post-service" //legg til postlikes
+import postService, { Post } from "../services/post-service" //legg til postlikes
 import registerService from '../services/register-service';
 import { AxiosPromise } from 'axios';
 import userService from '../services/user-service';

@@ -14,7 +14,8 @@ export const PostList: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
+    const userCookie = Cookies.get("user"); // Using cookies again, since we are working with users
+    // Referanse: src 6,7
 
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
@@ -92,7 +93,7 @@ export const PostNew: React.FC<{}> = () => {
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-
+// Referanse src 6,7
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
         setUser(JSON.parse(userCookie));
@@ -186,7 +187,7 @@ export const PostEdit: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
+    const userCookie = Cookies.get("user"); // Referanse: src 6,7
 
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
@@ -300,8 +301,6 @@ export const PostEdit: React.FC<{}> = () => {
 };
 
 
-
-
 export const PostDetails: React.FC<{}> = () => {
   const { post_id } = useParams<{ post_id: string }>();
   const [post, setPost] = useState<Post | null>(null);
@@ -310,7 +309,7 @@ export const PostDetails: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const userCookie = Cookies.get("user");
+    const userCookie = Cookies.get("user"); // Referanse: src 6,7
 
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {

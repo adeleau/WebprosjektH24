@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Home, About, Navbar, SearchPage, Leftbar, Footer, PopularPage, HowTo } from '../../src/components/other-components';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { MemoryRouter as Router } from 'react-router-dom';
 import AngelService from '../../src/services/angel-service';
 import SeriesService from '../../src/services/series-service';

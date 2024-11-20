@@ -1,8 +1,9 @@
 import { Link, useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import type { User } from "../services/user-service";
-import Cookies from "js-cookie";
+import Cookies from "js-cookie"; 
 import userService from "../services/user-service";
+
 
 export const Login: React.FC = () => {
   const history = useHistory();
@@ -39,7 +40,12 @@ export const Login: React.FC = () => {
     } else {
       Cookies.set("user", "guest", { domain: "localhost" });
     }
-  }, [user, history]);
+  }, [user, history]); //Using cookies since this is a method that works for remembering users
+  //This is valuable for us since we have users with admin privleges
+  //sources used:
+  //Chikari, M (14.04.23), Setting and Using Cookies in React, Clerk: https://clerk.com/blog/setting-and-using-cookies-in-react
+   //Djirdeh, H (24.10.23), React Basics: How to Use Cookies in React, KendoReact: https://www.telerik.com/blogs/react-basics-how-to-use-cookies 
+   
 
   return (
     <div className="login">

@@ -6,11 +6,15 @@ export type Users = {
     username: string;
     email: string;
     password_hash: string;
-    created_at: Date;
+    created_at: string; 
+    bio?: string | null;
+    profile_picture?: string | null;
+    role?: string | null;
+   
 };
 
 class RegisterService {
-    //henter alle brukere
+    //Get all users
     getAllUsers(): Promise<Users[]| Error> {
 
         return new Promise<Users[] | Error> ((resolve, reject) => {
@@ -21,7 +25,7 @@ class RegisterService {
             
         })
     }
-//hent bruker med ID
+//Get user with ID
     getUserById(user_id: number) {
         return new Promise<Users | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Users WHERE user_id=?', [user_id], (error, results: RowDataPacket[]) => {
@@ -30,7 +34,7 @@ class RegisterService {
             })
         })
     }
-//registrer en bruker
+//register user
     registerUser(username: string, email:string, password_hash:string) {
         return new Promise<number>((resolve, reject) => {
             pool.query('INSERT INTO Users SET username=?, email=?, password_hash=?', [username, email, password_hash], (error, results: ResultSetHeader) => {
@@ -39,7 +43,7 @@ class RegisterService {
             });
         });
     }
-//registrering
+//register
     register(username: string, email:string, password_hash:string) {
         return new Promise<Users | Error> ((resolve, reject) => {
             pool.query('SELECT * FROM Users WHERE username=? OR email=?', [username, email], (error, results: RowDataPacket[]) => {

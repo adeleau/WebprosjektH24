@@ -19,6 +19,7 @@ export const SeriesList: React.FC<{}> = () => {
   const [error, setError] = useState<string | null>(null);
   const [angelCount, setAngelCount] = useState<number | null>(null);
 
+  //using async since this is more compatible
   useEffect(() => {
     if (!series_id) return;
 
@@ -41,6 +42,7 @@ export const SeriesList: React.FC<{}> = () => {
       .catch((err) => setError("Error getting angel count: " + err.message));
     
       // Fetch user from cookies
+      //ref src: 6,7
     const userCookie = Cookies.get("user");
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
@@ -76,6 +78,7 @@ export const SeriesList: React.FC<{}> = () => {
       });
   };
 
+  //we have been using the same setup for every file with the navbar
   return (
     <div>
       <Navbar />

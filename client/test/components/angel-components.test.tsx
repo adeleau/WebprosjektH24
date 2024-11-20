@@ -1,229 +1,511 @@
-// import React from "react";
-// import { shallow, mount } from "enzyme";
-// import { MemoryRouter as Router } from "react-router-dom";
-// import { MasterList, AngelDetails, AngelNew, AngelHistory, AngelEdit,} from "../../src/components/angel-components";
-// import AngelService from "../../src/services/angel-service";
-// import SeriesService from "../../src/services/series-service";
-// import LikesService from "../../src/services/likes-service";
-// import WishlistService from "../../src/services/wishlist-service";
-// import Cookies from "js-cookie";
 
-// jest.mock("../../src/services/angel-service");
-// jest.mock("../../src/services/series-service");
-// jest.mock("../../src/services/likes-service");
-// jest.mock("../../src/services/wishlist-service");
-// jest.mock("js-cookie");
 
-// describe("Angel Components Tests", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+import React from "react";
+import { mount } from "enzyme";
+import { MemoryRouter as Router } from "react-router-dom";
+import { MasterList, AngelDetails, AngelNew, AngelEdit, AngelHistory } from "../../src/components/angel-components";
+import AngelService from "../../src/services/angel-service";
+import SeriesService from "../../src/services/series-service";
+import Cookies from "js-cookie";
 
-//   describe("MasterList Tests", () => {
-//     test("MasterList renders grouped angels correctly", async () => {
-//       AngelService.getAll.mockResolvedValue([
-//         { angel_id: 1, name: "Angel A", series_id: 1 },
-//         { angel_id: 2, name: "Angel B", series_id: 2 },
-//       ]);
 
-//       const wrapper = mount(
-//         <Router>
-//           <MasterList />
-//         </Router>
-//       );
+jest.mock("../../src/services/angel-service");
+jest.mock("../../src/services/series-service");
+jest.mock("js-cookie");
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+describe("Angel Components Tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//       expect(wrapper.find(".angel-group").length).toBe(2);
-//       expect(wrapper.find(".angel-link").at(0).text()).toBe("Angel A");
-//       expect(wrapper.find(".angel-link").at(1).text()).toBe("Angel B");
-//     });
+  describe("MasterList Component", () => {
+    test("renders and fetches angels", async () => {
+      const mockAngels = [
+        { angel_id: 1, name: "Angel A", series_id: 1 },
+        { angel_id: 2, name: "Angel B", series_id: 1 },
+      ];
+      
+      (AngelService.getAll as jest.Mock).mockResolvedValue(mockAngels);
 
-//     test("MasterList handles fetch errors gracefully", async () => {
-//       AngelService.getAll.mockRejectedValue(new Error("Failed to fetch angels"));
+      await act(async () => {
+        const wrapper = mount(
+          <Router>
+            <AngelEdit />
+          </Router>
+        );
+      
+        await waitForAsyncUpdates();
+        wrapper.update();
+      })
 
-//       const wrapper = mount(
-//         <Router>
-//           <MasterList />
-//         </Router>
-//       );
+      await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for async state updates
+      wrapper.update();
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+      expect(wrapper.find(".angel-master-list").exists()).toBe(true);
+      expect(wrapper.find(".angel-link").length).toBe(2);
+      expect(wrapper.find(".angel-link").at(0).text()).toBe("Angel A");
+      expect(wrapper.find(".angel-link").at(1).text()).toBe("Angel B");
+    });
 
-//       expect(wrapper.text()).toContain("Error fetching angels");
-//     });
-//   });
+    test("shows error message on fetch failure", async () => {
+      (AngelService.getAll as jest.Mock).mockRejectedValue(new Error("Failed to fetch angels"));
 
-//   describe("AngelDetails Tests", () => {
-//     test("AngelDetails renders correctly with angel data", async () => {
-//       AngelService.get.mockResolvedValue({
-//         angel_id: 1,
-//         name: "Angel A",
-//         description: "Test description",
-//         series_id: 1,
-//         views: 5,
-//         image: "https://example.com/image.jpg",
-//       });
-//       SeriesService.getName.mockResolvedValue("Test Series");
-//       LikesService.getUserLikes.mockResolvedValue([]);
-//       WishlistService.getUserWishlist.mockResolvedValue([]);
+      const wrapper = mount(
+        <Router>
+          <MasterList />
+        </Router>
+      );
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelDetails />
-//         </Router>
-//       );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+      expect(wrapper.find(".error-message").text()).toBe("Error fetching angels: Failed to fetch angels");
+    });
+  });
 
-//       expect(wrapper.find(".angel-header").text()).toBe("Angel A");
-//       expect(wrapper.find(".detail-row").at(0).text()).toContain("Test Series");
-//       expect(wrapper.find(".angel-image").prop("src")).toBe("https://example.com/image.jpg");
-//     });
+describe("AngelDetails Component", () => {
+    test("renders and fetches angel details", async () => {
+      const mockAngel = { angel_id: 1, name: "Angel A", description: "An angel", series_id: 1, views: 10 };
+      const mockSeriesName = "Series 1";
+      (AngelService.get as jest.Mock).mockResolvedValue(mockAngel);
+      (SeriesService.getName as jest.Mock).mockResolvedValue(mockSeriesName);
 
-//     test("AngelDetails handles errors gracefully", async () => {
-//       AngelService.get.mockRejectedValue(new Error("Error fetching angel"));
+      const wrapper = mount(
+        <Router>
+          <AngelDetails />
+        </Router>
+      );
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelDetails />
-//         </Router>
-//       );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+      expect(wrapper.find(".angel-header").text()).toBe("Angel A");
+      expect(wrapper.find(".detail-row").at(1).text()).toContain("An angel");
+      expect(wrapper.find(".detail-row").at(2).text()).toContain("10");
+    });
 
-//       expect(wrapper.text()).toContain("Error fetching angel");
-//     });
-//   });
+    test("shows error message on fetch failure", async () => {
+      (AngelService.get as jest.Mock).mockRejectedValue(new Error("Failed to fetch angel details"));
 
-//   describe("AngelNew Tests", () => {
-//     test("AngelNew renders and allows creating a new angel", async () => {
-//       SeriesService.getAll.mockResolvedValue([
-//         { series_id: 1, name: "Series A" },
-//         { series_id: 2, name: "Series B" },
-//       ]);
-//       AngelService.createAngel.mockResolvedValue({ angel_id: 1 });
+      const wrapper = mount(
+        <Router>
+          <AngelDetails />
+        </Router>
+      );
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelNew />
-//         </Router>
-//       );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+      const errorMessage = wrapper.find(".error-message");
+      expect(errorMessage.exists()).toBe(true);
+      expect(wrapper.find(".error-message").text()).toBe("Error fetching angel: Failed to fetch angel details");
+    });
+  });
 
-//       wrapper.find('input[name="name"]').simulate("change", { target: { value: "New Angel", name: "name" } });
-//       wrapper.find('textarea[name="description"]').simulate("change", { target: { value: "Description", name: "description" } });
-//       wrapper.find('input[name="image"]').simulate("change", { target: { value: "https://example.com/image.jpg", name: "image" } });
-//       wrapper.find('input[name="release_year"]').simulate("change", { target: { value: 2023, name: "release_year" } });
+describe("AngelNew Component", () => {
+    test("renders and submits a new angel", async () => {
+      const mockSeriesList = [{ series_id: 1, name: "Series 1" }];
+      (SeriesService.getAll as jest.Mock).mockResolvedValue(mockSeriesList);
+      (AngelService.createAngel as jest.Mock).mockResolvedValue({ angel_id: 1 });
 
-//       wrapper.find(".btn-create").simulate("click");
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: "admin", role: "admin", user_id: 123 }));
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       expect(AngelService.createAngel).toHaveBeenCalled();
-//     });
-//   });
+      const wrapper = mount(
+        <Router>
+          <AngelNew />
+        </Router>
+      );
 
-//   describe("AngelHistory Tests", () => {
-//     test("AngelHistory renders history entries correctly", async () => {
-//       AngelService.getAngelHistory.mockResolvedValue([
-//         {
-//           angelhistory_id: 1,
-//           description: "First update",
-//           user_id: 1,
-//           updated_at: "2023-01-01T00:00:00Z",
-//         },
-//       ]);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelHistory />
-//         </Router>
-//       );
+      wrapper.find('input[name="name"]').simulate("change", { target: { name: "name", value: "New Angel" } });
+      wrapper.find('select[name="series_id"]').simulate("change", { target: { value: "1" } });
+      wrapper.find('textarea[name="description"]').simulate("change", { target: { name: "description", value: "Description" } });
+      wrapper.find('input[name="release_year"]').simulate("change", { target: { name: "release_year", value: "2024" } });
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+      wrapper.find(".btn-create").simulate("click");
 
-//       expect(wrapper.find(".history-entry").length).toBe(1);
-//       expect(wrapper.text()).toContain("First update");
-//       expect(wrapper.text()).toContain("2023");
-//     });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
 
-//     test("AngelHistory handles empty history gracefully", async () => {
-//       AngelService.getAngelHistory.mockResolvedValue([]);
+      expect(AngelService.createAngel).toHaveBeenCalledWith({
+        angel_id: 0,
+        name: "New Angel",
+        description: "Description",
+        image: "",
+        release_year: 2024,
+        views: 0,
+        user_id: 123,
+        series_id: 1,
+      });
+    });
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelHistory />
-//         </Router>
-//       );
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+    test("shows error when creating a new angel fails", async () => {
+        const mockSeriesList = [{ series_id: 1, name: "Series 1" }];
+        (SeriesService.getAll as jest.Mock).mockResolvedValue(mockSeriesList);
+        (AngelService.createAngel as jest.Mock).mockRejectedValue(new Error("Failed to create angel"));
+    
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: "admin", role: "admin", user_id: 123 }));
+    
+        const wrapper = mount(
+            <Router>
+                <AngelNew />
+            </Router>
+        );
+    
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+    
+        wrapper.find('input[name="name"]').simulate("change", { target: { name: "name", value: "New Angel" } });
+        wrapper.find('select[name="series_id"]').simulate("change", { target: { value: "1" } });
+        wrapper.find(".btn-create").simulate("click");
+    
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+    
+        expect(wrapper.find(".error-message").exists()).toBe(true);
+        expect(wrapper.find(".error-message").text()).toBe("Error creating angel: Failed to create angel");
+    });
 
-//       expect(wrapper.text()).toContain("No history available for this angel");
-//     });
-//   });
+    test('shows validation error if required fields are empty', async () => {
+        const mockSeriesList = [{ series_id: 1, name: 'Series 1' }];
+        (SeriesService.getAll as jest.Mock).mockResolvedValue(mockSeriesList);
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: "admin", role: "admin", user_id: 123 }));
+      
+        const wrapper = mount(
+          <Router>
+            <AngelNew />
+          </Router>
+        );
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        wrapper.find(".btn-create").simulate("click");
+      
+        expect(wrapper.find(".error-message").exists()).toBe(true);
+        expect(wrapper.find(".error-message").text()).toContain('Name and Series are required');
+      });
+      
+  });
 
-//   describe("AngelEdit Tests", () => {
-//     test("AngelEdit renders and allows editing an angel", async () => {
-//       AngelService.get.mockResolvedValue({
-//         angel_id: 1,
-//         name: "Angel A",
-//         description: "Old description",
-//         series_id: 1,
-//         image: "https://example.com/image.jpg",
-//         release_year: 2020,
-//       });
-//       SeriesService.getAll.mockResolvedValue([
-//         { series_id: 1, name: "Series A" },
-//         { series_id: 2, name: "Series B" },
-//       ]);
+describe('AngelEdit Component', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+  
+    test('renders and fetches angel details', async () => {
+      const mockAngel = {
+        angel_id: 1,
+        name: 'Angel A',
+        description: 'Description',
+        image: 'https://example.com/image.png',
+        series_id: 1,
+        release_year: 2024,
+        views: 100,
+        user_id: 1,
+      };
+      const mockSeriesList = [{ series_id: 1, name: 'Series 1' }];
+  
+      (AngelService.get as jest.Mock).mockResolvedValueOnce(mockAngel);
+      (SeriesService.getAll as jest.Mock).mockResolvedValueOnce(mockSeriesList);
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+  
+      const wrapper = mount(
+        <Router>
+          <AngelEdit />
+        </Router>
+      );
+  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
+  
+      // Assertions
+      expect(wrapper.find('input[name="name"]').prop('value')).toBe(mockAngel.name);
+      expect(wrapper.find('textarea[name="description"]').prop('value')).toBe(mockAngel.description);
+      expect(wrapper.find('input[name="release_year"]').prop('value')).toBe(mockAngel.release_year);
+      expect(wrapper.find('select[name="series_id"]').prop('value')).toBe(mockAngel.series_id);
+    });
+  
+    test('updates and saves an angel', async () => {
+      const mockAngel = {
+        angel_id: 1,
+        name: 'Angel A',
+        description: 'Description',
+        image: 'https://example.com/image.png',
+        series_id: 1,
+        release_year: 2024,
+        views: 100,
+        user_id: 1,
+      };
+      const mockSeriesList = [{ series_id: 1, name: 'Series 1' }];
+  
+      (AngelService.get as jest.Mock).mockResolvedValueOnce(mockAngel);
+      (SeriesService.getAll as jest.Mock).mockResolvedValueOnce(mockSeriesList);
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+      (AngelService.updateAngel as jest.Mock).mockResolvedValueOnce({ ...mockAngel, name: 'Updated Angel' });
+  
+      const wrapper = mount(
+        <Router>
+          <AngelEdit />
+        </Router>
+      );
+  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
+  
+      // Simulate input change
+      wrapper.find('input[name="name"]').simulate('change', { target: { name: 'name', value: 'Updated Angel' } });
+      wrapper.find('.save-button').simulate('click');
+  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
+  
+      // Assertions
+      expect(AngelService.updateAngel).toHaveBeenCalledWith({
+        ...mockAngel,
+        name: 'Updated Angel',
+      });
+    });
+  
+    test('shows access denied for non-admin users', async () => {
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'user', role: 'user', user_id: 456 }));
+  
+      const wrapper = mount(
+        <Router>
+          <AngelEdit />
+        </Router>
+      );
+  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
+  
+      // Assertions
+      expect(wrapper.find('.access-denied').exists()).toBe(true);
+      expect(wrapper.find('.access-denied').text()).toContain('Access Denied');
+    });
+  
+    test('shows error message on fetch failure', async () => {
+      (AngelService.get as jest.Mock).mockRejectedValueOnce(new Error('Failed to fetch angel details'));
+      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+  
+      const wrapper = mount(
+        <Router>
+          <AngelEdit />
+        </Router>
+      );
+  
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      wrapper.update();
+      
+      console.log(wrapper.debug());
+      // Assertions
+      expect(wrapper.find('.error-message').exists()).toBe(true);
+      expect(wrapper.find('.error-message').text()).toBe('Error fetching angel details: Failed to fetch angel details');
+    });
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelEdit />
-//         </Router>
-//       );
+    test('renders access denied if user is not admin', async () => {
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'user', role: 'user', user_id: 456 }));
+      
+        const wrapper = mount(
+          <Router>
+            <AngelEdit />
+          </Router>
+        );
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        expect(wrapper.find('.access-denied').exists()).toBe(true);
+        expect(wrapper.find('.access-denied').text()).toContain('Access Denied');
+    });
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+    test('shows error message when series fetching fails', async () => {
+        (SeriesService.getAll as jest.Mock).mockRejectedValueOnce(new Error('Failed to fetch series'));
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+      
+        const wrapper = mount(
+          <Router>
+            <AngelEdit />
+          </Router>
+        );
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        expect(wrapper.find('.error-message').exists()).toBe(true);
+        expect(wrapper.find('.error-message').text()).toBe('Error fetching series: Failed to fetch series');
+    });
 
-//       wrapper.find('input[name="name"]').simulate("change", { target: { value: "Updated Angel", name: "name" } });
-//       wrapper.find(".save-button").simulate("click");
+    test('updates input fields correctly', async () => {
+        const mockAngel = {
+          angel_id: 1,
+          name: 'Angel A',
+          description: 'Description',
+          image: 'https://example.com/image.png',
+          series_id: 1,
+          release_year: 2024,
+          views: 100,
+          user_id: 1,
+        };
+        (AngelService.get as jest.Mock).mockResolvedValueOnce(mockAngel);
+        (SeriesService.getAll as jest.Mock).mockResolvedValueOnce([{ series_id: 1, name: 'Series 1' }]);
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+      
+        const wrapper = mount(
+          <Router>
+            <AngelEdit />
+          </Router>
+        );
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        wrapper.find('input[name="name"]').simulate('change', { target: { name: 'name', value: 'Updated Angel' } });
+        wrapper.find('textarea[name="description"]').simulate('change', { target: { name: 'description', value: 'Updated Description' } });
+      
+        expect(wrapper.find('input[name="name"]').prop('value')).toBe('Updated Angel');
+        expect(wrapper.find('textarea[name="description"]').prop('value')).toBe('Updated Description');
+    });
 
-//       expect(AngelService.updateAngel).toHaveBeenCalledWith(
-//         expect.objectContaining({ name: "Updated Angel" })
-//       );
-//     });
+      test('deletes an angel', async () => {
+        const mockAngel = {
+          angel_id: 1,
+          name: 'Angel A',
+          description: 'Description',
+          image: 'https://example.com/image.png',
+          series_id: 1,
+          release_year: 2024,
+          views: 100,
+          user_id: 1,
+        };
+        (AngelService.get as jest.Mock).mockResolvedValueOnce(mockAngel);
+        (AngelService.deleteAngel as jest.Mock).mockResolvedValueOnce({});
+        (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: 'admin', role: 'admin', user_id: 123 }));
+      
+        const wrapper = mount(
+          <Router>
+            <AngelEdit />
+          </Router>
+        );
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        wrapper.find('.delete-button').simulate('click');
+      
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        wrapper.update();
+      
+        expect(AngelService.deleteAngel).toHaveBeenCalledWith(1);
+    });
+  });
+});
 
-//     test("AngelEdit handles delete angel functionality", async () => {
-//       AngelService.get.mockResolvedValue({
-//         angel_id: 1,
-//         name: "Angel A",
-//         description: "Old description",
-//         series_id: 1,
-//         image: "https://example.com/image.jpg",
-//         release_year: 2020,
-//       });
+describe("AngelHistory Component Tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//       const wrapper = mount(
-//         <Router>
-//           <AngelEdit />
-//         </Router>
-//       );
+  test("renders and fetches angel history", async () => {
+    const mockHistory = [
+      {
+        angelhistory_id: 1,
+        description: "First update",
+        user_id: "123",
+        updated_at: "2024-01-01T12:00:00Z",
+      },
+      {
+        angelhistory_id: 2,
+        description: "Second update",
+        user_id: "456",
+        updated_at: "2024-02-01T15:30:00Z",
+      },
+    ];
 
-//       await new Promise(setImmediate); // Wait for async operations
-//       wrapper.update();
+    (AngelService.getAngelHistory as jest.Mock).mockResolvedValueOnce(mockHistory);
 
-//       wrapper.find(".delete-button").simulate("click");
+    const wrapper = mount(
+      <Router initialEntries={["/angelhistory/1"]}>
+        <AngelHistory />
+      </Router>
+    );
 
-//       expect(AngelService.deleteAngel).toHaveBeenCalledWith(1);
-//     });
-//   });
-// });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    wrapper.update();
+
+    expect(wrapper.find(".angel-history").exists()).toBe(true);
+    expect(wrapper.find(".history-entry").length).toBe(2);
+
+    expect(wrapper.find(".history-entry").at(0).text()).toContain("First update");
+    expect(wrapper.find(".history-entry").at(0).text()).toContain("123");
+    expect(wrapper.find(".history-entry").at(0).text()).toContain("01/01/2024, 12:00:00 PM");
+
+    expect(wrapper.find(".history-entry").at(1).text()).toContain("Second update");
+    expect(wrapper.find(".history-entry").at(1).text()).toContain("456");
+    expect(wrapper.find(".history-entry").at(1).text()).toContain("02/01/2024, 3:30:00 PM");
+  });
+
+  test("shows no history available message if no history exists", async () => {
+    (AngelService.getAngelHistory as jest.Mock).mockResolvedValueOnce([]);
+
+    const wrapper = mount(
+      <Router initialEntries={["/angelhistory/1"]}>
+        <AngelHistory />
+      </Router>
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    wrapper.update();
+
+    expect(wrapper.find(".angel-history").exists()).toBe(true);
+    expect(wrapper.find(".history-list").text()).toContain("No history available for this angel.");
+  });
+
+  test("shows error message on fetch failure", async () => {
+    (AngelService.getAngelHistory as jest.Mock).mockRejectedValueOnce(new Error("Failed to fetch"));
+
+    const wrapper = mount(
+      <Router initialEntries={["/angelhistory/1"]}>
+        <AngelHistory />
+      </Router>
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    wrapper.update();
+
+    expect(wrapper.find(".error-message").exists()).toBe(true);
+    expect(wrapper.find(".error-message").text()).toBe("Failed to fetch angel history");
+  });
+
+  test("navigates back to angel details", async () => {
+    const mockHistory = [
+      {
+        angelhistory_id: 1,
+        description: "First update",
+        user_id: "123",
+        updated_at: "2024-01-01T12:00:00Z",
+      },
+    ];
+
+    (AngelService.getAngelHistory as jest.Mock).mockResolvedValueOnce(mockHistory);
+
+    const mockHistoryPush = jest.fn();
+    jest.spyOn(require("react-router-dom"), "useHistory").mockReturnValue({ push: mockHistoryPush });
+
+    const wrapper = mount(
+      <Router initialEntries={["/angelhistory/1"]}>
+        <AngelHistory />
+      </Router>
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    wrapper.update();
+
+    wrapper.find(".back-button").simulate("click");
+
+    expect(mockHistoryPush).toHaveBeenCalledWith("/angels/1");
+  });
+});

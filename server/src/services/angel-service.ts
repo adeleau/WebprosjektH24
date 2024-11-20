@@ -15,16 +15,13 @@ export type Angel = {
     user_name: string;
 };
 
+// for setting up variables and database ref src: 4
 export type Angel_History = {
   angelhistory_id:number;
   angel_id?: number;
   description: string;
   user_id: string;
   updated_at?: Date;
-};
-
-export type AngelCardProps = {
-    angel: Angel;
 };
 
 class AngelService {
@@ -72,7 +69,8 @@ class AngelService {
   
     updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
-        // Hent den eksisterende engelen fra databasen
+        
+        // get the existing angel from the database
         this.get(angel.angel_id!)
           .then((result) => {
             if (result instanceof Error) {
@@ -81,16 +79,19 @@ class AngelService {
     
             const currentAngel = result as Angel;
     
-            // Sammenlign beskrivelsene
+  
+            //compare the descriptions
             if (currentAngel.description !== angel.description) {
-              // Logg historikk hvis beskrivelsen er forskjellig
+      
+              //logg the history if description is different
               pool.query(
                 'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
                 [angel.angel_id, currentAngel.description, angel.user_id],
                 (historyError) => {
                   if (historyError) return reject(historyError);
     
-                  // Oppdater engelens data etter å ha logget historikken
+                 
+                  //Update angel data after logging the history
                   pool.query(
                     'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
                     [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
@@ -102,7 +103,8 @@ class AngelService {
                 }
               );
             } else {
-              // Hvis beskrivelsen ikke er endret, oppdater bare engelens andre felt
+             
+              //if description not changed, update just the angels field
               pool.query(
                 'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
                 [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
@@ -215,6 +217,7 @@ class AngelService {
     });
   }
   
+  //Ref src:4,5,8
     //legger til engel historikk
     getAngelHistory(angel_id: number) {
       return new Promise<Angel_History[]>((resolve, reject) => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+// This is formated from he same was as the mandatory assigments
 // Angel type to represent individual angel details
 export type Angel = {
     angel_id?: number; 
@@ -176,6 +176,7 @@ getPopular(): Promise<Angel[]> {
         throw err;
       });
     }
+    //Getting AngelHistory we used the same methods as the rest for services.tsx
     getAngelHistory(angel_id: number): Promise<Angel_History[]> {
       return axios
         .get<Angel_History[]>(`/angels/${angel_id}/history`)

@@ -4,7 +4,7 @@
   "description": "A Sonny Angel wiki server",
   "scripts": {
     "start": "nodemon src/server.ts --exec \"npx babel-node -x .ts --require ./config\"",
-    "test": "jest --setupFiles ./test/config.ts"
+    "test": "jest --setupFiles ./test/config.ts --maxWorkers=1 --verbose"
   },
   "browserslist": [
     "maintained node versions"

@@ -11,24 +11,6 @@ export type Post = {
     created_at: Date;
     updated_at: Date;
   };
-  
-  export type PostComment = {
-    postcomment_id: number;
-    post_id: number;
-    user_id: number;
-    content: string;
-    created_at: Date;
-  };
-  
-//   export type PostLike = {
-//     poslike_id: number;
-//     post_id: number;
-//     like_count: number;
-//   };
-
-export type PostCardProps = {
-    post: Post;
-};
 
 class PostService {
     getAll() {

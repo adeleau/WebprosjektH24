@@ -11,10 +11,11 @@ export const Register: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const history = useHistory();
 
+// Using async since this is more benefitials for when using React
   const validateForm = async (): Promise<boolean> => {
     let isValid = true;
     const errors: { [key: string]: string } = {};
-
+// For formating have ref src: 1,2, we have also used src: 4 for formating and knowledge
     if (username.length < 3 || username.length > 20) {
       errors.username = "Username must be between 3 and 20 characters.";
       isValid = false;
@@ -43,6 +44,7 @@ export const Register: React.FC = () => {
     return isValid;
   };
 
+  //async is more benefitials
   const handleRegister = async () => {
     const isFormValid = await validateForm();
     if (isFormValid) {
@@ -56,6 +58,7 @@ export const Register: React.FC = () => {
     }
   };
 
+//same setup as from the assigments
   return (
     <div className="register">
       <div className="card">

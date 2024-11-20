@@ -23,7 +23,7 @@ postrouter.get('/posts/:post_id', (req, res) => {
   
 postrouter.post('/posts', (req, res) => {
   const { user_id, username, title, content, image } = req.body;
-
+//validation field
   if (!title || !user_id || !username) {
     return res.status(400).send('Missing required fields');
   }

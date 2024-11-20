@@ -5,9 +5,7 @@ import WishlistService from '../services/wishlist-service';
 
 const userrouter = express.Router();
 
-// USERS 
-
-// Get user by ID
+//Get user by ID
 userrouter.get('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     try {
@@ -37,7 +35,7 @@ userrouter.get('/users/uname/:username', async (req, res) => {
     }
 });
   
-// Get all users
+//Get all users
 userrouter.get('/users', async (req, res) => {
     try {
         const users = await userService.getAllUsers();
@@ -49,7 +47,7 @@ userrouter.get('/users', async (req, res) => {
 });
   
   
-// Update user role (Admin/User)
+//Update user role (Admin/User)
 userrouter.put('/users/:id/role', async (req, res) => {
     const userId = parseInt(req.params.id, 10);
     const { role } = req.body; // Expect { role: "admin" or "user" }
@@ -68,13 +66,13 @@ userrouter.put('/users/:id/role', async (req, res) => {
 });
   
   
-// Update user details
+//Update user details
 userrouter.put('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     const updatedData = req.body;
 
     try {
-        // Map `password` to `password_hash` if provided
+        //Map `password` to `password_hash` if provided
         if (updatedData.password) {
             updatedData.password_hash = updatedData.password; // Map to `password_hash`
             delete updatedData.password; // Remove plaintext `password` from payload
@@ -103,7 +101,7 @@ userrouter.post("/users/login", async (req, res) => {
         .catch((err) => res.status(500).send(err))
 })
 
-// Get likes of a user by user ID
+//Get likes of a user by user ID
 userrouter.get('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
@@ -115,7 +113,7 @@ userrouter.get('/:userId/likes', async (req, res) => {
     }
 });
 
-// Add a like for a user
+//Add a like for a user
 userrouter.post('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -128,7 +126,7 @@ userrouter.post('/:userId/likes', async (req, res) => {
     }
 });
 
-// Delete a like for a user
+//Delete a like for a user
 userrouter.delete('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;
@@ -142,7 +140,7 @@ userrouter.delete('/:userId/likes', async (req, res) => {
 });
 
 
-// Get wishlist of a user by user ID
+//Get wishlist of a user by user ID
 userrouter.get('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
@@ -154,7 +152,7 @@ userrouter.get('/:userId/wishlist', async (req, res) => {
     }
 });
 
-// Add an item to a user's wishlist
+//Add an item to a user's wishlist
 userrouter.post('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -167,7 +165,7 @@ userrouter.post('/:userId/wishlist', async (req, res) => {
     }
 });
 
-// Delete an item from a user's wishlist
+//Delete an item from a user's wishlist
 userrouter.delete('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;
