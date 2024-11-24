@@ -1,80 +1,65 @@
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
-import pool from '../mysql-pool';
-
-
-export type Users = {
-    user_id: number;
-    username: string;
-    email: string;
-    password_hash: string;
-    created_at: Date;
-};
+import { RowDataPacket, ResultSetHeader } from "mysql2";
+import pool from "../mysql-pool";
 
 class RegisterService {
-    getAllUsers(): Promise<Users[]| Error> {
+  getAllUsers(): Promise<RowDataPacket[]> {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT * FROM Users", [], (error, results) => {
+        if (error) return reject(error);
+        resolve(results as RowDataPacket[]);
+      });
+    });
+  }
 
-        return new Promise<Users[] | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Users', [], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                resolve(results as Users[])
-            })
-        })
-    }
+  getUserById(user_id: number): Promise<RowDataPacket | null> {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "SELECT * FROM Users WHERE user_id = ?",
+        [user_id],
+        (error, results: RowDataPacket[]) => {
+          if (error) return reject(error);
+          resolve(results[0] || null);
+        }
+      );
+    });
+  }
 
-    getUserById(user_id: number) {
-        return new Promise<Users | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Users WHERE user_id=?', [user_id], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                resolve(results[0] as Users)
-            })
-        })
-    }
+  register(username: string, email: string, password_hash: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "SELECT * FROM Users WHERE username = ? OR email = ?",
+        [username, email],
+        (error, results: RowDataPacket[]) => {
+          if (error) return reject(error);
+          if (results.length > 0) {
+            return reject(new Error("Username or email already in use"));
+          }
 
-    registerUser(user_id: number, email:string, password_hash:string) {
-        return new Promise<number>((resolve, reject) => {
-            pool.query('INSERT INTO Users SET user_id=?, email=?, password_hash=?', [user_id, email, password_hash], (error, results: ResultSetHeader) => {
-                if (error) return reject(error);
-                resolve(results.insertId);
-            });
-        });
-    }
+          pool.query(
+            "INSERT INTO Users (username, email, password_hash) VALUES (?, ?, ?)",
+            [username, email, password_hash],
+            (err, result: ResultSetHeader) => {
+              if (err) return reject(err);
+              resolve({ user_id: result.insertId, username, email });
+            }
+          );
+        }
+      );
+    });
+  }
 
-    register(username: string, email:string, password_hash:string) {
-        return new Promise<Users | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Users WHERE username=? OR email=?', [username, email], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-
-                if (results.length > 0){
-                    return reject(new Error("Username or email already in use"));
-                }
-
-            pool.query('INSERT INTO Users (username, email, password_hash) VALUES (?,?,?)', [username, email, password_hash], (error, results: ResultSetHeader) => {
-                if(error) return reject(error);
-
-                pool.query('SELECT * FROM Users WHERE user_id = ?' [results.insertId], (error, results: RowDataPacket[]) => {
-                    if (error) return reject(error);
-                    resolve(results[0] as Users);
-                })
-            })
-                
-            })
-        })
-    }
-
-    checkUserExists(username:string, email:string): Promise<boolean>{
-        return new Promise<boolean>((resolve, reject) => {
-            pool.query('SELECT COUNT(*) AS count FROM Users WHERE username = ? OR email = ?',
-            [username, email],
-            (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                const userExists = results[0].count > 0;
-                resolve(userExists);
-                }
-            );
-        });
-    };
-};
-
+  checkUserExists(username: string, email: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "SELECT COUNT(*) AS count FROM Users WHERE username = ? OR email = ?",
+        [username, email],
+        (error, results: RowDataPacket[]) => {
+          if (error) return reject(error);
+          resolve(results[0].count > 0);
+        }
+      );
+    });
+  }
+}
 
 export default new RegisterService();
-    

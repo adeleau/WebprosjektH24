@@ -1,11 +1,8 @@
-import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import RegisterService from "../services/register-service";
 
-
-//Joshi,G.(03.2023), Building a System for User Registration and Login using TypeScript (Part 2 ), Building by learning: https://gauravjoshi.hashnode.dev/building-a-system-for-user-registration-and-login-using-typescript-part-2
-//Brukt deler av strukturen for oppsettet til å bygge off for registreringen
-export const Register: React.FC = () => {  
+export const Register: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -14,14 +11,10 @@ export const Register: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const history = useHistory();
 
-// Using async since this is more benefitials for when using React
   const validateForm = async (): Promise<boolean> => {
     let isValid = true;
     const errors: { [key: string]: string } = {};
 
-//Oraro,P(23.09.23), Building A Simple React Login Form: A Step By Step Guide, DEV, https://dev.to/paulineoraro/building-a-simple-react-login-form-a-step-by-step-guide-17g1
-//For validering og oppsett av krav for passord
-// For formating have ref src: 1,2, we have also used src: 4 for formating and knowledge
     if (username.length < 3 || username.length > 20) {
       errors.username = "Username must be between 3 and 20 characters.";
       isValid = false;
@@ -37,7 +30,7 @@ export const Register: React.FC = () => {
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(password)
     ) {
       errors.password =
-        "Password must have at least 6 characters, including uppercase, lowercase, number, and special character.";
+        "Password must include uppercase, lowercase, number, and special character.";
       isValid = false;
     }
 
@@ -54,17 +47,15 @@ export const Register: React.FC = () => {
     const isFormValid = await validateForm();
     if (isFormValid) {
       try {
-        await RegisterService.registerUser(username, email, password);
+        await RegisterService.register(username, email, password);
         setSuccessMessage("Registration successful!");
         setTimeout(() => history.push("/login"), 1500);
-      } catch (error) {
+      } catch (err) {
         setError({ form: "Registration failed. Please try again." });
       }
     }
   };
-  
-//Denne delen er det brukt chat.gpt, men hjelp fra øvinger og følgende nettside:
-//Pantoja, E (29.05.23), React Registration Form, Medium
+
   return (
     <div className="register">
       <div className="card">
