@@ -11,7 +11,7 @@ export type Angel = {
     user_id: number;
     //created_at: Date;
     //updated_at?: Date;
-    // user_name: string;
+    username: string;
     series_id: number;
 };
 export type Angel_History = {
