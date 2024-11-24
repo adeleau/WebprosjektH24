@@ -45,6 +45,8 @@ describe("Login Component Tests", () => {
 
     loginButton.simulate("click");
     await new Promise((resolve) => setTimeout(resolve, 0));
+    loginButton.simulate("click");
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     wrapper.update();
 
@@ -56,11 +58,16 @@ describe("Login Component Tests", () => {
     const mockUser = { user_id: 1, username: "testuser", email: "test@example.com" };
     
     // Mock userService-metoder
+    
+    // Mock userService-metoder
     (userService.login as jest.Mock).mockResolvedValue(true);
     (userService.getByUsername as jest.Mock).mockResolvedValue(mockUser);
   
     // Spioner på Cookies.set
+  
+    // Spioner på Cookies.set
     const setMock = jest.spyOn(Cookies, "set");
+  
   
     const wrapper = mount(
       <Router>
@@ -75,7 +82,17 @@ describe("Login Component Tests", () => {
   
     // Vent til alle oppdateringer er fullført
     await new Promise((resolve) => setTimeout(resolve, 0));
+  
+    // Simuler brukerinput og innlogging
+    wrapper.find("input[type='text']").simulate("change", { target: { value: "testuser" } });
+    wrapper.find("input[type='password']").simulate("change", { target: { value: "testpass" } });
+    wrapper.find(".login-btn").simulate("click");
+  
+    // Vent til alle oppdateringer er fullført
+    await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
+  
+    // Bekreft at tjenestekall ble gjort
   
     // Bekreft at tjenestekall ble gjort
     expect(userService.login).toHaveBeenCalledWith("testuser", "testpass");
@@ -87,11 +104,21 @@ describe("Login Component Tests", () => {
       JSON.stringify(mockUser),
       { domain: "localhost" }
     );
+  
+    // Bekreft at Cookies.set ble kalt
+    expect(setMock).toHaveBeenCalledWith(
+      "user",
+      JSON.stringify(mockUser),
+      { domain: "localhost" }
+    );
   });
+  
+  
   
   
   test("handles Enter key for login", async () => {
     (userService.login as jest.Mock).mockResolvedValue(false);
+  
   
     const wrapper = mount(
       <Router>
@@ -99,8 +126,11 @@ describe("Login Component Tests", () => {
       </Router>
     );
   
+  
     const usernameInput = wrapper.find("input[type='text']");
     const passwordInput = wrapper.find("input[type='password']");
+  
+    // Simulerer input
   
     // Simulerer input
     usernameInput.simulate("change", { target: { value: "invalidUser" } });
@@ -110,7 +140,13 @@ describe("Login Component Tests", () => {
     usernameInput.simulate("keydown", { key: "Enter" });
     await new Promise((resolve) => setTimeout(resolve, 0)); // Vent til neste event loop
   
+  
+    // Simulerer Enter-tast og venter på oppdatering
+    usernameInput.simulate("keydown", { key: "Enter" });
+    await new Promise((resolve) => setTimeout(resolve, 0)); // Vent til neste event loop
+  
     wrapper.update();
+  
   
     expect(userService.login).toHaveBeenCalledWith("invalidUser", "invalidPass");
     expect(wrapper.find(".error-message").text()).toBe("Invalid Username or Password");

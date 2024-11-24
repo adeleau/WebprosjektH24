@@ -18,7 +18,7 @@ interface AngelComment extends BaseAngelComment {
 }
 
 const history = createHashHistory();
-
+//Same structure as the mandatory assigments
 export const MasterList: React.FC = () => {
   const [angels, setAngels] = useState<Angel[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,9 @@ export const MasterList: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Get logged-in user from cookies
+    // Get logged in user from cookies. 
+    // We use cookies due to its simple nature of saving user data locally. 
+    // This allows us to remeber user when logged in and when browsing the site.
     const userCookie = Cookies.get("user");
 
     try {
@@ -54,6 +56,10 @@ export const MasterList: React.FC = () => {
       console.error("Error parsing user cookie:", error);
       setUser(null); // Set as not logged in if parsing fails
     }
+    //For cookie implementing we have used two sources and chatGPT for syntax problems,
+    //our sources where:
+    //Chikari, M (14.04.23), Setting and Using Cookies in React,
+    //Clerk: https://clerk.com/blog/setting-and-using-cookies-in-react
 
     AngelService.getAll()
       .then((data) => setAngels(data))
@@ -155,6 +161,7 @@ export const AngelDetails: React.FC<{}> = () => {
   const [comments, setComments] = useState<AngelComment[]>([]);
 
   // Get angel details and user information
+  // Using useEffects since this method is more compatible with React
   useEffect(() => {
     if (angel_id) {
       AngelService.get(Number(angel_id))
@@ -233,7 +240,7 @@ export const AngelDetails: React.FC<{}> = () => {
       setError("You must be logged in to add this angel to your wishlist");
       return;
     }
-
+// Validation for wishlist button
     try {
       if (isWishlisted) {
         if (angel?.angel_id !== undefined) {
@@ -251,7 +258,7 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  // Fetch comments
+  // Get comments
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
@@ -260,8 +267,9 @@ export const AngelDetails: React.FC<{}> = () => {
       setError(`Error fetching comments: ${err}`);
     }
   };
+  
 
-  // Post a comment
+  // Posting a comment
   const handlePostComment = async () => {
     if (!comment.trim()) {
       setError("Comment cannot be empty");
@@ -507,7 +515,7 @@ export const AngelNew: React.FC<{}> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Get logged-in user from cookies
+    // Get logged in user from cookies
     const userCookie = Cookies.get("user");
 
     try {
@@ -520,7 +528,7 @@ export const AngelNew: React.FC<{}> = () => {
           }
         } else if (userCookie === "guest") {
           setUser({ username: "Guest", user_id: 0, role: "guest" });
-          history.push("/"); // Restrictions for guests
+          history.push("/"); // Restirctions for guests
         } else {
           setUser(null);
           history.push("/login");
@@ -551,8 +559,8 @@ export const AngelNew: React.FC<{}> = () => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     if (value === "add-new-series") {
-      setShowAddSeries(true); // Input for adding a new series
-      setSelectedSeriesId(null);
+      setShowAddSeries(true); // input field for adding a new series
+      setSelectedSeriesId(null); 
     } else {
       setShowAddSeries(false);
       setSelectedSeriesId(Number(value));
@@ -567,9 +575,9 @@ export const AngelNew: React.FC<{}> = () => {
 
     SeriesService.createSeries({ name: newSeriesName })
       .then((newSeries) => {
-        setSeriesList([...seriesList, newSeries]);
+        setSeriesList([...seriesList, newSeries]); 
         setSelectedSeriesId(newSeries.series_id); // Automatically select the new series
-        setNewSeriesName("");
+        setNewSeriesName(""); 
         setShowAddSeries(false); // Hide input
       })
       .catch((error) => setError("Error creating series: " + error.message));

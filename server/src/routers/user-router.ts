@@ -36,36 +36,6 @@ userrouter.get('/users/uname/:username', async (req, res) => {
     }
 });
   
-// Get user by ID
-userrouter.get('/users/:id', async (req, res) => {
-    const user_id = parseInt(req.params.id, 10);
-    try {
-        const user = await userService.getById(user_id);
-        if (user) {
-            res.send(user);
-        } else {
-            res.status(404).send('User not found');
-        }
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).send('Server error');
-    }
-});
-  
-userrouter.get('/users/uname/:username', async (req, res) => {
-    const username = req.params.username;
-    try {
-        const user = await userService.getByUsername(username);
-        if (user) {
-         res.send(user);
-        } else {
-            res.status(404).send('User not found');
-        }
-    } catch (error) {
-        res.status(500).send("Shits fucked");
-    }
-});
-  
 // Get all users
 userrouter.get('/users', async (req, res) => {
     try {
@@ -78,7 +48,7 @@ userrouter.get('/users', async (req, res) => {
 });
   
   
-// Update user role (Admin/User)
+//Update user role (Admin/User)
 userrouter.put('/users/:id/role', async (req, res) => {
     const userId = parseInt(req.params.id, 10);
     const { role } = req.body; // Expect { role: "admin" or "user" }
@@ -96,16 +66,15 @@ userrouter.put('/users/:id/role', async (req, res) => {
     }
 });
   
-  
-// Update user details
+//Update user details
 userrouter.put('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     const updatedData = req.body;
 
     try {
-        // Map `password` to `password_hash` 
+        // Map 'password' to 'password_hash'
         if (updatedData.password) {
-            updatedData.password_hash = updatedData.password; // Map to `password_hash`
+            updatedData.password_hash = updatedData.password; // Map to 'password_hash'
             delete updatedData.password; 
         }
 
@@ -132,7 +101,7 @@ userrouter.post("/users/login", async (req, res) => {
         .catch((err) => res.status(500).send(err))
 })
 
-// Get likes of a user by user ID
+//Get likes of a user by user ID
 userrouter.get('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
@@ -183,7 +152,7 @@ userrouter.get('/:userId/wishlist', async (req, res) => {
     }
 });
 
-// Add an item to wishlist
+//Add an item to wishlist
 userrouter.post('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  

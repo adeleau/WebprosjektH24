@@ -6,7 +6,7 @@ import type { Series } from "../services/series-service";
 import AngelService, {Angel} from "../services/angel-service";
 import type { User } from "../services/user-service";
 import Cookies from "js-cookie";
-
+//The methods used for other-components are mostly from the mandatory assigments
 // Renders the Homepage
 export const Home: React.FC<{}> = () => {
     return (
@@ -141,9 +141,15 @@ export const Navbar = () => {
     }
   }, [])
 
+  //We are using cookies here again since we are handling users
+  //sources:
+  //Chikari, M (14.04.23), Setting and Using Cookies in React, Clerk: https://clerk.com/blog/setting-and-using-cookies-in-react
+  //Djirdeh, H (24.10.23), React Basics: How to Use Cookies in React, KendoReact: https://www.telerik.com/blogs/react-basics-how-to-use-cookies 
+   
+
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
-    setSearchQuery(query);
+    setSearchQuery(query); //using async since this is compatible with reacts asynchronized behaviour
 
     if (!query) {
       setResults([]);
@@ -173,6 +179,7 @@ export const Navbar = () => {
     }
   };
 
+// We have used chatGPT as help from the if (!query) to this comment
   return (
     <>
       <div className="navbar">
@@ -230,7 +237,7 @@ export const Navbar = () => {
   );
 };
 
-//Renders the Search page
+// Renders the Search page
 export const SearchPage = () => {
   const { searchQuery } = useParams<{ searchQuery: string }>();
   const [results, setResults] = useState<Angel[]>([]);
@@ -287,7 +294,7 @@ export const SearchPage = () => {
   );
 };
 
-//Renders the Leftbar
+// Renders the Leftbar
 export const Leftbar: React.FC<{}> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -393,7 +400,6 @@ export const Leftbar: React.FC<{}> = () => {
   );
 };
 
-
 export const Footer =() => {
 
     return (
@@ -404,9 +410,6 @@ export const Footer =() => {
     </>
     );
   } 
-
-
-
 
 export const PopularPage: React.FC<{}> = () => {
   const [popularAngels, setPopularAngels] = useState<Angel[]>([]);
@@ -446,9 +449,6 @@ export const PopularPage: React.FC<{}> = () => {
     </>
   );
 };
-
-
-
 
 export const HowTo: React.FC<{}> = () => {
   return (

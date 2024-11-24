@@ -7,7 +7,8 @@ import WishlistService from '../services/wishlist-service';
 import angelService, { Angel } from '../services/angel-service';
 import Cookies from 'js-cookie';
 
-
+//for user-components we had to use cookies since we have administred roles
+//ref src: 6,7
 export const UserProfile: React.FC = () => {
     const history = useHistory();
     const [user, setUser] = useState<User>();

@@ -14,12 +14,14 @@ export const Register: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const history = useHistory();
 
+// Using async since this is more benefitials for when using React
   const validateForm = async (): Promise<boolean> => {
     let isValid = true;
     const errors: { [key: string]: string } = {};
 
 //Oraro,P(23.09.23), Building A Simple React Login Form: A Step By Step Guide, DEV, https://dev.to/paulineoraro/building-a-simple-react-login-form-a-step-by-step-guide-17g1
 //For validering og oppsett av krav for passord
+// For formating have ref src: 1,2, we have also used src: 4 for formating and knowledge
     if (username.length < 3 || username.length > 20) {
       errors.username = "Username must be between 3 and 20 characters.";
       isValid = false;
@@ -47,7 +49,6 @@ export const Register: React.FC = () => {
     setError(errors);
     return isValid;
   };
-
 
   const handleRegister = async () => {
     const isFormValid = await validateForm();

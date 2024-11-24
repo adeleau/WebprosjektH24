@@ -10,6 +10,12 @@ export type Users = {
 };
 
 class RegisterService {
+
+    private normalizeDate(date: string | Date): string {
+        const d = typeof date === 'string' ? new Date(date) : date;
+        return d.toISOString().split('.')[0]; // Normalize to remove milliseconds
+    }
+    
     // Henter en bruker basert på user_id
     private normalizeDate(date: string | Date): string {
         const d = typeof date === 'string' ? new Date(date) : date;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import userService, { User } from '../../src/services/user-service';
-
+//link to nettside explaining use : https://medium.com/@swatikpl44/mastering-mocking-techniques-in-jest-for-react-testing-cbf4d7fde7ee
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 

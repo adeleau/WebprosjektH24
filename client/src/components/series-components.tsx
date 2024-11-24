@@ -19,8 +19,6 @@ export const SeriesList: React.FC<{}> = () => {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [angelCount, setAngelCount] = useState<number | null>(null);
-
-  
   useEffect(() => {
     if (!series_id) return;
 
@@ -44,6 +42,7 @@ export const SeriesList: React.FC<{}> = () => {
     
       // Fetch user from cookies
       //Bruker Cookies for å se hvem som er logget inn og begrense brukertilgang til kun admin
+      //ref src: 6,7
     const userCookie = Cookies.get("user");
     try {
       if (userCookie && userCookie.startsWith("{") && userCookie.endsWith("}")) {
@@ -79,6 +78,7 @@ export const SeriesList: React.FC<{}> = () => {
       });
   };
 
+  //we have been using the same setup for every file with the navbar
   return (
     <div>
       <Navbar />

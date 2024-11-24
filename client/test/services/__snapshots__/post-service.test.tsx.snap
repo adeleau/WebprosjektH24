@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PostService test get should match the snapshot 1`] = `
+{
+  "content": "My post",
+  "created_at": 2023-01-01T12:00:00.000Z,
+  "image": "angelimage.jpg",
+  "post_id": 1,
+  "title": "Angel post",
+  "updated_at": 2023-01-01T12:00:00.000Z,
+  "user_id": 1,
+}
+`;
+
+exports[`PostService test getAll should match the snapshot 1`] = `
+[
+  {
+    "content": "My post",
+    "created_at": 2023-01-01T12:00:00.000Z,
+    "image": "Angelimage.jpg",
+    "post_id": 1,
+    "title": "Angel post",
+    "updated_at": 2023-01-01T12:00:00.000Z,
+    "user_id": 1,
+  },
+  {
+    "content": "Test",
+    "created_at": 2023-01-01T12:00:00.000Z,
+    "image": "Testimage.jpg",
+    "post_id": 2,
+    "title": "Test post",
+    "updated_at": 2023-01-01T12:00:00.000Z,
+    "user_id": 2,
+  },
+]
+`;

@@ -1,11 +1,5 @@
 import express from 'express';
-import seriesService, { Series } from "../services/series-service"
-import angelService, { Angel } from "../services/angel-service" //legg til angellikes
-import angelCommentService, { AngelComment } from "../services/angelcomment-service"
-import postService, { Post } from "../services/post-service" //legg til postlikes
-import registerService from '../services/register-service';
-import { AxiosPromise } from 'axios';
-import userService from '../services/user-service';
+import registerService, { Users } from '../services/register-service';
 
 const registerrouter = express.Router();
 
@@ -47,26 +41,6 @@ registerrouter.get('/users/:user_id', (req, res) => {
       })
       .catch(() => res.status(500).send('Error fetching user'));
 });
-/*registerrouter.get('/users/:user_id', (req, res) => {
-  const user_id = Number(req.params.user_id);
-  registerService
-      .getUserById(user_id)
-      .then((user) => {
-          if (!user) {
-              return res.status(404).send('User not found');
-          }
-          res.status(200).send(user);
-      })
-      .catch((error) => res.status(500).send('Error fetching user'));
-});*/
-
-/*registerrouter.get('/users/:user_id', (_request, response) =>{
-    const user_id = Number(_request.params.user_id);
-    registerService
-      .getUserById(user_id)
-      .then((users) =>  response.send(users))
-      .catch((error) => response.status(500).send(error));
-});*/
   
 
 registerrouter.post('/register', (request,response) =>{
