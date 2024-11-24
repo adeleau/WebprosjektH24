@@ -55,10 +55,7 @@ class AngelService {
           });
       }
 
-      updateAngel(updatedAngel: Partial<Angel>): Promise<Angel> {
-        if (!updatedAngel.angel_id) {
-          return Promise.reject(new Error('Missing angel_id'));
-        }
+      updateAngel(updatedAngel: Partial<Angel>) {
         return axios
           .put<Angel>(`/angels/${updatedAngel.angel_id}`, updatedAngel)
           .then((res) => res.data)

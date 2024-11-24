@@ -44,7 +44,7 @@ angelrouter.post("/angels", (req, res) => {
   }
 
   angelService
-    .createAngel({ name, description, image, release_year, views: 0, user_id, series_id/*, user_name: req.body.user_name*/ })
+    .createAngel({ name, description, image, release_year, views: 0, user_id, series_id})
     .then((newAngel) => res.status(201).json(newAngel))
     .catch((err) => {
       console.error("Error creating angel:", err);
@@ -55,32 +55,6 @@ angelrouter.post("/angels", (req, res) => {
 
 // **Update Existing Angel**
 angelrouter.put("/angels/:angel_id", (req, res) => {
-  const angel_id = Number(req.params.angel_id);
-  const angel: Angel = req.body;
-
-  // Valider angel_id
-  if (isNaN(angel_id)) {
-    return res.status(400).send("Invalid angel ID.");
-  }
-
-  // Valider obligatoriske felt
-  if (!angel.description || angel.description.trim() === "") {
-    return res.status(400).send("Description cannot be empty");
-  }
-  if (!angel.name || angel.name.trim() === "") {
-    return res.status(400).send("Name cannot be empty");
-  }
-
-  angelService
-    .updateAngel({ ...angel, angel_id })
-    .then(() => res.status(200).send("Angel updated successfully."))
-    .catch((err) => {
-      console.error(`Error updating angel with ID ${angel_id}:`, err);
-      res.status(500).send(err.message || "Failed to update angel.");
-    });
-});
-
-/*angelrouter.put("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
   const angel: Angel = req.body;
 
@@ -95,7 +69,7 @@ angelrouter.put("/angels/:angel_id", (req, res) => {
       console.error(`Error updating angel with ID ${angel_id}:`, err);
       res.status(500).send("Failed to update angel");
     });
-});*/
+});
 
 //Hent Angel History
 angelrouter.get("/angels/:angel_id/history", (req, res) => {

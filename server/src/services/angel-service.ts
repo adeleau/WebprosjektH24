@@ -77,52 +77,53 @@ class AngelService {
       });
     }
 
-    updateAngel(angel: Angel) {
-      return new Promise<void>((resolve, reject) => {
-        // Valider input
-        if (!angel.angel_id) return reject(new Error("Angel ID is missing."));
-        if (!angel.description || angel.description.trim() === "") {
-          return reject(new Error("Description is missing or invalid"));
-        }
+
     
-        // Hent eksisterende engel for å sammenligne
-        this.get(angel.angel_id)
-          .then((currentAngel) => {
-            if (!currentAngel) {
-              return reject(new Error(`Angel with ID ${angel.angel_id} not found.`));
+    updateAngel(angel: Angel): Promise<void> {
+      return new Promise<void>((resolve, reject) => {
+        // Hent den eksisterende engelen fra databasen
+        this.get(angel.angel_id!)
+          .then((result) => {
+            if (result instanceof Error) {
+              return reject(new Error('Failed to fetch existing angel data'));
             }
     
-            // Logg historikk hvis beskrivelse har endret seg
+            const currentAngel = result as Angel;
+    
+            // Sammenlign beskrivelsene
             if (currentAngel.description !== angel.description) {
+              // Logg historikk hvis beskrivelsen er forskjellig
               pool.query(
-                "INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())",
+                'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
                 [angel.angel_id, currentAngel.description, angel.user_id],
                 (historyError) => {
                   if (historyError) return reject(historyError);
     
-                  // Oppdater engel
-                  this.performUpdate(angel, resolve, reject);
+                  // Oppdater engelens data etter å ha logget historikken
+                  pool.query(
+                    'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                    [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                    (updateError) => {
+                      if (updateError) return reject(updateError);
+                      resolve();
+                    }
+                  );
                 }
               );
             } else {
-              // Bare oppdater hvis historikk ikke er nødvendig
-              this.performUpdate(angel, resolve, reject);
+              // Hvis beskrivelsen ikke er endret, oppdater bare engelens andre felt
+              pool.query(
+                'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                (updateError) => {
+                  if (updateError) return reject(updateError);
+                  resolve();
+                }
+              );
             }
           })
-          .catch(reject);
+          .catch((error) => reject(error));
       });
-    }
-    
-    // Oppdateringslogikk er abstrahert for å unngå repetisjon
-    private performUpdate(angel: Angel, resolve: () => void, reject: (error: Error) => void) {
-      pool.query(
-        "UPDATE Angels SET name = ?, description = ?, image = ?, release_year = ?, series_id = ? WHERE angel_id = ?",
-        [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
-        (updateError) => {
-          if (updateError) return reject(updateError);
-          resolve();
-        }
-      );
     }
     
 

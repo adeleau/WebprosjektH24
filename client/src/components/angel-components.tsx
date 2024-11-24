@@ -602,6 +602,7 @@ export const AngelNew: React.FC<{}> = () => {
       release_year,
       views: 0,
       user_id: user.user_id,
+      username: user.username,
       series_id: selectedSeriesId,
     };
 
@@ -785,8 +786,8 @@ export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
 
-  const [angel, setAngel] = useState<Partial<Angel>>({
-    angel_id: 0,
+  const [angel, setAngel] = useState<Angel>({
+  angel_id: 0,
     name: "",
     description: "",
     image: "",
@@ -794,7 +795,7 @@ export const AngelEdit: React.FC<{}> = () => {
     views: 0,
     user_id: 0,
     series_id: 0,
-  });
+  });  
   const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -858,7 +859,6 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleSave = () => {
-    console.log("Angel being updated:", angel);
     AngelService.updateAngel(angel)
       .then(() => {
         history.push(`/angels/${angel.angel_id}`);
@@ -867,7 +867,6 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleDelete = () => {
-    console.log("Deleting angel with ID:", angel.angel_id);
     AngelService.deleteAngel(angel.angel_id!)
       .then(() => {
         history.push(`/`);
