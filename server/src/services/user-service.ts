@@ -18,12 +18,18 @@ class UserService {
     // Get all users
     getAllUsers(): Promise<User[]> {
         return new Promise((resolve, reject) => {
+            console.log('Executing query: SELECT * FROM Users');
             pool.query('SELECT * FROM Users', (error, results) => {
-                if (error) return reject(error);
+                if (error) {
+                    console.error('Database query error:', error);
+                    return reject(error);
+                }
+                console.log('Query results:', results);
                 resolve(results as User[]);
             });
         });
     }
+    
     // Get user by ID
     getById(user_id: number) {
         return new Promise<User | null>((resolve, reject) => {

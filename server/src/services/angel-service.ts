@@ -125,57 +125,6 @@ class AngelService {
       );
     }
     
-    updateAngel(angel: Angel) {
-      return new Promise<void>((resolve, reject) => {
-        
-        // get the existing angel from the database
-        this.get(angel.angel_id!)
-          .then((result) => {
-            if (result instanceof Error) {
-              return reject(new Error('Failed to fetch existing angel data'));
-            }
-    
-            const currentAngel = result as Angel;
-    
-  
-            //compare the descriptions
-            if (currentAngel.description !== angel.description) {
-      
-              //logg the history if description is different
-              pool.query(
-                'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
-                [angel.angel_id, currentAngel.description, angel.user_id],
-                (historyError) => {
-                  if (historyError) return reject(historyError);
-    
-                 
-                  //Update angel data after logging the history
-                  pool.query(
-                    'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
-                    [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
-                    (updateError) => {
-                      if (updateError) return reject(updateError);
-                      resolve();
-                    }
-                  );
-                }
-              );
-            } else {
-             
-              //if description not changed, update just the angels field
-              pool.query(
-                'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
-                [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
-                (updateError) => {
-                  if (updateError) return reject(updateError);
-                  resolve();
-                }
-              );
-            }
-          })
-          .catch((error) => reject(error));
-      });
-    }
 
   // Increment views for an angel
   incrementViews(angelId: number) {
