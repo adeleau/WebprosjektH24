@@ -276,6 +276,15 @@ export const UserSettings: React.FC = () => {
                         onChange={handleChange}
                     />
                 </label>
+                <label>
+                    Profile picture url:
+                    <input
+                        type="string"
+                        name="profile_picture"
+                        defaultValue={user.profile_picture}
+                        onChange={handleChange}
+                    />
+                </label>
                 <button type="submit">Save Changes and Log Out</button>
             </form>
 
