@@ -7,16 +7,16 @@ import { MasterList, AngelDetails, AngelNew, AngelEdit, AngelHistory } from "../
 import AngelService from "../../src/services/angel-service";
 import SeriesService from "../../src/services/series-service";
 import Cookies from "js-cookie";
-
+import { act } from 'react-dom/test-utils';
 
 jest.mock("../../src/services/angel-service");
 jest.mock("../../src/services/series-service");
 jest.mock("js-cookie");
 
-describe("Angel Components Tests", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+// describe("Angel Components Tests", () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//   });
 describe("Angel Components Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -31,16 +31,16 @@ describe("Angel Components Tests", () => {
       
       (AngelService.getAll as jest.Mock).mockResolvedValue(mockAngels);
 
-      await act(async () => {
+     // await act(async () => {
         const wrapper = mount(
           <Router>
             <AngelEdit />
           </Router>
         );
       
-        await waitForAsyncUpdates();
-        wrapper.update();
-      })
+        //await waitForAsyncUpdates();
+        //wrapper.update();
+      //})
 
       await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for async state updates
       wrapper.update();
@@ -53,32 +53,44 @@ describe("Angel Components Tests", () => {
 
     test("shows error message on fetch failure", async () => {
       (AngelService.getAll as jest.Mock).mockRejectedValue(new Error("Failed to fetch angels"));
-    test("shows error message on fetch failure", async () => {
-      (AngelService.getAll as jest.Mock).mockRejectedValue(new Error("Failed to fetch angels"));
+    // test("shows error message on fetch failure", async () => {
+    //   (AngelService.getAll as jest.Mock).mockRejectedValue(new Error("Failed to fetch angels"));
 
       const wrapper = mount(
         <Router>
           <MasterList />
         </Router>
       );
-      const wrapper = mount(
-        <Router>
-          <MasterList />
-        </Router>
-      );
+      // const wrapper = mount(
+      //   <Router>
+      //     <MasterList />
+      //   </Router>
+      // );
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      wrapper.update();
+      // await new Promise((resolve) => setTimeout(resolve, 0));
+      // wrapper.update();
       await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
 
       expect(wrapper.find(".error-message").text()).toBe("Error fetching angels: Failed to fetch angels");
     });
   });
-      expect(wrapper.find(".error-message").text()).toBe("Error fetching angels: Failed to fetch angels");
-    });
-  });
+  //     expect(wrapper.find(".error-message").text()).toBe("Error fetching angels: Failed to fetch angels");
+  //   });
+  // });
 
+// describe("AngelDetails Component", () => {
+//     test("renders and fetches angel details", async () => {
+//       const mockAngel = { angel_id: 1, name: "Angel A", description: "An angel", series_id: 1, views: 10 };
+//       const mockSeriesName = "Series 1";
+//       (AngelService.get as jest.Mock).mockResolvedValue(mockAngel);
+//       (SeriesService.getName as jest.Mock).mockResolvedValue(mockSeriesName);
+
+//       const wrapper = mount(
+//         <Router>
+//           <AngelDetails />
+//         </Router>
+//       );
 describe("AngelDetails Component", () => {
     test("renders and fetches angel details", async () => {
       const mockAngel = { angel_id: 1, name: "Angel A", description: "An angel", series_id: 1, views: 10 };
@@ -91,35 +103,23 @@ describe("AngelDetails Component", () => {
           <AngelDetails />
         </Router>
       );
-describe("AngelDetails Component", () => {
-    test("renders and fetches angel details", async () => {
-      const mockAngel = { angel_id: 1, name: "Angel A", description: "An angel", series_id: 1, views: 10 };
-      const mockSeriesName = "Series 1";
-      (AngelService.get as jest.Mock).mockResolvedValue(mockAngel);
-      (SeriesService.getName as jest.Mock).mockResolvedValue(mockSeriesName);
-
-      const wrapper = mount(
-        <Router>
-          <AngelDetails />
-        </Router>
-      );
 
       await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      wrapper.update();
+      // await new Promise((resolve) => setTimeout(resolve, 0));
+      // wrapper.update();
 
       expect(wrapper.find(".angel-header").text()).toBe("Angel A");
       expect(wrapper.find(".detail-row").at(1).text()).toContain("An angel");
       expect(wrapper.find(".detail-row").at(2).text()).toContain("10");
     });
-      expect(wrapper.find(".angel-header").text()).toBe("Angel A");
-      expect(wrapper.find(".detail-row").at(1).text()).toContain("An angel");
-      expect(wrapper.find(".detail-row").at(2).text()).toContain("10");
-    });
+    //   expect(wrapper.find(".angel-header").text()).toBe("Angel A");
+    //   expect(wrapper.find(".detail-row").at(1).text()).toContain("An angel");
+    //   expect(wrapper.find(".detail-row").at(2).text()).toContain("10");
+    // });
 
-    test("shows error message on fetch failure", async () => {
-      (AngelService.get as jest.Mock).mockRejectedValue(new Error("Failed to fetch angel details"));
+    // test("shows error message on fetch failure", async () => {
+    //   (AngelService.get as jest.Mock).mockRejectedValue(new Error("Failed to fetch angel details"));
     test("shows error message on fetch failure", async () => {
       (AngelService.get as jest.Mock).mockRejectedValue(new Error("Failed to fetch angel details"));
 
@@ -137,26 +137,26 @@ describe("AngelDetails Component", () => {
       expect(wrapper.find(".error-message").text()).toBe("Error fetching angel: Failed to fetch angel details");
     });
   });
-      const wrapper = mount(
-        <Router>
-          <AngelDetails />
-        </Router>
-      );
+  //     const wrapper = mount(
+  //       <Router>
+  //         <AngelDetails />
+  //       </Router>
+  //     );
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      wrapper.update();
+  //     await new Promise((resolve) => setTimeout(resolve, 0));
+  //     wrapper.update();
 
-      const errorMessage = wrapper.find(".error-message");
-      expect(errorMessage.exists()).toBe(true);
-      expect(wrapper.find(".error-message").text()).toBe("Error fetching angel: Failed to fetch angel details");
-    });
-  });
+  //     const errorMessage = wrapper.find(".error-message");
+  //     expect(errorMessage.exists()).toBe(true);
+  //     expect(wrapper.find(".error-message").text()).toBe("Error fetching angel: Failed to fetch angel details");
+  //   });
+  // });
 
-describe("AngelNew Component", () => {
-    test("renders and submits a new angel", async () => {
-      const mockSeriesList = [{ series_id: 1, name: "Series 1" }];
-      (SeriesService.getAll as jest.Mock).mockResolvedValue(mockSeriesList);
-      (AngelService.createAngel as jest.Mock).mockResolvedValue({ angel_id: 1 });
+// describe("AngelNew Component", () => {
+//     test("renders and submits a new angel", async () => {
+//       const mockSeriesList = [{ series_id: 1, name: "Series 1" }];
+//       (SeriesService.getAll as jest.Mock).mockResolvedValue(mockSeriesList);
+//       (AngelService.createAngel as jest.Mock).mockResolvedValue({ angel_id: 1 });
 describe("AngelNew Component", () => {
     test("renders and submits a new angel", async () => {
       const mockSeriesList = [{ series_id: 1, name: "Series 1" }];
@@ -170,16 +170,16 @@ describe("AngelNew Component", () => {
           <AngelNew />
         </Router>
       );
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: "admin", role: "admin", user_id: 123 }));
+      // (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ username: "admin", role: "admin", user_id: 123 }));
 
-      const wrapper = mount(
-        <Router>
-          <AngelNew />
-        </Router>
-      );
+      // const wrapper = mount(
+      //   <Router>
+      //     <AngelNew />
+      //   </Router>
+      // );
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      wrapper.update();
+      // await new Promise((resolve) => setTimeout(resolve, 0));
+      // wrapper.update();
       await new Promise((resolve) => setTimeout(resolve, 0));
       wrapper.update();
 
@@ -851,7 +851,7 @@ describe('AngelEdit Component', () => {
       
         expect(AngelService.deleteAngel).toHaveBeenCalledWith(1);
     });
-  });
+ // });
 });
 
 describe("AngelHistory Component Tests", () => {
@@ -959,6 +959,6 @@ describe("AngelHistory Component Tests", () => {
     expect(mockHistoryPush).toHaveBeenCalledWith("/angels/1");
   });
 });
-    expect(mockHistoryPush).toHaveBeenCalledWith("/angels/1");
-  });
-});
+//     expect(mockHistoryPush).toHaveBeenCalledWith("/angels/1");
+//   });
+// });

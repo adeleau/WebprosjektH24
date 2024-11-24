@@ -1,6 +1,14 @@
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import pool from "../mysql-pool";
 
+export type Users = {
+    user_id: number;
+    username: string;
+    email: string;
+    password_hash: string;
+    //created_at: string;
+  };
+
 class RegisterService {
   getAllUsers(): Promise<RowDataPacket[]> {
     return new Promise((resolve, reject) => {

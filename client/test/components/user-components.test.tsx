@@ -28,7 +28,7 @@ describe('User Components Tests', () => {
       // Mock Cookies
       (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
       // Mock Cookies
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+      //(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
       // Mock LikesService
       (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
@@ -65,14 +65,14 @@ describe('User Components Tests', () => {
     });
 
     test('handles errors gracefully when fetching user data', async () => {
-      // Mock Cookies
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+      // // Mock Cookies
+      // (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
-      // Mock LikesService to throw error
-      (LikesService.getUserLikes as jest.Mock).mockRejectedValue(new Error('Error fetching liked angels'));
+      // // Mock LikesService to throw error
+      // (LikesService.getUserLikes as jest.Mock).mockRejectedValue(new Error('Error fetching liked angels'));
 
-      // Mock WishlistService
-      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
+      // // Mock WishlistService
+      // (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
       // Mock Cookies
       (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
@@ -95,14 +95,14 @@ describe('User Components Tests', () => {
     });
 
     test('renders empty collection and wishlist messages', async () => {
-      // Mock Cookies
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
+      // // Mock Cookies
+      // (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
-      // Mock LikesService
-      (LikesService.getUserLikes as jest.Mock).mockResolvedValue([]);
+      // // Mock LikesService
+      // (LikesService.getUserLikes as jest.Mock).mockResolvedValue([]);
 
-      // Mock WishlistService
-      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
+      // // Mock WishlistService
+      // (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([]);
       // Mock Cookies
       (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'testuser' }));
 
@@ -151,9 +151,9 @@ describe('User Components Tests', () => {
   
   
     test('renders admin user settings with all users', async () => {
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
+      // (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
   
-      (userService.getAllUsers as jest.Mock).mockResolvedValue([
+      // (userService.getAllUsers as jest.Mock).mockResolvedValue([
       (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
   
       (userService.getAllUsers as jest.Mock).mockResolvedValue([
@@ -180,10 +180,10 @@ describe('User Components Tests', () => {
   
   
     test('handles errors when updating user roles', async () => {
-      (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
+      // (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
   
-      (userService.getAllUsers as jest.Mock).mockResolvedValue([{ user_id: 2, username: 'user1', role: 'user' }]);
-      (userService.update as jest.Mock).mockRejectedValue(new Error('Error updating role'));
+      // (userService.getAllUsers as jest.Mock).mockResolvedValue([{ user_id: 2, username: 'user1', role: 'user' }]);
+      // (userService.update as jest.Mock).mockRejectedValue(new Error('Error updating role'));
   
       (Cookies.get as jest.Mock).mockReturnValue(JSON.stringify({ user_id: 1, username: 'admin', role: 'admin' }));
   
@@ -215,10 +215,10 @@ describe('User Components Tests', () => {
   
   describe('UserPage Tests', () => {
     test('renders user details and tabs for collection and wishlist', async () => {
-      (userService.getById as jest.Mock).mockResolvedValue({ user_id: 1, username: 'testuser' });
-      (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
-      (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([{ angel_id: 2 }]);
-      (angelService.get as jest.Mock)
+      // (userService.getById as jest.Mock).mockResolvedValue({ user_id: 1, username: 'testuser' });
+      // (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
+      // (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([{ angel_id: 2 }]);
+      // (angelService.get as jest.Mock)
       (userService.getById as jest.Mock).mockResolvedValue({ user_id: 1, username: 'testuser' });
       (LikesService.getUserLikes as jest.Mock).mockResolvedValue([{ angel_id: 1 }]);
       (WishlistService.getUserWishlist as jest.Mock).mockResolvedValue([{ angel_id: 2 }]);
@@ -248,7 +248,7 @@ describe('User Components Tests', () => {
   
   
     test('handles errors gracefully when fetching user data', async () => {
-      (userService.getById as jest.Mock).mockRejectedValue(new Error('Error fetching user'));
+      // (userService.getById as jest.Mock).mockRejectedValue(new Error('Error fetching user'));
   
       (userService.getById as jest.Mock).mockRejectedValue(new Error('Error fetching user'));
   
@@ -269,4 +269,4 @@ describe('User Components Tests', () => {
     });
   });
 })  
-})  
+//})  

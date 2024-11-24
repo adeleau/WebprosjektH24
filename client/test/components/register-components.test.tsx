@@ -246,13 +246,13 @@ describe('Register Component Tests', () => {
     expect(wrapper.find('.error-message').at(0).text()).toBe('Username must be between 3 and 20 characters.');
     expect(wrapper.find('.error-message').at(1).text()).toBe('Invalid email format.');
     expect(wrapper.find('.error-message').at(2).text()).toBe(
-      'Password must have at least 6 characters, including uppercase, lowercase, number, and special character.'
+      'Password must include uppercase, lowercase, number, and special character.'
     );
     expect(wrapper.find('.error-message').at(3).text()).toBe('Passwords do not match.');
   });
 
   test('calls the RegisterService and shows success message on valid input', async () => {
-    (RegisterService.registerUser as jest.Mock).mockResolvedValueOnce(null);
+    (RegisterService.register as jest.Mock).mockResolvedValueOnce(null);
 
     const wrapper = mount(
       <Router>
@@ -273,12 +273,12 @@ describe('Register Component Tests', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
 
-    expect(RegisterService.registerUser).toHaveBeenCalledWith('validuser', 'user@example.com', 'Valid123!');
+    expect(RegisterService.register).toHaveBeenCalledWith('validuser', 'user@example.com', 'Valid123!');
     expect(wrapper.find('.success-message').text()).toBe('Registration successful!');
   });
 
   test('shows error message on registration failure', async () => {
-    (RegisterService.registerUser as jest.Mock).mockRejectedValueOnce(new Error('Registration failed'));
+    (RegisterService.register as jest.Mock).mockRejectedValueOnce(new Error('Registration failed'));
 
     const wrapper = mount(
       <Router>

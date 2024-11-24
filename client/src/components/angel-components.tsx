@@ -554,6 +554,7 @@ export const AngelNew: React.FC<{}> = () => {
     else if (name === "description") setDescription(value);
     else if (name === "image") setImage(value);
     else if (name === "release_year") setReleaseYear(Number(value));
+    
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

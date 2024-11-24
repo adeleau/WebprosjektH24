@@ -58,10 +58,10 @@ class AngelService {
       updateAngel(updatedAngel: Partial<Angel>) {
         return axios
           .put<Angel>(`/angels/${updatedAngel.angel_id}`, updatedAngel)
-          .then((res) => res.data)
-          .catch((err) => {
-            console.error(`Error updating angel with id ${updatedAngel.angel_id}:`, err);
-            throw err;
+          .then((response) => response.data)
+          .catch((error) => {
+            console.error(`Error updating angel with id ${updatedAngel.angel_id}:`, error);
+            throw error;
           });
       }
 

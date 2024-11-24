@@ -52,7 +52,6 @@ angelrouter.post("/angels", (req, res) => {
     });
 });
 
-
 // **Update Existing Angel**
 angelrouter.put("/angels/:angel_id", (req, res) => {
   const angel_id = Number(req.params.angel_id);
@@ -135,8 +134,6 @@ angelrouter.delete("/angels/:angel_id", async (req, res) => {
           });
       });
 });*/
-
-
 
 
 // **Increment Views**

@@ -203,10 +203,10 @@ CREATE TABLE `Angel_comments` (
 --
 
 INSERT INTO `Angel_comments` (`angelcomment_id`, `angel_id`, `user_id`, `content`, `created_at`, `updated_at`) VALUES
-(1, 1, 4, 'Jeg elsker Sonny Angels!', '2023-11-08 11:34:56', '2024-11-12 13:19:23'),
-(2, 1, 2, 'Lesser panda er supersøt!.', '2023-11-08 11:34:56', '2024-11-12 13:19:23'),
-(5, 173, 1, 'Jeg ønsker meg denne!', '2024-11-17 23:31:38', '2024-11-19 17:08:29'),
-(7, 73, 1, 'Min først Sonny!', '2024-11-18 00:04:48', '2024-11-18 00:04:47'),
+(1, 56, 4, 'Jeg elsker Sonny Angels!', '2023-11-08 11:34:56', '2024-11-12 13:19:23'),
+(2, 21, 2, 'Cow er supersøt!.', '2023-11-08 11:34:56', '2024-11-12 13:19:23'),
+(3, 82, 1, 'Jeg ønsker meg denne!', '2024-11-17 23:31:38', '2024-11-19 17:08:29'),
+(4, 73, 1, 'Min først Sonny!', '2024-11-18 00:04:48', '2024-11-18 00:04:47');
 
 -- --------------------------------------------------------
 
@@ -230,10 +230,9 @@ INSERT INTO `Collections` (`user_id`, `angel_id`) VALUES
 (2, 86),
 (2, 93),
 (3, 96),
-(3, 96),
 (3, 113),
 (4, 116),
-(4, 121),
+(4, 121);
 
 -- --------------------------------------------------------
 
@@ -256,9 +255,9 @@ CREATE TABLE `Posts` (
 --
 
 INSERT INTO `Posts` (`post_id`, `user_id`, `title`, `content`, `image`, `created_at`) VALUES
-(37, 3, 'Hei alle!', 'Hei, jeg leter etter nye venner som elsker Sonny Angels', 'https://ih1.redbubble.net/image.5118589567.2997/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg', '2024-11-17 19:40:47'),
-(44, 2, 'Jeg ønsker meg keychain', 'Vet ikke hvilken da, kanskje den blå? Den er så cute! Tips?:))', 'https://www.sonnyangel.com/renewal/wp-content/uploads/2023/12/soda-pig.png', '2024-11-18 10:29:21'),
-(49, 1, 'Så søtt design', 'Den babytingen med jordbær på toppen av posts er supersøt!', '', '2024-11-20 00:09:26'),
+(1, 3, 'Hei alle!', 'Hei, jeg leter etter nye venner som elsker Sonny Angels', 'https://ih1.redbubble.net/image.5118589567.2997/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg', '2024-11-17 19:40:47'),
+(2, 2, 'Jeg ønsker meg keychain', 'Vet ikke hvilken da, kanskje den blå? Den er så cute! Tips?:))', 'https://www.sonnyangel.com/renewal/wp-content/uploads/2023/12/soda-pig.png', '2024-11-18 10:29:21'),
+(3, 1, 'Så søtt design', 'Den babytingen med jordbær på toppen av posts er supersøt!', '', '2024-11-20 00:09:26');
 
 -- --------------------------------------------------------
 
@@ -317,6 +316,7 @@ INSERT INTO `Users` (`user_id`, `username`, `email`, `password_hash`, `created_a
 (2, 'Adele', 'Adele@stud.ntnu.no', '123', '2024-11-08 12:04:00', 'admin', 'Hei, jeg elsker sonny angels', 'https://m.media-amazon.com/images/I/417LIDmHllL.SS700.jpg'),
 (3, 'Julia', 'Julia@stud.ntnu.no', '123', '2024-11-08 12:04:28', 'admin', 'Jeg elsker Sonny baby', NULL),
 (4, 'Emina', 'Emina@sonny.com', 'Angel123?', '2024-11-14 17:59:13', 'user', 'Hei alle', NULL),
+(5, 'Admin', 'admin@sonny.com', 'Passord', '2023-11-14 18:00:01', 'admin', 'Admin bruker', NULL);
 
 -- --------------------------------------------------------
 
@@ -338,14 +338,14 @@ INSERT INTO `Wishlists` (`user_id`, `angel_id`) VALUES
 (2, 25),
 (3, 91),
 (1, 93),
-(2, 105),
+(1, 105),
 (3, 109),
-(2, 13),
-(1, 87),
-(1, 45),
-(3, 23),
-(1, 67),
-(1, 3);
+(2, 18),
+(4, 87),
+(4, 45),
+(4, 23),
+(5, 67),
+(5, 19);
 
 --
 -- Indexes for dumped tables

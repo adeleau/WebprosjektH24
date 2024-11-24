@@ -86,7 +86,6 @@ describe('SeriesList Component Tests', () => {
     expect(fullErrorText).toContain('Error getting angels: Error fetching angels');
     expect(fullErrorText).toContain('Error getting series name: Error fetching series name');
     expect(fullErrorText).toContain('Error getting angel count: Error fetching angel count');
-<<<<<<< HEAD
   });
 
   test('renders no angels when the series is empty', async () => {
@@ -189,8 +188,6 @@ describe('SeriesList Component Tests', () => {
 
     expect(wrapper.find('button.btn-create-angel').exists()).toBe(false);
     expect(wrapper.find('button.btn-delete-series').exists()).toBe(false);
-=======
->>>>>>> 2a425eaa7e645dc631393fc3165641cb01a13ab4
   });
 
   test('renders no angels when the series is empty', async () => {

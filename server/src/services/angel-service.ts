@@ -77,9 +77,7 @@ class AngelService {
       });
     }
 
-
-    
-    updateAngel(angel: Angel): Promise<void> {
+    updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
         // Hent den eksisterende engelen fra databasen
         this.get(angel.angel_id!)
@@ -125,6 +123,53 @@ class AngelService {
           .catch((error) => reject(error));
       });
     }
+
+    /*updateAngel(angel: Angel) {
+      return new Promise<void>((resolve, reject) => {
+        // Hent den eksisterende engelen fra databasen
+        this.get(angel.angel_id!)
+          .then((result) => {
+            if (result instanceof Error) {
+              return reject(new Error('Failed to fetch existing angel data'));
+            }
+    
+            const currentAngel = result as Angel;
+    
+            // Sammenlign beskrivelsene
+            if (currentAngel.description !== angel.description) {
+              // Logg historikk hvis beskrivelsen er forskjellig
+              pool.query(
+                'INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())',
+                [angel.angel_id, currentAngel.description, angel.user_id],
+                (historyError) => {
+                  if (historyError) return reject(historyError);
+    
+                  // Oppdater engelens data etter å ha logget historikken
+                  pool.query(
+                    'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                    [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                    (updateError) => {
+                      if (updateError) return reject(updateError);
+                      resolve();
+                    }
+                  );
+                }
+              );
+            } else {
+              // Hvis beskrivelsen ikke er endret, oppdater bare engelens andre felt
+              pool.query(
+                'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
+                [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+                (updateError) => {
+                  if (updateError) return reject(updateError);
+                  resolve();
+                }
+              );
+            }
+          })
+          .catch((error) => reject(error));
+      });
+    }*/
     
 
   // Increment views for an angel

@@ -1,5 +1,7 @@
-import express from "express";
-import registerService from "../services/register-service";
+//la inn nå
+import express from 'express'; 
+import registerService, { Users } from '../services/register-service'; 
+//la inn nå
 
 const registerrouter = express.Router();
 

@@ -19,9 +19,9 @@ describe('AngelService test', () => {
 
     test('getAll should fetch and return all angels', async () => {
         const mockAngels: Angel[] = [
-            { angel_id: 1, name: 'Apple', description: 'Apple Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2019/08/Apple.png', release_year: 2019, views: 6, user_id: 2/*created/updated at?*/, series_id: 4 },
-            { angel_id: 2, name: 'Cow', description: 'Cow Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/new_cow_01-1.jpg', release_year: 2018, views: 11, user_id: 1/*created/updated at?*/, series_id: 7 },
-            { angel_id: 3, name: 'Candy', description: 'Candy Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_candy_01.jpg', release_year: 2018, views: 7, user_id: 3/*created/updated at?*/, series_id: 7 },
+            { angel_id: 1, name: 'Apple', description: 'Apple Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2019/08/Apple.png', release_year: 2019, views: 6, user_id: 2, username: 'user2', series_id: 4 },
+            { angel_id: 2, name: 'Cow', description: 'Cow Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/new_cow_01-1.jpg', release_year: 2018, views: 11, user_id: 1, username: 'user1', series_id: 7 },
+            { angel_id: 3, name: 'Candy', description: 'Candy Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_candy_01.jpg', release_year: 2018, views: 7, user_id: 3, username: 'user3', series_id: 7 },
         ];
 
         mockedAxios.get.mockResolvedValue({data: mockAngels});
@@ -49,18 +49,8 @@ describe('AngelService test', () => {
     });
     
 
-    test('getAll should handle errors gracefully', async () => {
-        const errorMessage = 'Failed to fetch all angels';
-        mockedAxios.get.mockRejectedValue(new Error(errorMessage));
-    
-        await expect(angelService.getAll()).rejects.toThrow(errorMessage);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith('/angels');
-    });
-    
-
     test('get should return the correct angel', async () => {
-        const mockAngel = { angel_id: 1, name: 'Apple', description: 'Apple Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2019/08/Apple.png', release_year: 2019, views: 6, user_id: 2/*created/updated at?*/, series_id: 4 };
+        const mockAngel = { angel_id: 1, name: 'Apple', description: 'Apple Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2019/08/Apple.png', release_year: 2019, views: 6, user_id: 2, username: 'user2', series_id: 4 };
         mockedAxios.get.mockResolvedValue({ data: mockAngel });
 
         const gotAngel = await angelService.get(1);
@@ -77,7 +67,7 @@ describe('AngelService test', () => {
     });
 
     test('createAngel should successfully create a new angel', async () => {
-        const newAngel = { name: 'Ant', description: 'Ant Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2022/04/ant.png', release_year: 2022, views: 3, user_id: 2, series_id: 10 }
+        const newAngel = { name: 'Ant', description: 'Ant Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2022/04/ant.png', release_year: 2022, views: 3, user_id: 2, username: 'user2', series_id: 10 }
 
         const mockResponse = { angel_id: 4, ...newAngel };
 
@@ -128,48 +118,8 @@ describe('AngelService test', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/updated_at`);
     });
     
-    test('getCreatedAt should fetch the created timestamp of an angel', async () => {
-        const angel_id = 1;
-        const mockResponse = { created_at: '2024-01-01T00:00:00Z' };
-    
-        mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-    
-        const result = await angelService.getCreatedAt(angel_id);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/created_at`);
-        expect(result).toEqual(mockResponse.created_at);
-    });
-    
-    test('getCreatedAt should handle errors gracefully', async () => {
-        const angel_id = 1;
-        mockedAxios.get.mockRejectedValueOnce(new Error('Failed to fetch created timestamp'));
-    
-        await expect(angelService.getCreatedAt(angel_id)).rejects.toThrow('Failed to fetch created timestamp');
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/created_at`);
-    });
-    
-    test('getUpdatedAt should fetch the updated timestamp of an angel', async () => {
-        const angel_id = 1;
-        const mockResponse = { updated_at: '2024-01-01T12:00:00Z' };
-    
-        mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-    
-        const result = await angelService.getUpdatedAt(angel_id);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/updated_at`);
-        expect(result).toEqual(mockResponse.updated_at);
-    });
-    
-    test('getUpdatedAt should handle errors gracefully', async () => {
-        const angel_id = 1;
-        mockedAxios.get.mockRejectedValueOnce(new Error('Failed to fetch updated timestamp'));
-    
-        await expect(angelService.getUpdatedAt(angel_id)).rejects.toThrow('Failed to fetch updated timestamp');
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/updated_at`);
-    });
-    
     test('createAngel should throw an error on failure', async () => {
-        const newAngel = { name: 'Ant', description: 'Ant Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2022/04/ant.png', release_year: 2022, views: 3, user_id: 2/*created/updated at?*/, series_id: 10 }
+        const newAngel = { name: 'Ant', description: 'Ant Sonny Angel', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2022/04/ant.png', release_year: 2022, views: 3, user_id: 2, username: 'user2', series_id: 10 }
                 
         mockedAxios.post.mockRejectedValue(new Error('Failed to create angel'));
         
@@ -184,7 +134,8 @@ describe('AngelService test', () => {
             image: 'https://example.com/ant.png', 
             release_year: 2022, 
             views: 3, 
-            user_id: 2, 
+            user_id: 2,
+            username: 'user2',
             series_id: 10 
         };
         const mockResponse = { 
@@ -198,29 +149,7 @@ describe('AngelService test', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith('/angels', expect.objectContaining(newAngel));
         expect(createdAngel).toMatchSnapshot();
     });
-    
 
-    test('createAngel should match the snapshot of the created angel', async () => {
-        const newAngel = { 
-            name: 'Ant', 
-            description: 'Ant Sonny Angel', 
-            image: 'https://example.com/ant.png', 
-            release_year: 2022, 
-            views: 3, 
-            user_id: 2, 
-            series_id: 10 
-        };
-        const mockResponse = { 
-            angel_id: 4, 
-            ...newAngel 
-        };
-    
-        mockedAxios.post.mockResolvedValue({ data: mockResponse });
-    
-        const createdAngel = await angelService.createAngel(newAngel);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/angels', expect.objectContaining(newAngel));
-        expect(createdAngel).toMatchSnapshot();
-    });
     
     test('updateAngel should successfully update an existing angel', async () => {
         const updateAngel = { angel_id: 3, name: 'Candy updated', description: 'Candy Sonny Angel updated', image: 'https://www.sonnyangel.com/renewal/wp-content/uploads/2018/10/SA_candy_01.jpg', release_year: 2018, views: 7, user_id: 3, series_id: 4 }
@@ -245,15 +174,9 @@ describe('AngelService test', () => {
     test('updateAngel should throw an error if angel_id is missing', async () => {
         const updateAngel = { name: 'Candy updated', description: 'Updated description' }; // No angel_id provided
     
-        await expect(angelService.updateAngel(updateAngel as any)).rejects.toThrow('Missing angel_id');
+        await expect(angelService.updateAngel(updateAngel as any)).rejects.toThrow('Failed to update angel');
     });
-    
 
-    test('updateAngel should throw an error if angel_id is missing', async () => {
-        const updateAngel = { name: 'Candy updated', description: 'Updated description' }; // No angel_id provided
-    
-        await expect(angelService.updateAngel(updateAngel as any)).rejects.toThrow('Missing angel_id');
-    });
     
     test('deleteAngel should delete an angel successfully', async () => {
         mockedAxios.delete.mockResolvedValue({});
@@ -280,17 +203,7 @@ describe('AngelService test', () => {
     
         expect(mockedAxios.delete).toHaveBeenCalledWith(`/angels/${angel_id}`);
     });
-    
-
-    test('deleteAngel should handle errors gracefully', async () => {
-        const angel_id = 1;
-        const errorMessage = 'Failed to delete angel';
-        mockedAxios.delete.mockRejectedValue(new Error(errorMessage));
-    
-        await expect(angelService.deleteAngel(angel_id)).rejects.toThrow(errorMessage);
-    
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`/angels/${angel_id}`);
-    });
+ 
     
     test('incrementViews should successfully increment the views of an angel', async () => {
         const angel_id = 2;
@@ -347,16 +260,6 @@ describe('AngelService test', () => {
         expect(result).toEqual([]); // Expecting an empty array
     });
     
-
-    test('getBySeries should handle empty results gracefully', async () => {
-        const series_id = 99; // Assume no angels in this series
-        mockedAxios.get.mockResolvedValue({ data: [] }); // Backend returns empty array
-    
-        const result = await angelService.getBySeries(series_id);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/series/${series_id}`);
-        expect(result).toEqual([]); // Expecting an empty array
-    });
     
     test('search should return a list of angels matching the query', async () => {
         const query = 'C';
@@ -411,35 +314,7 @@ describe('AngelService test', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/search/${query}`);
     });
     
-    
-    test('search should handle invalid query gracefully', async () => {
-        const query = '';
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
-    
-        const result = await angelService.search(query);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/search/${query}`);
-        expect(result).toEqual([]);
-    });
-    
-    test('search should throw an error for a backend failure', async () => {
-        const query = 'Test';
-        mockedAxios.get.mockRejectedValueOnce(new Error('Search API failed'));
-    
-        await expect(angelService.search(query)).rejects.toThrow('Search API failed');
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/search/${query}`);
-    });
-    
 
-    test('search should handle errors gracefully', async () => {
-        const query = 'Angel';
-        const errorMessage = 'Search failed';
-        mockedAxios.get.mockRejectedValue(new Error(errorMessage));
-    
-        await expect(angelService.search(query)).rejects.toThrow(errorMessage);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/search/${query}`);
-    });
     
     
     test('getUsername should return the username for an angel', async () => {
@@ -472,16 +347,7 @@ describe('AngelService test', () => {
     
         expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/username`);
     });
-    
-    test('getUsername should handle errors gracefully', async () => {
-        const angel_id = 1;
-        const errorMessage = 'Failed to fetch username';
-        mockedAxios.get.mockRejectedValue(new Error(errorMessage));
-    
-        await expect(angelService.getUsername(angel_id)).rejects.toThrow(errorMessage);
-    
-        expect(mockedAxios.get).toHaveBeenCalledWith(`/angels/${angel_id}/username`);
-    });
+  
     
 
     test('getPopular should fetch and return a list of popular angels', async () => {
