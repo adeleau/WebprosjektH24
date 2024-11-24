@@ -9,7 +9,7 @@ html, body {
   #root {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Ensures #root takes up all available space */
+    flex-grow: 1; 
   }
 
 .home-content h2 {
@@ -78,7 +78,6 @@ html, body {
     position: relative;
 }
 
-/* Search bar styling */
 .navbar_search {
     max-width: 140px;
     flex-shrink: 0;
@@ -152,7 +151,6 @@ html, body {
 }
 
 
-/* Center logo styling */
 .navbar_logo-container {
     position: absolute;
     left: 50%;
@@ -168,7 +166,6 @@ html, body {
     max-height: 80px;
 }
 
-/* Right user logo styling */
 .navbar_user-logo {
     height: 40px;
     width: auto;
@@ -178,7 +175,7 @@ html, body {
 .navbar_profile .user {
     display: flex;
     align-items: center;
-    flex-direction: row-reverse; /* Places the image to the right of the name */
+    flex-direction: row-reverse; 
 }
 
 .user-link {
@@ -186,48 +183,12 @@ html, body {
 }
 
 .navbar_profile img {
-    width: 40px; /* Adjust the size as needed */
+    width: 40px; 
     height: 40px;
-    border-radius: 50%; /* Makes the image circular */
-    object-fit: cover; /* Ensures the image scales properly within the circle */
-    margin-left: 10px; /* Space between the name and the image */
+    border-radius: 50%;
+    object-fit: cover; 
+    margin-left: 10px; 
 }
-
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 600px) {
-    .navbar {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        height: auto;
-        padding: 10px;
-        position: relative;
-    }
-
-    .navbar_search {
-        max-width: 10%;
-        margin-left: 20px;
-        order: 1; /* Places search bar at the top */
-        position: absolute;
-    }
-
-    .navbar_logo-container {
-        max-width: 30%;
-        order: 2; 
-        justify-content: center;
-        flex-grow:1;
-
-
-    }
-
-    .navbar_user-logo {
-        height: 30px;
-        order: 3; /* Places user logo at the bottom */
-        margin-top: 10px;
-    }
-}
-
 
 .nav-menu {
     background-color: white; 
@@ -253,7 +214,7 @@ html, body {
 .sidebar-logo {
     width: 80%; 
     height: auto; 
-    margin: 20px auto; /* Center logo horizontally */
+    margin: 20px auto; 
     display: block;
 }
 
@@ -355,7 +316,7 @@ ul.dropdown-menu.active .nav-text{
     color: white;
     text-align: center;
     padding: 5px;
-    margin-top: auto; /* Pushes footer to the bottom */
+    margin-top: auto; 
   }
 
   .about-container {

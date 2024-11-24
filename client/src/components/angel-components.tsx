@@ -1,20 +1,21 @@
 import { Link, useHistory, useParams } from "react-router-dom";
-import React from "react";
-import { useState, useEffect, useRef} from "react";
-import { createHashHistory } from 'history';
+import React, { useState, useEffect, useRef } from "react";
+import { createHashHistory } from "history";
 import { Navbar, Leftbar, Footer } from "./other-components";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import AngelService from "../services/angel-service";
 import type { Angel, Angel_History } from "../services/angel-service";
 import AngelCommentService from "../services/angelcomment-service";
 import type { AngelComment as BaseAngelComment } from "../services/angelcomment-service";
-interface AngelComment extends BaseAngelComment { isEditing: boolean; }
 import SeriesService from "../services/series-service";
 import type { Series } from "../services/series-service";
 import type { User } from "../services/user-service";
 import LikesService from "../services/likes-service";
 import WishlistService from "../services/wishlist-service";
 
+interface AngelComment extends BaseAngelComment {
+  isEditing: boolean;
+}
 
 const history = createHashHistory();
 //Same structure as the mandatory assigments
@@ -30,24 +31,30 @@ export const MasterList: React.FC = () => {
     // We use cookies due to its simple nature of saving user data locally. 
     // This allows us to remeber user when logged in and when browsing the site.
     const userCookie = Cookies.get("user");
-  
+
     try {
       if (userCookie) {
         if (userCookie.startsWith("{") && userCookie.endsWith("}")) {
           const parsedUser = JSON.parse(userCookie);
           setUser(parsedUser);
         } else if (userCookie === "guest") {
-          setUser({ username: "Guest", user_id: 0, role: "guest", email: "", password_hash: "" });
+          setUser({
+            username: "Guest",
+            user_id: 0,
+            role: "guest",
+            email: "",
+            password_hash: "",
+          });
         } else {
           console.warn("Unexpected cookie value:", userCookie);
           setUser(null);
         }
       } else {
-        setUser(null); 
+        setUser(null);
       }
     } catch (error) {
       console.error("Error parsing user cookie:", error);
-      setUser(null); // set as not logged in if parsing fails
+      setUser(null); // Set as not logged in if parsing fails
     }
     //For cookie implementing we have used two sources and chatGPT for syntax problems,
     //our sources where:
@@ -102,7 +109,7 @@ export const MasterList: React.FC = () => {
             ))}
         </div>
 
-         {user && user.role === "admin" ? (
+        {user && user.role === "admin" ? (
           <button
             className="btn-create-angel"
             onClick={() => history.push(`/series/1/new`)}
@@ -120,7 +127,7 @@ export const MasterList: React.FC = () => {
                 id={letter}
                 className="angel-group"
                 ref={(el) => (sectionRefs.current[letter] = el)}
-                >
+              >
                 <h2>{letter}</h2>
                 <ul>
                   {groupedAngels[letter].map((angel) => (
@@ -196,7 +203,9 @@ export const AngelDetails: React.FC<{}> = () => {
       WishlistService.getUserWishlist(user.user_id)
         .then((wishlist) => {
           const wishlistedAngels = wishlist.map((item) => item.angel_id);
-          setIsWishlisted(angel?.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id));
+          setIsWishlisted(
+            angel?.angel_id !== undefined && wishlistedAngels.includes(angel.angel_id)
+          );
         })
         .catch((err) => setError(`Error checking wishlist status: ${err.message}`));
     }
@@ -225,13 +234,13 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  // Toggle button
+  // Toggle wishlist
   const handleWishlistToggle = async () => {
     if (!user) {
       setError("You must be logged in to add this angel to your wishlist");
       return;
     }
-// Validation for wishlist
+// Validation for wishlist button
     try {
       if (isWishlisted) {
         if (angel?.angel_id !== undefined) {
@@ -249,11 +258,11 @@ export const AngelDetails: React.FC<{}> = () => {
     }
   };
 
-  // Comments
+  // Get comments
   const fetchComments = async () => {
     try {
       const fetchedComments = await AngelCommentService.getAngelComments(Number(angel_id));
-      setComments(fetchedComments.map((c) => ({ ...c, isEditing: false }))); // Add isEditing property
+      setComments(fetchedComments.map((c) => ({ ...c, isEditing: false })));
     } catch (err) {
       setError(`Error fetching comments: ${err}`);
     }
@@ -275,7 +284,7 @@ export const AngelDetails: React.FC<{}> = () => {
     try {
       await AngelCommentService.addAngelComment(Number(angel_id), user.user_id, comment);
       setComment("");
-      fetchComments(); 
+      fetchComments();
     } catch (err) {
       setError(`Failed to post comment: ${err}`);
     }
@@ -404,7 +413,7 @@ export const AngelDetails: React.FC<{}> = () => {
                                 comment.angelcomment_id,
                                 comment.content,
                                 user.user_id,
-                                user.role || ''
+                                user.role || ""
                               )
                                 .then(() => {
                                   const updatedComments = comments.map((c) =>
@@ -414,7 +423,9 @@ export const AngelDetails: React.FC<{}> = () => {
                                   );
                                   setComments(updatedComments);
                                 })
-                                .catch((err) => setError(`Failed to edit comment: ${err.message}`));
+                                .catch((err) =>
+                                  setError(`Failed to edit comment: ${err.message}`)
+                                );
                             }}
                             className="save-comment-button"
                           >
@@ -440,10 +451,12 @@ export const AngelDetails: React.FC<{}> = () => {
                             AngelCommentService.deleteAngelComment(
                               comment.angelcomment_id,
                               user.user_id,
-                              user.role || ''
+                              user.role || ""
                             )
                               .then(() => fetchComments())
-                              .catch((err) => setError(`Failed to delete comment: ${err.message}`))
+                              .catch((err) =>
+                                setError(`Failed to delete comment: ${err.message}`)
+                              )
                           }
                           className="delete-comment-button"
                         >
@@ -479,7 +492,6 @@ export const AngelDetails: React.FC<{}> = () => {
               <p className="login-prompt">Log in to post a comment.</p>
             )}
           </div>
-
         </div>
       ) : null}
 
@@ -494,12 +506,12 @@ export const AngelNew: React.FC<{}> = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [release_year, setReleaseYear] = useState(0);
-  const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>( Number(routeSeriesId) );
+  const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>(Number(routeSeriesId));
   const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [newSeriesName, setNewSeriesName] = useState("");
   const [showAddSeries, setShowAddSeries] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<{ username: string; user_id: number; role: string } | null>( null );
+  const [user, setUser] = useState<{ username: string; user_id: number; role: string } | null>(null);
   const history = useHistory();
 
   useEffect(() => {
@@ -547,7 +559,7 @@ export const AngelNew: React.FC<{}> = () => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     if (value === "add-new-series") {
-      setShowAddSeries(true); // Input for adding a new series
+      setShowAddSeries(true); // input field for adding a new series
       setSelectedSeriesId(null); 
     } else {
       setShowAddSeries(false);
@@ -610,7 +622,7 @@ export const AngelNew: React.FC<{}> = () => {
 
         <h2>Add New Angel as {user?.username || "Unknown"}</h2>
 
-        {/*  Creation Form */}
+        {/* Creation Form */}
         <div className="form-group">
           <label htmlFor="name">Name:</label>
           <input
@@ -729,7 +741,10 @@ export const AngelHistory: React.FC = () => {
       <Leftbar />
 
       <div className="angel-history">
-        <button className="back-button" onClick={() => history.push(`/angels/${angel_id}`)}>
+        <button
+          className="back-button"
+          onClick={() => history.push(`/angels/${angel_id}`)}
+        >
           Back to Angel Details
         </button>
 
@@ -749,7 +764,8 @@ export const AngelHistory: React.FC = () => {
                     <strong>Updated by User ID:</strong> {entry.user_id}
                   </p>
                   <p>
-                    <strong>Updated at:</strong> {new Date(entry.updated_at || "").toLocaleString()}
+                    <strong>Updated at:</strong>{" "}
+                    {new Date(entry.updated_at || "").toLocaleString()}
                   </p>
                 </div>
               ))
@@ -764,11 +780,12 @@ export const AngelHistory: React.FC = () => {
     </>
   );
 };
+
 export const AngelEdit: React.FC<{}> = () => {
   const { angel_id } = useParams<{ angel_id: string }>();
   const history = useHistory();
 
-  const [angel, setAngel] = useState<Angel>({
+  const [angel, setAngel] = useState<Partial<Angel>>({
     angel_id: 0,
     name: "",
     description: "",
@@ -841,6 +858,7 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleSave = () => {
+    console.log("Angel being updated:", angel);
     AngelService.updateAngel(angel)
       .then(() => {
         history.push(`/angels/${angel.angel_id}`);

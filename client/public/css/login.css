@@ -130,33 +130,3 @@
     color: white;
   }
   
-  /* Media query for smaller screens */
-  @media (max-width: 600px) {
-    .login .card {
-        flex-direction: column;
-        max-width: 90%;
-        height: auto;
-    }
-  
-    .login .card .left,
-    .login .card .right {
-        padding: 15px;
-        gap: 10px;
-    }
-  
-    .login .card .left h1,
-    .login .card .right h1 {
-        font-size: 1.8rem;
-        line-height: 2.2rem;
-    }
-  
-    .login .card .left span {
-        font-size: 0.7rem;
-    }
-  
-    .login .card form input,
-    .login .card form button {
-        padding: 8px 15px;
-    }
-  }
-  

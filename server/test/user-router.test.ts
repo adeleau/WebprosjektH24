@@ -13,10 +13,14 @@ const testUser: User[] = [
     user_id: 80,
     username: 'onichan',
     email: 'onichan@mail.com',
+    email: 'onichan@mail.com',
     password_hash: 'onichan',
     created_at: normalizeDate(new Date().toISOString()),
     role: 'user',
+    created_at: normalizeDate(new Date().toISOString()),
+    role: 'user',
     bio: 'ohayo',
+    profile_picture: 'onichan.jpg',
     profile_picture: 'onichan.jpg',
   },
 ];
@@ -26,8 +30,17 @@ let webServer: any;
 beforeAll((done) => {
   webServer = app.listen(3004, () => done());
 },60000);
+},60000);
 
 beforeEach((done) => {
+  pool.query('SET FOREIGN_KEY_CHECKS = 0', (err) => {
+    if (err) return done(err);
+
+    pool.query('DELETE FROM Users', (truncateErr) => {
+      if (truncateErr) return done(truncateErr);
+
+      pool.query('SET FOREIGN_KEY_CHECKS = 1', (enableErr) => {
+        if (enableErr) return done(enableErr);
   pool.query('SET FOREIGN_KEY_CHECKS = 0', (err) => {
     if (err) return done(err);
 
@@ -46,7 +59,25 @@ beforeEach((done) => {
           user.bio,
           user.profile_picture,
         ]);
+        const values = testUser.map((user) => [
+          user.user_id,
+          user.username,
+          user.email,
+          user.password_hash,
+          user.role,
+          user.bio,
+          user.profile_picture,
+        ]);
 
+        pool.query(
+          'INSERT INTO Users (user_id, username, email, password_hash, role, bio, profile_picture) VALUES ?',
+          [values],
+          done
+        );
+      });
+    });
+  });
+},60000);
         pool.query(
           'INSERT INTO Users (user_id, username, email, password_hash, role, bio, profile_picture) VALUES ?',
           [values],

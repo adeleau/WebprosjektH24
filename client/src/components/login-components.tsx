@@ -4,7 +4,8 @@ import type { User } from "../services/user-service";
 import Cookies from "js-cookie"; 
 import userService from "../services/user-service";
 
-
+//Joshi,G.(03.2023), Building a System for User Registration and Login using TypeScript (Part 2 ), Building by learning: https://gauravjoshi.hashnode.dev/building-a-system-for-user-registration-and-login-using-typescript-part-2
+//samme oppsett som for register
 export const Login: React.FC = () => {
   const history = useHistory();
   const [username, setUsername] = useState<string>("");
@@ -37,16 +38,16 @@ export const Login: React.FC = () => {
     if (user) {
       Cookies.set("user", JSON.stringify(user), { domain: "localhost" });
       history.push("/");
-    } else {
-      Cookies.set("user", "guest", { domain: "localhost" });
+    } else if (user==null){
+      Cookies.remove("user"); 
     }
-  }, [user, history]); //Using cookies since this is a method that works for remembering users
-  //This is valuable for us since we have users with admin privleges
+  }, [user, history]);//Using cookies 
   //sources used:
   //Chikari, M (14.04.23), Setting and Using Cookies in React, Clerk: https://clerk.com/blog/setting-and-using-cookies-in-react
    //Djirdeh, H (24.10.23), React Basics: How to Use Cookies in React, KendoReact: https://www.telerik.com/blogs/react-basics-how-to-use-cookies 
    
 
+  //Oraro,P(23.09.23), Building A Simple React Login Form: A Step By Step Guide, DEV, https://dev.to/paulineoraro/building-a-simple-react-login-form-a-step-by-step-guide-17g1
   return (
     <div className="login">
       <div className="card">

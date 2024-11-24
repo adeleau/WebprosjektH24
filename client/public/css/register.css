@@ -64,28 +64,3 @@ input:focus {
     background-color: #d18b9e;
   }
   
-
-  @media (max-width: 768px) {
-    .register-page {
-        width: 80%;
-        padding: 15px;
-    }
-
-    .btn-register {
-        padding: 10px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .register-page {
-        width: 90%;
-    }
-
-    .input-group input {
-        padding: 10px;
-    }
-
-    .btn-register {
-        padding: 8px 15px;
-    }
-}

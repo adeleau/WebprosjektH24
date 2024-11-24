@@ -9,10 +9,8 @@ export type Angel = {
     release_year: number;
     views: number;
     user_id: number;
-    // created_at: string;
-    // updated_at?: string;
     series_id: number;
-    user_name: string;
+    username: string;
 };
 
 // for setting up variables and database ref src: 4
@@ -33,21 +31,33 @@ class AngelService {
             })
         })
     }
-
+    
     get(angel_id: number) {
-        return new Promise<Angel | Error> ((resolve, reject) => {
-            pool.query('SELECT * FROM Angels WHERE angel_id=?', [angel_id], (error, results: RowDataPacket[]) => {
-                if (error) return reject(error);
-                let tempAngel: Angel = results[0] as Angel;
-                resolve(tempAngel)
-            })
-        })
+      return new Promise<Angel>((resolve, reject) => {
+        pool.query(
+          "SELECT * FROM Angels WHERE angel_id=?",
+          [angel_id],
+          (error, results: RowDataPacket[]) => {
+            if (error) return reject(error);
+            if (results.length === 0) return reject(new Error("Angel not found"));
+            resolve(results[0] as Angel);
+          }
+        );
+      });
     }
-
+    
     createAngel(angel: Omit<Angel, 'angel_id' | 'created_at' | 'updated_at'>) {
       return new Promise<Angel>((resolve, reject) => {
         const { name, description, image, release_year, views, user_id, series_id } = angel;
-  
+          // Validering av description
+    if (!description || description.trim() === "") {
+      return reject(new Error("Description is required and cannot be empty"));
+    }
+    //validering av release_year
+    if (isNaN(Number(release_year))) {
+      return reject(new Error("Invalid release year"));
+    }
+
         pool.query(
           'INSERT INTO Angels (name, description, image, release_year, views, user_id, series_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [name, description, image, release_year, views, user_id, series_id],
@@ -66,7 +76,55 @@ class AngelService {
         );
       });
     }
-  
+
+    updateAngel(angel: Angel) {
+      return new Promise<void>((resolve, reject) => {
+        // Valider input
+        if (!angel.angel_id) return reject(new Error("Angel ID is missing."));
+        if (!angel.description || angel.description.trim() === "") {
+          return reject(new Error("Description is missing or invalid"));
+        }
+    
+        // Hent eksisterende engel for å sammenligne
+        this.get(angel.angel_id)
+          .then((currentAngel) => {
+            if (!currentAngel) {
+              return reject(new Error(`Angel with ID ${angel.angel_id} not found.`));
+            }
+    
+            // Logg historikk hvis beskrivelse har endret seg
+            if (currentAngel.description !== angel.description) {
+              pool.query(
+                "INSERT INTO AngelHistory (angel_id, description, user_id, updated_at) VALUES (?, ?, ?, NOW())",
+                [angel.angel_id, currentAngel.description, angel.user_id],
+                (historyError) => {
+                  if (historyError) return reject(historyError);
+    
+                  // Oppdater engel
+                  this.performUpdate(angel, resolve, reject);
+                }
+              );
+            } else {
+              // Bare oppdater hvis historikk ikke er nødvendig
+              this.performUpdate(angel, resolve, reject);
+            }
+          })
+          .catch(reject);
+      });
+    }
+    
+    // Oppdateringslogikk er abstrahert for å unngå repetisjon
+    private performUpdate(angel: Angel, resolve: () => void, reject: (error: Error) => void) {
+      pool.query(
+        "UPDATE Angels SET name = ?, description = ?, image = ?, release_year = ?, series_id = ? WHERE angel_id = ?",
+        [angel.name, angel.description, angel.image, angel.release_year, angel.series_id, angel.angel_id],
+        (updateError) => {
+          if (updateError) return reject(updateError);
+          resolve();
+        }
+      );
+    }
+    
     updateAngel(angel: Angel) {
       return new Promise<void>((resolve, reject) => {
         
@@ -136,7 +194,8 @@ class AngelService {
     });
   }
 
-  deleteAngel(angelId: number) {
+
+deleteAngel(angelId: number) {
     return new Promise<void>((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) return reject(err);

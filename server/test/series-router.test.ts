@@ -7,6 +7,9 @@ const testSeries: Series[] = [
   { series_id: 60, name: 'Marine Series' },
   { series_id: 61, name: 'Animal Series' },
   { series_id: 62, name: 'Christmas series' },
+  { series_id: 60, name: 'Marine Series' },
+  { series_id: 61, name: 'Animal Series' },
+  { series_id: 62, name: 'Christmas series' },
 ];
 
 axios.defaults.baseURL = 'http://localhost:3002';
@@ -14,6 +17,7 @@ axios.defaults.baseURL = 'http://localhost:3002';
 let webServer: any;
 
 // Set Jest timeout to 30 seconds
+jest.setTimeout(60000);
 jest.setTimeout(60000);
 
 beforeAll((done) => {

@@ -2,7 +2,12 @@ import axios from "axios";
 import pool from "../src/mysql-pool";
 import app from "../src/app";
 import angelService, { Angel } from "../src/services/angel-service"
+import axios from "axios";
+import pool from "../src/mysql-pool";
+import app from "../src/app";
+import angelService, { Angel } from "../src/services/angel-service"
 
+axios.defaults.baseURL = "http://localhost:3005";
 axios.defaults.baseURL = "http://localhost:3005";
 
 let webServer: any;

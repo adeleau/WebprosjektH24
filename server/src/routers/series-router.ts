@@ -19,13 +19,25 @@ seriesrouter.get("/series", (_request, response) => {
 });
  
 //get name of series by id
-seriesrouter.get('/series/name/:id',(req, res) =>{
-   seriesService.getName(Number(req.params.id))
-     .then((name) => res.send(name))
-     .catch((err) => res.status(500).send(err))
-})
+seriesrouter.get('/series/name/:id', (req, res) => {
+  const seriesId = Number(req.params.id);
 
-// Create a new series (new route)
+  seriesService.getName(seriesId)
+    .then((name) => {
+      if (!name) {
+        return res.status(404).send('Series not found'); // Returner riktig status
+      }
+      res.status(200).send(name); // Returner serienavnet hvis funnet
+    })
+    .catch((err) => {
+      console.error(err); // Logg feilen for debugging
+      res.status(500).send('Internal server error');
+    });
+});
+
+
+
+// Create new series 
 seriesrouter.post('/series', (req, res) => {
   const { name } = req.body;
   if (!name) {
@@ -38,7 +50,7 @@ seriesrouter.post('/series', (req, res) => {
     .catch((error) => res.status(500).send(error));
 });
 
-// Delete a series without deleting associated angels
+// Delete a series w/o deleting associated angels
 seriesrouter.delete('/series/:id', (req, res) => {
   const seriesId = Number(req.params.id);
 
@@ -51,6 +63,5 @@ seriesrouter.delete('/series/:id', (req, res) => {
     .then(() => res.status(200).send(`Series with ID ${seriesId} deleted successfully`))
     .catch((error) => res.status(500).send(error));
 });
-
 
 export default seriesrouter;

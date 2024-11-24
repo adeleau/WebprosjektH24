@@ -15,8 +15,22 @@ class SeriesService {
             })
         })
     }
-
+    
     getName(id: number) {
+      return new Promise<string | null>((resolve, reject) => {
+          pool.query(
+              'SELECT name FROM Series WHERE series_id = ?', 
+              [id], 
+              (error, results: RowDataPacket[]) => {
+                  if (error) return reject(error);
+                  if (results.length === 0) return resolve(null); // Returner `null` hvis serien ikke finnes
+                  resolve(results[0].name as string);
+              }
+          );
+      });
+  }
+  
+    /*getName(id: number) {
         return new Promise<string | Error> ((resolve, reject) => {
             pool.query('SELECT name FROM Series WHERE series_id=?', 
             [id], 
@@ -27,7 +41,7 @@ class SeriesService {
             }
           )
         })
-    }
+    }*/
 
   // Add a new series (new method)
   createSeries(series: { name: string }) {

@@ -5,7 +5,8 @@ import WishlistService from '../services/wishlist-service';
 
 const userrouter = express.Router();
 
-//Get user by ID
+// USERS 
+// Get user by ID
 userrouter.get('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     try {
@@ -35,11 +36,11 @@ userrouter.get('/users/uname/:username', async (req, res) => {
     }
 });
   
-//Get all users
+// Get all users
 userrouter.get('/users', async (req, res) => {
     try {
         const users = await userService.getAllUsers();
-        res.json(users);
+        res.send(users);
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).send('Server error');
@@ -65,17 +66,16 @@ userrouter.put('/users/:id/role', async (req, res) => {
     }
 });
   
-  
 //Update user details
 userrouter.put('/users/:id', async (req, res) => {
     const user_id = parseInt(req.params.id, 10);
     const updatedData = req.body;
 
     try {
-        //Map `password` to `password_hash` if provided
+        // Map 'password' to 'password_hash'
         if (updatedData.password) {
-            updatedData.password_hash = updatedData.password; // Map to `password_hash`
-            delete updatedData.password; // Remove plaintext `password` from payload
+            updatedData.password_hash = updatedData.password; // Map to 'password_hash'
+            delete updatedData.password; 
         }
 
         await userService.updateUser(user_id, updatedData);
@@ -106,14 +106,14 @@ userrouter.get('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
         const likes = await LikesService.getUserLikes(userId);
-        res.json(likes);
+        res.send(likes);
     } catch (error) {
         console.error('Error fetching user likes:', error);
         res.status(500).send('Server error');
     }
 });
 
-//Add a like for a user
+// Add a like (collection) for a user
 userrouter.post('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -126,7 +126,7 @@ userrouter.post('/:userId/likes', async (req, res) => {
     }
 });
 
-//Delete a like for a user
+// Delete a like (collection) for a user
 userrouter.delete('/:userId/likes', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;
@@ -140,19 +140,19 @@ userrouter.delete('/:userId/likes', async (req, res) => {
 });
 
 
-//Get wishlist of a user by user ID
+// Get wishlist of a user for a user
 userrouter.get('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     try {
         const wishlist = await WishlistService.getUserWishlist(userId);
-        res.json(wishlist);
+        res.send(wishlist);
     } catch (error) {
         console.error('Error fetching user wishlist:', error);
         res.status(500).send('Server error');
     }
 });
 
-//Add an item to a user's wishlist
+//Add an item to wishlist
 userrouter.post('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { angelId } = req.body;  
@@ -165,7 +165,7 @@ userrouter.post('/:userId/wishlist', async (req, res) => {
     }
 });
 
-//Delete an item from a user's wishlist
+// Delete an item from wishlist
 userrouter.delete('/:userId/wishlist', async (req, res) => {
     const userId = parseInt(req.params.userId, 10);
     const { seriesId } = req.body;

@@ -13,12 +13,17 @@ const testUser : Users[]= [
     {user_id:40, username:'Adele', email:'Adele@san.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
     {user_id:41, username:'Julia', email:'Julia@kun.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
     {user_id:42, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
+    {user_id:40, username:'Adele', email:'Adele@san.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
+    {user_id:41, username:'Julia', email:'Julia@kun.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
+    {user_id:42, username:'Emii', email:'Emii@sonny.com', password_hash:'Angel123!', created_at: normalizeDate(new Date()),bio: null, profile_picture: null, role: 'user'},
 ];
 
 let webServer: any;
 
+
 beforeAll((done) => {
     webServer = app.listen(3001, () => done());
+  });
   });
 
   beforeEach((done) => {

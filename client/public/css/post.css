@@ -59,7 +59,6 @@
   transition: transform 0.2s ease;
   flex-direction: column;
   cursor: pointer;
-  /*overflow: hidden;*/
 }
   
   .post-preview-card:hover {

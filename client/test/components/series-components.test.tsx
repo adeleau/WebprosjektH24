@@ -86,6 +86,111 @@ describe('SeriesList Component Tests', () => {
     expect(fullErrorText).toContain('Error getting angels: Error fetching angels');
     expect(fullErrorText).toContain('Error getting series name: Error fetching series name');
     expect(fullErrorText).toContain('Error getting angel count: Error fetching angel count');
+<<<<<<< HEAD
+  });
+
+  test('renders no angels when the series is empty', async () => {
+    (AngelService.getBySeries as jest.Mock).mockResolvedValue([]);
+    (SeriesService.getName as jest.Mock).mockResolvedValue('Empty Series');
+    (AngelService.getAngelCount as jest.Mock).mockResolvedValue(0);
+
+    let wrapper: any;
+    await act(async () => {
+      wrapper = mount(
+        <MemoryRouter initialEntries={['/series/1']}>
+          <Route path="/series/:series_id">
+            <SeriesList />
+          </Route>
+        </MemoryRouter>
+      );
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find('h1').text()).toBe('Empty Series');
+    expect(wrapper.find('.angel-card').length).toBe(0);
+    expect(wrapper.text()).toContain('No angels found in this series.');
+    expect(wrapper.text()).toContain('Number of angels in Empty Series: 0');
+  });
+
+  test('handles missing series name gracefully', async () => {
+    (AngelService.getBySeries as jest.Mock).mockResolvedValue([
+      { angel_id: 1, name: 'Angel One', image: '/angel1.jpg' },
+    ]);
+    (SeriesService.getName as jest.Mock).mockResolvedValue(null);
+    (AngelService.getAngelCount as jest.Mock).mockResolvedValue(1);
+
+    let wrapper: any;
+    await act(async () => {
+      wrapper = mount(
+        <MemoryRouter initialEntries={['/series/1']}>
+          <Route path="/series/:series_id">
+            <SeriesList />
+          </Route>
+        </MemoryRouter>
+      );
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find('h1').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Loading series information...');
+  });
+
+  test('shows admin actions for admin users', async () => {
+    (Cookies.get as jest.Mock).mockReturnValue(
+      JSON.stringify({ username: 'admin', role: 'admin' })
+    );
+    (AngelService.getBySeries as jest.Mock).mockResolvedValue([
+      { angel_id: 1, name: 'Angel One', image: '/angel1.jpg' },
+    ]);
+    (SeriesService.getName as jest.Mock).mockResolvedValue('Admin Series');
+    (AngelService.getAngelCount as jest.Mock).mockResolvedValue(1);
+
+    let wrapper: any;
+    await act(async () => {
+      wrapper = mount(
+        <MemoryRouter initialEntries={['/series/1']}>
+          <Route path="/series/:series_id">
+            <SeriesList />
+          </Route>
+        </MemoryRouter>
+      );
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find('button.btn-create-angel').exists()).toBe(true);
+    expect(wrapper.find('button.btn-delete-series').exists()).toBe(true);
+  });
+
+  test('does not show admin actions for non-admin users', async () => {
+    (Cookies.get as jest.Mock).mockReturnValue(
+      JSON.stringify({ username: 'user', role: 'user' })
+    );
+    (AngelService.getBySeries as jest.Mock).mockResolvedValue([
+      { angel_id: 1, name: 'Angel One', image: '/angel1.jpg' },
+    ]);
+    (SeriesService.getName as jest.Mock).mockResolvedValue('User Series');
+    (AngelService.getAngelCount as jest.Mock).mockResolvedValue(1);
+
+    let wrapper: any;
+    await act(async () => {
+      wrapper = mount(
+        <MemoryRouter initialEntries={['/series/1']}>
+          <Route path="/series/:series_id">
+            <SeriesList />
+          </Route>
+        </MemoryRouter>
+      );
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find('button.btn-create-angel').exists()).toBe(false);
+    expect(wrapper.find('button.btn-delete-series').exists()).toBe(false);
+=======
+>>>>>>> 2a425eaa7e645dc631393fc3165641cb01a13ab4
   });
 
   test('renders no angels when the series is empty', async () => {
@@ -189,6 +294,7 @@ describe('SeriesList Component Tests', () => {
     expect(wrapper.find('button.btn-create-angel').exists()).toBe(false);
     expect(wrapper.find('button.btn-delete-series').exists()).toBe(false);
   });
+
 });
 
 /*import React from 'react';

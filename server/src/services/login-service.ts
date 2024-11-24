@@ -16,7 +16,7 @@ class LoginService {
         return new Promise((resolve, reject) => {
             pool.query('SELECT * FROM Users WHERE username = ?', [username], (error, results: RowDataPacket[]) => {
                 if (error) return reject(error);
-                if (results.length === 0) return resolve(null); // Return null if no user found
+                if (results.length === 0) return resolve(null); 
                 resolve(results[0] as User);
             });
         });

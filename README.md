@@ -24,7 +24,7 @@ Welcome to the **Sonny Angels Wiki**, a community for Sonny Angel enthusiasts! T
 - **Editing and Versioning**: Admins can create and edit wiki pages, with a history of all changes. ✏️
 - **Comments and Likes**: Share your thoughts by commenting on pages. 💬
 - **Community Discussions**: Join the discussion space to connect with fellow enthusiasts. 🌸
-- **Tags**: All Angels are the children of a Series, you can order and search by them! (works as tags)
+- **Tags**: Our answer of using tags are Series. All Angels are underlying of a Series, you can order and search by them!
 
 ---
 
@@ -43,7 +43,7 @@ Follow these steps to set up the project locally:
 ### Install dependencies:
 
 1. ```bash
-   cd client/src
+   cd client
    npm install
 
 2. ```bash
@@ -51,7 +51,7 @@ Follow these steps to set up the project locally:
    npm install
 
 
-### Create a config.ts file in the server directory and set the following variables:
+### Create a config.ts  file in the root directory and set the following variables:
 
 process.env.MYSQL_HOST = 'hostname';
 
@@ -64,13 +64,13 @@ process.env.MYSQL_DATABASE = 'database-name';
 
 ### Add following tables into your database: 
 
-Copy and paste the database-setup.sql into your SQL Query editor or terminal. One of the test-users is admin, and have more rights in the wiki. Try to log in with that one to see!
+Look at the database-setup.txt file to create all tables. There are a few test varibles added here - including one admin user.
 
 
 ### Start the development server:
 
 1. ```bash
-   cd client/src
+   cd client
    npm start
    
 2. ```bash
@@ -85,58 +85,36 @@ Register or log in to explore features like the wiki, collections, and community
 Run the following command to execute tests:
 
 1. ```bash
-   npm test
-   npm test -- testfile.test.ts / .tsx
+   npm test 
+
+### Sources 📚
+Sonny Angel Official Site
+
+In this project, we have used the following AI tools to support our work:
+
+ChatGPT by OpenAI and GitHub Copilot by GitHub for 
+- Syntax correction.
+- To refine and correct code snippets, ensuring proper syntax.
+- Error trouble shooting.
+- Suggestions for improvement to enhance the readability, structure, and technical accuracy of both code and textual explanations.
+- Optimizing code: To suggest more efficient solutions for existing code
 
 
 ### Front-End
 
-We have implemented cookies for Login and register since it is a method that works well for login and users. This method works well when you want users to have roles such as Admin, wich in our case we do have. 
- 
-All use of async and wait is because it is more compatible with Ract
+We have implemented cookied due to its simple nature of storing data in a web browser. It saves the user data upon login in a cookie, and deletes the cookie when user logs out. 
 
-- Components
-   - For the layout of the component we have used the methods wich we have learned during our mandatory assigments, we have relied mostly on this, and we used chat for some help. 
-
-
-- Services
-   
-      - This layout is taken from the assignments we have had, all the service files therefore follow the same format
-      - Angel Service: For creating the version log, and for creating the database, these sources were used (ref src: 4)
-      - A similar setup as from the assignments was used in this one, in addition, chatGPT was also used to correct errors
-
-      
-- test
-   - services
-      For all the test we have used async and wait since these are more compatible with react asynchronius behaviour
-     
-
-   - components
-      For all the test we have used async and wait since these are more compatible with react asynchronius behaviour. 
-      For some of the components test we have used act since it has helped with
-
+- Set up
+We have followed the setup/structure of our project files as done in the mandatory assignments. We implemented a service setup that uses a service for each table in our database. 
 
 ### Back-end
 
-All use of async and wait is because it is more compatible with React.
-
-
 - For back-end we have used the JavaScript Date toISOString()-method, wich is used to convert the given data object's contents into a string in ISO format. We chose to use this because it is more compatible with React. Sources we used are (ref src 3)
-
-- src
-    - router
-        - The format of the router files is taken from the mandatory exercises, but with the router-tests and services-test split up.
-
-    - services
-        - The service format is taken from the mandatory exercises, with changes made with login- and register-services: the following sources are used as help to build of  the  structure   for both user and login (ref src 1,2)
-- test
-
-   We were not able to use the test methods wich we have learned since React made it very complicated, thats why we had to go and try to find different ways to make these tests. Thats why we had to get a little more help from chat, so that we could use it correctly. We learned to late that we could not use the original test methods, and therefor we did not have te time to go very much in depth and learn the new methods without the help of AI tools.
 
 
 ### Sources 📚
 
-Sonny Angel Official Site
+Sonny Angel Official Site for images and info about the products.
 
 In this project, we have used the following AI tools to support our work:
 
@@ -179,14 +157,3 @@ https://youtu.be/wIyHSOugGGw?si=EviloZtlwGMUmZGH
 https://youtu.be/LOH1l-MP_9k?si=SS6Pt5iV2fBvtY-a
 
 15. Lama Dev.(2023.22.02), React Node.js Fiverr App Full Tutorial | MERN Stack Freelance Service App w/ Stripe[video],https://youtu.be/csUM7yfiaMw?si=fw-lA43fNXGYEnV0
-
-
-
-
-
-
-
-   
-
-
-

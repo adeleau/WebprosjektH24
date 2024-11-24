@@ -93,7 +93,7 @@ describe('PostService test', () => {
         const posts = await postService.getAll();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/posts');
-        expect(posts).toEqual(mockPosts);
+        expect(posts).toEqual(mockPost);
     });
 
     test('createPost should create a new post', async () => {
@@ -107,7 +107,9 @@ describe('PostService test', () => {
         mockedAxios.post.mockResolvedValue({ data: mockResponse });
 
         const post_id = await postService.createPost(user_id, title, content, image);
+        const post_id = await postService.createPost(user_id, title, content, image);
 
+        expect(mockedAxios.post).toHaveBeenCalledWith('/posts', { user_id, title, content, image });
         expect(mockedAxios.post).toHaveBeenCalledWith('/posts', { user_id, title, content, image });
         expect(post_id).toBe(mockResponse.post_id);
     });
@@ -118,6 +120,7 @@ describe('PostService test', () => {
         const content = 'Updated Content';
         const image = 'updated_image.jpg';
 
+        mockedAxios.put.mockResolvedValue({ data: { success: true } });
         mockedAxios.put.mockResolvedValue({ data: { success: true } });
         const response = await postService.updatePost(post_id, title, content, image);
 

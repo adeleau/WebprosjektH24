@@ -8,7 +8,7 @@ export type Like = {
 
 class LikesService {
 
-    // Get likes for a specific user
+    // Get likes (collection) for a specific user
     getUserLikes(user_id: number): Promise<Like[]> {
         return new Promise((resolve, reject) => {
             pool.query('SELECT * FROM Collections WHERE user_id = ?', [user_id], (error, results: RowDataPacket[]) => {
@@ -18,7 +18,7 @@ class LikesService {
         });
     }
 
- // Add a like
+ // Add a like (add to collection)
 addLike(userId: number, angelId: number): Promise<void> {
     return new Promise((resolve, reject) => {
         pool.query(
@@ -35,7 +35,7 @@ addLike(userId: number, angelId: number): Promise<void> {
     });
 }
 
-    // Remove a like
+    // Remove a like(remove from collection)
     removeLike(user_id: number, angel_id: number): Promise<void> {
         return new Promise((resolve, reject) => {
             pool.query(
