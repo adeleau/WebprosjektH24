@@ -30,7 +30,7 @@ class PostService {
       get(post_id: number) {
         return new Promise<Post>((resolve, reject) => {
           pool.query(
-            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id WHERE Post.post_id = ?',
+            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id WHERE Posts.post_id = ?',
             [post_id],
             (error, results: RowDataPacket[]) => {
               if (error) return reject(error);
