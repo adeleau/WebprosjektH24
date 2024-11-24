@@ -5,7 +5,7 @@ export type Post = {
     post_id: number;
     user_id: number;
     title: string;
-    //username?: string;
+    username?: string;
     content: string;
     image: string;
     created_at: Date;
@@ -16,8 +16,7 @@ class PostService {
     getAll() {
         return new Promise<Post[]>((resolve, reject) => {
           pool.query(
-            //'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id',
-            'SELECT * FROM Posts',
+            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id',
             [],
             (error, results: RowDataPacket[]) => {
               if (error) return reject(error);
@@ -31,7 +30,7 @@ class PostService {
       get(post_id: number) {
         return new Promise<Post>((resolve, reject) => {
           pool.query(
-            'SELECT * FROM WHERE post_id = ?',
+            'SELECT Posts.*, Users.username FROM Posts INNER JOIN Users ON Posts.user_id = Users.user_id',
             [post_id],
             (error, results: RowDataPacket[]) => {
               if (error) return reject(error);
@@ -42,10 +41,10 @@ class PostService {
       }
 
       //post post
-      createPost(user_id: number/*, username: string*/, title: string, content: string, image: string) {
+      createPost(user_id: number, username: string, title: string, content: string, image: string) {
         return new Promise<number>((resolve, reject) => {
           pool.query(
-            'INSERT INTO Posts (user_id, title, content, image) VALUES (?, ?, ?, ?)',
+            'INSERT INTO Posts (user_id, title, username, content, image) VALUES (?, ?, ?, ?, ?)',
             [user_id, title, content, image],
             (error, results: ResultSetHeader) => {
               if (error) {
