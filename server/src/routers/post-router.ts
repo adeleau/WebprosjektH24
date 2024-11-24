@@ -31,7 +31,7 @@ postrouter.get('/posts/:post_id', (req, res) => {
 });
   
 postrouter.post('/posts', (req, res) => {
-  const { user_id, username, title, content, image } = req.body;
+  const { user_id, title, content, image } = req.body;
 
   if (!title || !user_id) {
     return res.status(400).send('Missing required fields');
@@ -42,7 +42,7 @@ postrouter.post('/posts', (req, res) => {
   }
   
   postService
-    .createPost(user_id, username, title, content, image)
+    .createPost(user_id, title, content, image)
     .then((post_id) => res.status(201).send({ post_id }))
     .catch((error) => {
       console.error('Error creating post:', error.message);
