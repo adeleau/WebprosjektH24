@@ -10,7 +10,7 @@ export type Angel = {
     views: number;
     user_id: number;
     series_id: number;
-    username: string;
+    username?: string;
 };
 
 // for setting up variables and database ref src: 4
@@ -85,7 +85,7 @@ class AngelService {
             if (result instanceof Error) {
               return reject(new Error('Failed to fetch existing angel data'));
             }
-    
+    /*
             const currentAngel = result as Angel;
     
             // Sammenlign beskrivelsene
@@ -108,7 +108,7 @@ class AngelService {
                   );
                 }
               );
-            } else {
+            } else { */
               // Hvis beskrivelsen ikke er endret, oppdater bare engelens andre felt
               pool.query(
                 'UPDATE Angels SET name=?, description=?, image=?, release_year=?, series_id=? WHERE angel_id=?',
@@ -119,7 +119,7 @@ class AngelService {
                 }
               );
             }
-          })
+          )
           .catch((error) => reject(error));
       });
     }

@@ -860,6 +860,12 @@ export const AngelEdit: React.FC<{}> = () => {
   };
 
   const handleSave = () => {
+    setAngel((prevAngel) => ({
+      ...prevAngel,
+      user_id: Number(user!.user_id),
+    }));
+    console.log(user!.user_id);
+    console.log(angel);
     AngelService.updateAngel(angel)
       .then(() => {
         history.push(`/angels/${angel.angel_id}`);
